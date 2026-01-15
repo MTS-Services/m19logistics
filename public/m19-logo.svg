@@ -1,0 +1,18 @@
+<svg width="1152" height="768" viewBox="0 0 1152 768" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Teal Circle Background -->
+  <circle cx="576" cy="256" r="256" fill="#4DB6AC"/>
+  
+  <!-- White Divider -->
+  <path d="M320 160 L832 160 Q832 160 832 170 L832 210 Q832 220 822 220 L320 220 Q310 220 310 210 L310 170 Q310 160 320 160 Z" fill="white"/>
+  
+  <!-- Red Road Stripe -->
+  <path d="M310 160 L820 280 Q830 283 830 295 L820 480 Q818 490 808 487 L298 367 Q288 364 288 352 L298 167 Q300 157 310 160 Z" fill="#F44336"/>
+  
+  <!-- White Road Lines (3 dashes) -->
+  <rect x="390" y="180" width="100" height="8" fill="white" opacity="0.8" rx="4"/>
+  <rect x="510" y="210" width="100" height="8" fill="white" opacity="0.8" rx="4"/>
+  <rect x="630" y="240" width="100" height="8" fill="white" opacity="0.8" rx="4"/>
+  
+  <!-- M19 LOGISTICS Text -->
+  <text x="576" y="650" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="#4DB6AC" text-anchor="middle">M19 LOGISTICS</text>
+</svg>

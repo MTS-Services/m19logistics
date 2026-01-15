@@ -823,5 +823,3 @@ Ensure `Provider` wraps your app in `main.jsx` and the store is properly configu
 Built with ❤️ using React, Redux, and Tailwind CSS
 
 # React-boilerplate-main M19 Logistics Application
-#   m 1 9 l o g i s t i c s  
- 
