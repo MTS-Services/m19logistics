@@ -23,7 +23,7 @@ const NavbarLayout = () => {
   };
 
   return (
-    <nav className="fixed top-0 right-0 left-0 z-[100] border-b border-gray-200 bg-white shadow-sm">
+    <nav className="fixed top-0 right-0 left-0 z-20 border-b border-gray-200 bg-white shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
