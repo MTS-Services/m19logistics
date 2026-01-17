@@ -99,7 +99,7 @@ const HomeView = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/40"></div>
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-20 sm:px-8 lg:px-12">
+        <div className="relative z-50 container mx-auto w-full px-6 py-20 sm:px-8 lg:px-12">
           <div className="max-w-3xl text-left">
             <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
               Logistics <span className="text-teal-400">Evolved</span>.
