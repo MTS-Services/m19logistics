@@ -25,7 +25,7 @@ const NavbarLayout = () => {
   return (
     <nav className="border-b border-gray-200 bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="ml-8 flex h-20 items-center justify-between">
+        <div className="ml-8 flex h-24 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src="images/logo.png" alt="M19 Logistics" className="h-16 w-auto" />
