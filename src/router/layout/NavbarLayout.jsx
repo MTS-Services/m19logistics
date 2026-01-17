@@ -41,7 +41,7 @@ const NavbarLayout = () => {
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="ml-6 flex h-20 items-center justify-between">
+        <div className="mr-4 ml-4 flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src="images/logo.png" alt="M19 Logistics" className="h-14 w-auto" />
