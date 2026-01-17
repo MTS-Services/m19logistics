@@ -24,7 +24,7 @@ const NavbarLayout = () => {
 
   return (
     <nav className="border-b border-gray-200 bg-white shadow-sm">
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
