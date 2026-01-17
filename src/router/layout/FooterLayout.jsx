@@ -12,7 +12,7 @@ const FooterLayout = () => {
           {/* Brand Section */}
           <div className="md:col-span-2">
             <div className="mb-4 flex items-center space-x-2">
-              <img src="/logo.png" alt="M19 Logistics" className="h-16 w-auto" />
+              <img src="images/logo.png" alt="M19 Logistics" className="h-16 w-auto" />
             </div>
             <p className="mb-4 max-w-md text-gray-400">
               Your trusted partner in seamless delivery solutions across the UK. Providing reliable,
