@@ -54,12 +54,12 @@ const NavbarLayout = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`rounded-md px-4 py-2.5 text-base font-[600] transition-all ${
+                  className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${
                     isActive(item.href)
                       ? ' text-[#31A2A2]'
                       : isScrolled
                         ? 'text-gray-800 hover:text-[#31A2A2]'
-                        : 'text-gray-800 hover:text-[#31A2A2]'
+                        : 'text-gray-500 hover:text-[#31A2A2]'
                   }`}
                 >
                   {item.name}
