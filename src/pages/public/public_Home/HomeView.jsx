@@ -222,7 +222,7 @@ const HomeView = () => {
 
       {/* CTA Section - Ready to get moving */}
       <section className="bg-[#1B9898] py-20">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
           <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">Ready to get moving?</h2>
           <p className="mx-auto mb-10 max-w-2xl text-lg text-white opacity-90 md:text-xl">
             Booking is simple — online, by phone or email. Our team is ready to take care of
