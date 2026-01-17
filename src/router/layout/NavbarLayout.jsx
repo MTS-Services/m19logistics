@@ -44,7 +44,7 @@ const NavbarLayout = () => {
         <div className="mr-4 ml-4 flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="images/logo.png" alt="M19 Logistics" className="h-14 w-auto" />
+            <img src="/images/logo.png" alt="M19 Logistics" className="h-14 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -122,7 +122,7 @@ const NavbarLayout = () => {
         {/* Mobile Navigation */}
         <div
           className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${
-            isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            isOpen ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
           <div className="space-y-1 pt-2 pb-4">
