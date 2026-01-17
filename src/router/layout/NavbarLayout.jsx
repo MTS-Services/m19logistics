@@ -120,63 +120,110 @@ const NavbarLayout = () => {
         </div>
 
         {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="pb-4 md:hidden">
-            <div className="flex flex-col space-y-2">
-              {navigation.map((item) => {
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className={`rounded-md px-3 py-2 text-base font-medium transition-colors ${
-                      isActive(item.href) ? 'text-teal-600' : 'text-gray-600 hover:text-teal-600'
-                    }`}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })}
-
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to={
-                      user.role === 'admin'
-                        ? '/admin/dashboard'
-                        : user.role === 'driver'
-                          ? '/driver/dashboard'
-                          : user.role === 'area_manager'
-                            ? '/area-manager/dashboard'
-                            : '/customer/dashboard'
-                    }
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-600 hover:bg-gray-100"
-                  >
-                    <User className="h-5 w-5" />
-                    <span>{user.name}</span>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center space-x-2 rounded-md bg-red-600 px-3 py-2 text-base font-medium text-white"
-                  >
-                    <LogOut className="h-5 w-5" />
-                    <span>Logout</span>
-                  </button>
-                </>
-              ) : (
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${
+            isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="space-y-1 pt-2 pb-4">
+            {navigation.map((item, index) => {
+              const Icon = item.icon;
+              return (
                 <Link
-                  to="/login"
+                  key={item.name}
+                  to={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center space-x-2 rounded-md bg-teal-500 px-3 py-2 text-base font-medium text-white"
+                  className={`group flex items-center space-x-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'bg-teal-50 text-teal-600 shadow-sm'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-teal-600'
+                  }`}
+                  style={{
+                    animation: isOpen ? `slideIn 0.3s ease-out ${index * 0.05}s forwards` : 'none',
+                    opacity: isOpen ? 1 : 0,
+                    transform: isOpen ? 'translateX(0)' : 'translateX(-20px)',
+                  }}
                 >
-                  <LogIn className="h-5 w-5" />
-                  <span>Login</span>
+                  <Icon
+                    className={`h-5 w-5 transition-colors ${
+                      isActive(item.href)
+                        ? 'text-teal-600'
+                        : 'text-gray-400 group-hover:text-teal-500'
+                    }`}
+                  />
+                  <span>{item.name}</span>
                 </Link>
-              )}
-            </div>
+              );
+            })}
+
+            {/* Divider */}
+            <div className="my-3 border-t border-gray-200"></div>
+
+            {/* Auth Section */}
+            {isAuthenticated ? (
+              <div className="space-y-1">
+                <Link
+                  to={
+                    user.role === 'admin'
+                      ? '/admin/dashboard'
+                      : user.role === 'driver'
+                        ? '/driver/dashboard'
+                        : user.role === 'area_manager'
+                          ? '/area-manager/dashboard'
+                          : '/customer/dashboard'
+                  }
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-3 rounded-lg bg-gray-50 px-4 py-3 text-base font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100"
+                  style={{
+                    animation: isOpen ? 'slideIn 0.3s ease-out 0.2s forwards' : 'none',
+                    opacity: isOpen ? 1 : 0,
+                  }}
+                >
+                  <User className="h-5 w-5 text-gray-500" />
+                  <span>{user.name}</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center space-x-3 rounded-lg bg-red-50 px-4 py-3 text-base font-medium text-red-600 transition-all duration-200 hover:bg-red-100"
+                  style={{
+                    animation: isOpen ? 'slideIn 0.3s ease-out 0.25s forwards' : 'none',
+                    opacity: isOpen ? 1 : 0,
+                  }}
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-700 px-4 py-3 text-base font-semibold text-white shadow-md transition-all duration-200 hover:from-teal-700 hover:to-teal-800 hover:shadow-lg"
+                style={{
+                  animation: isOpen ? 'slideIn 0.3s ease-out 0.2s forwards' : 'none',
+                  opacity: isOpen ? 1 : 0,
+                }}
+              >
+                <LogIn className="h-5 w-5" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
-        )}
+        </div>
+
+        {/* Animation Keyframes */}
+        <style>{`
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: translateX(-20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+        `}</style>
       </div>
     </nav>
   );
