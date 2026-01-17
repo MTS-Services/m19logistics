@@ -96,7 +96,7 @@ const HomeView = () => {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[url('images/hero-bg.jpg')] bg-cover bg-center opacity-70"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/40"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-slate-900/80 to-slate-900/40"></div>
         </div>
 
         <div className="relative z-10 container mx-auto w-full px-6 py-20 sm:px-8 lg:px-12">
@@ -122,7 +122,7 @@ const HomeView = () => {
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center rounded-lg border-2 border-white bg-transparent px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-lg border-2 border-white/40 bg-transparent px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/10"
               >
                 Contact Us
               </Link>
@@ -140,7 +140,7 @@ const HomeView = () => {
               return (
                 <div
                   key={index}
-                  className="group rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 p-6 text-center transition-all hover:shadow-lg"
+                  className="group rounded-2xl bg-linear-to-br from-gray-50 to-gray-100 p-6 text-center transition-all hover:shadow-lg"
                 >
                   <Icon className="mx-auto mb-3 h-8 w-8 text-teal-600 transition-transform group-hover:scale-110" />
                   <div className="text-3xl font-bold text-gray-900 sm:text-4xl">{stat.number}</div>
@@ -153,7 +153,7 @@ const HomeView = () => {
       </section>
 
       {/* Services Section - Enhanced */}
-      <section className="bg-gradient-to-b from-white to-gray-50 py-16 sm:py-24">
+      <section className="bg-linear-to-b from-white to-gray-50 py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -173,10 +173,10 @@ const HomeView = () => {
                   className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div
-                    className={`absolute -top-6 -right-6 h-32 w-32 rounded-full bg-gradient-to-br ${service.color} opacity-10 transition-opacity group-hover:opacity-20`}
+                    className={`absolute -top-6 -right-6 h-32 w-32 rounded-full bg-linear-to-br ${service.color} opacity-10 transition-opacity group-hover:opacity-20`}
                   ></div>
                   <Icon
-                    className={`relative mb-4 h-10 w-10 bg-gradient-to-br ${service.color} bg-clip-text text-transparent`}
+                    className={`relative mb-4 h-10 w-10 bg-linear-to-br ${service.color} bg-clip-text text-transparent`}
                   />
                   <h3 className="relative mb-3 text-xl font-bold text-gray-900">{service.title}</h3>
                   <p className="relative text-gray-600">{service.description}</p>
@@ -203,10 +203,10 @@ const HomeView = () => {
             {whyChooseUs.map((item, index) => (
               <div
                 key={index}
-                className="flex gap-4 rounded-xl bg-gradient-to-br from-gray-50 to-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                className="flex gap-4 rounded-xl bg-linear-to-br from-gray-50 to-white p-6 shadow-sm transition-shadow hover:shadow-md"
               >
-                <div className="flex-shrink-0">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-blue-500 text-white">
+                <div className="shrink-0">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-teal-500 to-blue-500 text-white">
                     <CheckCircle className="h-5 w-5" />
                   </div>
                 </div>
@@ -237,7 +237,7 @@ const HomeView = () => {
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center justify-center rounded-lg border-2 border-white bg-transparent px-8 py-4 text-base font-bold text-white transition-all hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-lg border-2 border-white/40 bg-transparent px-8 py-4 text-base font-bold text-white transition-all hover:bg-white/10"
             >
               Contact Sales
             </Link>
@@ -246,7 +246,7 @@ const HomeView = () => {
       </section>
 
       {/* Contact Info Section */}
-      <section className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-16">
+      <section className="bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Get in Touch Today</h2>
