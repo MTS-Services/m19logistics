@@ -23,22 +23,22 @@ const NavbarLayout = () => {
   };
 
   return (
-    <nav className="border-b border-gray-200 bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="ml-8 flex h-24 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="images/logo.png" alt="M19 Logistics" className="h-16 w-auto" />
+            <img src="images/logo.png" alt="M19 Logistics" className="h-14 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center space-x-6 md:flex">
+          <div className="hidden items-center space-x-4 md:flex">
             {navigation.map((item) => {
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`rounded-md px-3 py-2 text-base font-extrabold transition-colors ${
+                  className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
                     isActive(item.href) ? 'text-[#31A2A2]' : 'text-gray-700 hover:text-[#31A2A2]'
                   }`}
                 >
