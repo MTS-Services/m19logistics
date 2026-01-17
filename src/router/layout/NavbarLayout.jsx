@@ -36,12 +36,12 @@ const NavbarLayout = () => {
     <nav
       className={`fixed top-0 right-0 left-0 z-20 border-b transition-all duration-300 ${
         isScrolled
-          ? 'border-gray-400 bg-white/40 shadow-lg backdrop-blur-md'
+          ? 'border-gray-400/5 bg-white/40 shadow-lg backdrop-blur-md'
           : 'border-gray-200 bg-white shadow-sm'
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
+        <div className="ml-6 flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img src="images/logo.png" alt="M19 Logistics" className="h-14 w-auto" />
