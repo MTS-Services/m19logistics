@@ -21,8 +21,8 @@ const NavbarLayout = () => {
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'About Us', href: '/about', icon: Info },
-    { name: 'Contact', href: '/contact', icon: Mail },
     { name: 'Enquiries', href: '/enquiries', icon: HelpCircle },
+    { name: 'Contact', href: '/contact', icon: Mail },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -54,11 +54,11 @@ const NavbarLayout = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`rounded-md px-4 py-2.5 text-base font-bold transition-all ${
+                  className={`rounded-md px-4 py-2.5 text-base font-[600] transition-all ${
                     isActive(item.href)
                       ? ' text-[#31A2A2]'
                       : isScrolled
-                        ? 'text-gray-900 hover:text-[#31A2A2]'
+                        ? 'text-gray-800 hover:text-[#31A2A2]'
                         : 'text-gray-800 hover:text-[#31A2A2]'
                   }`}
                 >
