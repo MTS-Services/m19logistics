@@ -35,27 +35,33 @@ const FooterLayout = () => {
             <h3 className="mb-4 font-semibold text-white">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/" className="text-gray-400 transition-colors hover:text-[#31A2A2]">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/about" className="text-gray-400 transition-colors hover:text-[#31A2A2]">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-400 transition-colors hover:text-white">
+                <Link
+                  to="/contact"
+                  className="text-gray-400 transition-colors hover:text-[#31A2A2]"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <Link to="/enquiries" className="text-gray-400 transition-colors hover:text-white">
+                <Link
+                  to="/enquiries"
+                  className="text-gray-400 transition-colors hover:text-[#31A2A2]"
+                >
                   Enquiries
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/login" className="text-gray-400 transition-colors hover:text-[#31A2A2]">
                   Customer Login
                 </Link>
               </li>
@@ -69,10 +75,10 @@ const FooterLayout = () => {
               <li className="flex items-start space-x-2">
                 <Phone className="mt-1 h-4 w-4 flex-shrink-0 text-teal-400" />
                 <div>
-                  <a href="tel:07971415430" className="block text-gray-400 hover:text-white">
+                  <a href="tel:07971415430" className="block text-gray-400 hover:text-[#31A2A2]">
                     07971 415430
                   </a>
-                  <a href="tel:01978439739" className="block text-gray-400 hover:text-white">
+                  <a href="tel:01978439739" className="block text-gray-400 hover:text-[#31A2A2]">
                     01978 439739
                   </a>
                 </div>
@@ -82,13 +88,13 @@ const FooterLayout = () => {
                 <div className="space-y-1">
                   <a
                     href="mailto:enquiries@m19logistics.com"
-                    className="block text-gray-400 hover:text-white"
+                    className="block text-gray-400 hover:text-[#31A2A2]"
                   >
                     enquiries@m19logistics.com
                   </a>
                   <a
                     href="mailto:deliveries@m19logistics.com"
-                    className="block text-gray-400 hover:text-white"
+                    className="block text-gray-400 hover:text-[#31A2A2]"
                   >
                     deliveries@m19logistics.com
                   </a>
