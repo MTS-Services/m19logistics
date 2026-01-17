@@ -92,7 +92,7 @@ const HomeView = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section - Modern & Clean */}
-      <div className="relative flex min-h-[95vh] w-full items-center overflow-hidden bg-slate-900 pt-20">
+      <div className="relative flex min-h-screen w-full items-center overflow-hidden bg-slate-900 pt-20">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[url('images/hero-bg.jpg')] bg-cover bg-center opacity-70"></div>
