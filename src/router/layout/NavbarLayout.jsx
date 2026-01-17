@@ -28,7 +28,7 @@ const NavbarLayout = () => {
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="M19 Logistics" className="h-16 w-auto" />
+            <img src="images/logo.png" alt="M19 Logistics" className="h-16 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}

@@ -95,7 +95,7 @@ const HomeView = () => {
       <div className="relative flex min-h-[85vh] w-full items-center overflow-hidden bg-slate-900">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] bg-cover bg-center opacity-70"></div>
+          <div className="absolute inset-0 bg-[url('images/hero-bg.jpg')] bg-cover bg-center opacity-70"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/40"></div>
         </div>
 
