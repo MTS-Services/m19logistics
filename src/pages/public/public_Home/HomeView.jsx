@@ -247,7 +247,7 @@ const HomeView = () => {
 
       {/* Contact Info Section */}
       <section className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Get in Touch Today</h2>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-gray-300">
