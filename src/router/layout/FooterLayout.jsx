@@ -6,7 +6,7 @@ const FooterLayout = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-200 bg-gray-900 text-white">
+    <footer className="border-t border-gray-800 bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 md:grid-cols-4">
           {/* Brand Section */}
