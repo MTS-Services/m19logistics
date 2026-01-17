@@ -5,8 +5,18 @@ import { Menu, X, Home, Info, Mail, HelpCircle, LogIn, LogOut, User, Truck } fro
 
 const NavbarLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -23,7 +33,13 @@ const NavbarLayout = () => {
   };
 
   return (
-    <nav className="fixed top-0 right-0 left-0 z-20 border-b border-gray-200 bg-white shadow-sm">
+    <nav
+      className={`fixed top-0 right-0 left-0 z-20 border-b transition-all duration-300 ${
+        isScrolled
+          ? 'border-gray-400 bg-white/40 shadow-lg backdrop-blur-md'
+          : 'border-gray-200 bg-white shadow-sm'
+      }`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
@@ -39,7 +55,11 @@ const NavbarLayout = () => {
                   key={item.name}
                   to={item.href}
                   className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
-                    isActive(item.href) ? 'text-[#31A2A2]' : 'text-gray-700 hover:text-[#31A2A2]'
+                    isActive(item.href)
+                      ? 'text-[#31A2A2]'
+                      : isScrolled
+                        ? 'text-gray-900 hover:text-[#31A2A2]'
+                        : 'text-gray-700 hover:text-[#31A2A2]'
                   }`}
                 >
                   {item.name}
@@ -60,7 +80,11 @@ const NavbarLayout = () => {
                           ? '/area-manager/dashboard'
                           : '/customer/dashboard'
                   }
-                  className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                    isScrolled
+                      ? 'text-gray-900 hover:text-gray-700'
+                      : 'text-gray-700 hover:text-gray-900'
+                  }`}
                 >
                   <User className="h-4 w-4" />
                   <span>{user.name}</span>
