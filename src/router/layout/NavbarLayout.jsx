@@ -20,7 +20,7 @@ const NavbarLayout = () => {
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
-    { name: 'About', href: '/about', icon: Info },
+    { name: 'About Us', href: '/about', icon: Info },
     { name: 'Contact', href: '/contact', icon: Mail },
     { name: 'Enquiries', href: '/enquiries', icon: HelpCircle },
   ];
@@ -54,12 +54,12 @@ const NavbarLayout = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                  className={`rounded-md px-4 py-2.5 text-base font-bold transition-all ${
                     isActive(item.href)
-                      ? 'text-[#31A2A2]'
+                      ? ' text-[#31A2A2]'
                       : isScrolled
                         ? 'text-gray-900 hover:text-[#31A2A2]'
-                        : 'text-gray-700 hover:text-[#31A2A2]'
+                        : 'text-gray-800 hover:text-[#31A2A2]'
                   }`}
                 >
                   {item.name}
@@ -100,9 +100,9 @@ const NavbarLayout = () => {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center space-x-1 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
+                className="flex items-center space-x-1 rounded-md bg-teal-600 px-5 py-2.5 text-base font-bold text-white shadow-sm hover:bg-teal-700"
               >
-                <LogIn className="h-4 w-4" />
+                <LogIn className="h-5 w-5" />
                 <span>Login</span>
               </Link>
             )}
