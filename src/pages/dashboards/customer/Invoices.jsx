@@ -139,6 +139,52 @@ const Invoices = () => {
       total: 45.0,
       paidDate: null,
     },
+    {
+      id: 5,
+      invoiceNumber: 'T0323',
+      date: '2025-12-22',
+      weekEnding: '2025-12-22',
+      status: 'Overdue',
+      deliveries: [
+        {
+          spoNumber: 'SPO013344',
+          date: '2025-12-20',
+          address: '4 Bumpers Lane, Chester, CH1 4LY',
+          basePrice: 37.5,
+          distanceSurcharge: 0,
+          vat: 7.5,
+          total: 45.0,
+        },
+      ],
+      additionalCharges: [],
+      subtotal: 37.5,
+      totalVAT: 7.5,
+      total: 45.0,
+      paidDate: null,
+    },
+    {
+      id: 6,
+      invoiceNumber: 'T0323',
+      date: '2025-12-22',
+      weekEnding: '2025-12-22',
+      status: 'Overdue',
+      deliveries: [
+        {
+          spoNumber: 'SPO013344',
+          date: '2025-12-20',
+          address: '4 Bumpers Lane, Chester, CH1 4LY',
+          basePrice: 37.5,
+          distanceSurcharge: 0,
+          vat: 7.5,
+          total: 45.0,
+        },
+      ],
+      additionalCharges: [],
+      subtotal: 37.5,
+      totalVAT: 7.5,
+      total: 45.0,
+      paidDate: null,
+    },
   ];
 
   // Calculate statistics
