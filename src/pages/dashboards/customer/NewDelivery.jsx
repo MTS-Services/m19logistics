@@ -395,7 +395,7 @@ const NewDelivery = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={() => {
@@ -412,13 +412,13 @@ const NewDelivery = () => {
               });
               setErrors({});
             }}
-            className="rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50"
+            className="w-full rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50 sm:w-auto"
           >
             Reset Form
           </button>
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 sm:w-auto"
           >
             <Send className="h-5 w-5" />
             Submit Request
@@ -504,16 +504,16 @@ const NewDelivery = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-4 border-t border-gray-200 px-6 py-4">
+            <div className="flex flex-col items-center justify-center gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:justify-end">
               <button
                 onClick={() => setShowPreview(false)}
-                className="rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50"
+                className="w-full rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50 sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmSubmission}
-                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                className="flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 sm:w-auto"
               >
                 <CheckCircle className="h-5 w-5" />
                 Confirm & Submit
