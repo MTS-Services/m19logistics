@@ -322,7 +322,7 @@ const CustomerDashboardHome = () => {
               onClick={() => setFilterStatus('all')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'all'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -332,7 +332,7 @@ const CustomerDashboardHome = () => {
               onClick={() => setFilterStatus('received')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'received'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -342,7 +342,7 @@ const CustomerDashboardHome = () => {
               onClick={() => setFilterStatus('allocated')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'allocated'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -352,7 +352,7 @@ const CustomerDashboardHome = () => {
               onClick={() => setFilterStatus('delivered')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'delivered'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -362,7 +362,7 @@ const CustomerDashboardHome = () => {
 
           <button
             onClick={() => setShowRequestModal(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:text-base lg:w-auto lg:px-6"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:text-base lg:w-auto lg:px-6"
           >
             <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             Request Delivery
@@ -379,7 +379,7 @@ const CustomerDashboardHome = () => {
             <p className="mb-6 text-gray-600">Get started by requesting your first delivery</p>
             <button
               onClick={() => setShowRequestModal(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
             >
               <Plus className="h-5 w-5" />
               Request Delivery
@@ -442,7 +442,7 @@ const CustomerDashboardHome = () => {
 
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     <div className="flex items-start gap-2">
-                      <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-600">Delivery Address</p>
                         <p className="text-sm font-semibold text-gray-900">{delivery.address}</p>
@@ -450,7 +450,7 @@ const CustomerDashboardHome = () => {
                     </div>
 
                     <div className="flex items-start gap-2">
-                      <Calendar className="mt-1 h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <Calendar className="mt-1 h-4 w-4 shrink-0 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-600">Date & Time</p>
                         <p className="text-sm font-semibold text-gray-900">
@@ -460,7 +460,7 @@ const CustomerDashboardHome = () => {
                     </div>
 
                     <div className="flex items-start gap-2">
-                      <User className="mt-1 h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <User className="mt-1 h-4 w-4 shrink-0 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-600">Customer</p>
                         <p className="text-sm font-semibold text-gray-900">
@@ -470,7 +470,7 @@ const CustomerDashboardHome = () => {
                     </div>
 
                     <div className="flex items-start gap-2">
-                      <Weight className="mt-1 h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <Weight className="mt-1 h-4 w-4 shrink-0 text-gray-400" />
                       <div>
                         <p className="text-sm text-gray-600">Weight</p>
                         <p className="text-sm font-semibold text-gray-900">{delivery.weight}kg</p>
@@ -696,7 +696,7 @@ const CustomerDashboardHome = () => {
               </button>
               <button
                 onClick={handleRequestDelivery}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
                 <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                 Submit Request
@@ -831,7 +831,7 @@ const CustomerDashboardHome = () => {
             <div className="sticky bottom-0 z-10 flex justify-end border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="w-full rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
+                className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
                 Close
               </button>
@@ -918,7 +918,7 @@ const CustomerDashboardHome = () => {
               </div>
 
               <div className="flex items-start gap-3 rounded-lg bg-yellow-50 p-4">
-                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-600" />
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-yellow-600" />
                 <p className="text-sm text-gray-900">
                   Changes will notify the admin. Please ensure all details are correct before
                   saving.
@@ -938,7 +938,7 @@ const CustomerDashboardHome = () => {
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
                 <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />
                 Save Changes
@@ -1007,7 +1007,7 @@ const CustomerDashboardHome = () => {
               </button>
               <button
                 onClick={confirmDeleteDelivery}
-                className="w-full rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
+                className="w-full rounded-lg bg-linear-to-r from-red-600 to-red-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
                 Yes, Cancel Delivery
               </button>
