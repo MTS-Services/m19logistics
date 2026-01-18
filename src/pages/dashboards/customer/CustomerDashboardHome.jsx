@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Pagination from '../../../components/Pagination';
 
 const CustomerDashboardHome = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -25,6 +26,8 @@ const CustomerDashboardHome = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Sample delivery data
   const [deliveries, setDeliveries] = useState([
@@ -164,6 +167,24 @@ const CustomerDashboardHome = () => {
     if (filterStatus === 'all') return true;
     return delivery.status.toLowerCase() === filterStatus.toLowerCase();
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredDeliveries.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedDeliveries = filteredDeliveries.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle filter change with page reset
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
 
   // Get status badge color
   const getStatusColor = (status) => {
@@ -355,7 +376,7 @@ const CustomerDashboardHome = () => {
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setFilterStatus('all')}
+              onClick={() => handleFilterChange('all')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'all'
                   ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -365,7 +386,7 @@ const CustomerDashboardHome = () => {
               All
             </button>
             <button
-              onClick={() => setFilterStatus('received')}
+              onClick={() => handleFilterChange('received')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'received'
                   ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -375,7 +396,7 @@ const CustomerDashboardHome = () => {
               Pending
             </button>
             <button
-              onClick={() => setFilterStatus('allocated')}
+              onClick={() => handleFilterChange('allocated')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'allocated'
                   ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -385,7 +406,7 @@ const CustomerDashboardHome = () => {
               In Progress
             </button>
             <button
-              onClick={() => setFilterStatus('delivered')}
+              onClick={() => handleFilterChange('delivered')}
               className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'delivered'
                   ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -422,7 +443,7 @@ const CustomerDashboardHome = () => {
             </button>
           </div>
         ) : (
-          filteredDeliveries.map((delivery) => (
+          paginatedDeliveries.map((delivery) => (
             <div
               key={delivery.id}
               className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6"
@@ -573,6 +594,17 @@ const CustomerDashboardHome = () => {
           ))
         )}
       </div>
+
+      {/* Pagination */}
+      {filteredDeliveries.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredDeliveries.length}
+        />
+      )}
 
       {/* Request Delivery Modal */}
       {showRequestModal && (
