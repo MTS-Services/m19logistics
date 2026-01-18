@@ -80,10 +80,10 @@ const NavbarLayout = () => {
                           ? '/area-manager/dashboard'
                           : '/customer/dashboard'
                   }
-                  className={`text-sm font-medium transition-colors ${
+                  className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${
                     isScrolled
-                      ? 'text-gray-900 hover:text-gray-700'
-                      : 'text-gray-700 hover:text-gray-900'
+                      ? 'text-gray-800 hover:text-[#31A2A2]'
+                      : 'text-gray-500 hover:text-[#31A2A2]'
                   }`}
                 >
                   <span>Dashboard</span>
