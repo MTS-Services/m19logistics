@@ -22,6 +22,7 @@ const CustomerDashboardHome = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
 
@@ -229,22 +230,27 @@ const CustomerDashboardHome = () => {
       return;
     }
 
-    const reason = prompt('Please provide a reason for cancellation:');
-    if (reason) {
-      setDeliveries(
-        deliveries.map((d) =>
-          d.id === delivery.id
-            ? {
-                ...d,
-                status: 'Cancelled',
-                cancelledAt: new Date().toISOString(),
-                cancelReason: reason,
-              }
-            : d
-        )
-      );
-      toast.success('Delivery cancelled successfully');
-    }
+    setSelectedDelivery(delivery);
+    setShowDeleteModal(true);
+  };
+
+  // Confirm delete delivery
+  const confirmDeleteDelivery = () => {
+    setDeliveries(
+      deliveries.map((d) =>
+        d.id === selectedDelivery.id
+          ? {
+              ...d,
+              status: 'Cancelled',
+              cancelledAt: new Date().toISOString(),
+              cancelReason: 'Cancelled by customer',
+            }
+          : d
+      )
+    );
+    setShowDeleteModal(false);
+    setSelectedDelivery(null);
+    toast.success('Delivery cancelled successfully');
   };
 
   return (
@@ -498,7 +504,7 @@ const CustomerDashboardHome = () => {
 
       {/* Request Delivery Modal */}
       {showRequestModal && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
               <h2 className="text-2xl font-bold text-gray-900">Request New Delivery</h2>
@@ -664,7 +670,7 @@ const CustomerDashboardHome = () => {
 
       {/* View Delivery Modal */}
       {showViewModal && selectedDelivery && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
               <h2 className="text-2xl font-bold text-gray-900">Delivery Details</h2>
@@ -796,7 +802,7 @@ const CustomerDashboardHome = () => {
 
       {/* Edit Delivery Modal */}
       {showEditModal && selectedDelivery && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
               <h2 className="text-2xl font-bold text-gray-900">Edit Delivery</h2>
@@ -894,6 +900,72 @@ const CustomerDashboardHome = () => {
               >
                 <Edit2 className="h-5 w-5" />
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedDelivery && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
+              <h2 className="text-xl font-bold text-gray-900">Confirm Cancellation</h2>
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSelectedDelivery(null);
+                }}
+                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+              >
+                <XCircle className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="mb-6 flex items-start gap-4">
+                <div className="rounded-full bg-red-100 p-3">
+                  <AlertCircle className="h-6 w-6 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Are you sure you want to cancel this delivery?
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    This action will cancel the delivery request for{' '}
+                    <span className="font-semibold">{selectedDelivery.spoNumber}</span>. This cannot
+                    be undone.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-lg bg-gray-50 p-4">
+                <p className="text-sm text-gray-600">Delivery Details:</p>
+                <p className="mt-1 text-sm font-semibold text-gray-900">
+                  {selectedDelivery.address}
+                </p>
+                <p className="mt-1 text-sm text-gray-600">
+                  {selectedDelivery.date} - {selectedDelivery.timeSlot}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSelectedDelivery(null);
+                }}
+                className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100"
+              >
+                No, Keep It
+              </button>
+              <button
+                onClick={confirmDeleteDelivery}
+                className="rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              >
+                Yes, Cancel Delivery
               </button>
             </div>
           </div>
