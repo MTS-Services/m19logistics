@@ -13,14 +13,19 @@ import {
   Printer,
   Filter,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Pagination from '../../../components/Pagination';
 
 const Invoices = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Sample invoice data
   const invoices = [
@@ -213,6 +218,30 @@ const Invoices = () => {
     return matchesStatus && matchesSearch;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedInvoices = filteredInvoices.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle filter change with page reset
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    setCurrentPage(1);
+  };
+
+  // Handle search with page reset
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
   // Get status badge color
   const getStatusColor = (status) => {
     switch (status) {
@@ -247,10 +276,74 @@ const Invoices = () => {
     setShowViewModal(true);
   };
 
-  // Handle download PDF
-  const handleDownloadPDF = (invoice) => {
-    toast.success(`Downloading invoice ${invoice.invoiceNumber} as PDF...`);
-    // PDF download logic would go here
+  // Handle download Excel
+  const handleDownloadExcel = (invoice) => {
+    // Prepare invoice data for Excel
+    const invoiceData = [
+      ['M19 Logistics Limited'],
+      ['84 Acton Hall Walks, Wrexham, LL12 7YJ'],
+      ['Tel: 07971415430 / 01978439739'],
+      ['Email: m19logistics@gmail.com'],
+      ['VAT Number: 447 5918 54'],
+      [''],
+      ['Invoice Number', invoice.invoiceNumber],
+      ['Date', invoice.date],
+      ['Week Ending', invoice.weekEnding],
+      ['Status', invoice.status],
+      ...(invoice.paidDate ? [['Paid Date', invoice.paidDate]] : []),
+      [''],
+      ['Delivery Items'],
+      ['SPO Number', 'Date', 'Address', 'Base Price', 'Distance Surcharge', 'VAT', 'Total'],
+      ...invoice.deliveries.map((d) => [
+        d.spoNumber,
+        d.date,
+        d.address,
+        `£${d.basePrice.toFixed(2)}`,
+        `£${d.distanceSurcharge.toFixed(2)}`,
+        `£${d.vat.toFixed(2)}`,
+        `£${d.total.toFixed(2)}`,
+      ]),
+      [''],
+    ];
+
+    if (invoice.additionalCharges.length > 0) {
+      invoiceData.push(['Additional Charges']);
+      invoiceData.push(['Description', 'Amount']);
+      invoice.additionalCharges.forEach((charge) => {
+        invoiceData.push([charge.description, `£${charge.amount.toFixed(2)}`]);
+      });
+      invoiceData.push(['']);
+    }
+
+    invoiceData.push(
+      ['Subtotal', `£${invoice.subtotal.toFixed(2)}`],
+      ['VAT (20%)', `£${invoice.totalVAT.toFixed(2)}`],
+      ['Total', `£${invoice.total.toFixed(2)}`]
+    );
+
+    // Convert to CSV
+    const csvContent = invoiceData
+      .map((row) =>
+        row
+          .map((cell) => {
+            const value = cell || '';
+            const escaped = String(value).replace(/"/g, '""');
+            return `"${escaped}"`;
+          })
+          .join(',')
+      )
+      .join('\n');
+
+    // Download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Invoice_${invoice.invoiceNumber}_${invoice.date}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Handle email invoice
@@ -341,7 +434,7 @@ const Invoices = () => {
                 type="text"
                 placeholder="Search by invoice number or SPO..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
               />
             </div>
@@ -350,7 +443,7 @@ const Invoices = () => {
           {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setFilterStatus('all')}
+              onClick={() => handleFilterChange('all')}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 filterStatus === 'all'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -360,7 +453,7 @@ const Invoices = () => {
               All
             </button>
             <button
-              onClick={() => setFilterStatus('paid')}
+              onClick={() => handleFilterChange('paid')}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 filterStatus === 'paid'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -370,7 +463,7 @@ const Invoices = () => {
               Paid
             </button>
             <button
-              onClick={() => setFilterStatus('pending')}
+              onClick={() => handleFilterChange('pending')}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 filterStatus === 'pending'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -380,7 +473,7 @@ const Invoices = () => {
               Pending
             </button>
             <button
-              onClick={() => setFilterStatus('overdue')}
+              onClick={() => handleFilterChange('overdue')}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 filterStatus === 'overdue'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -406,7 +499,7 @@ const Invoices = () => {
             </p>
           </div>
         ) : (
-          filteredInvoices.map((invoice) => {
+          paginatedInvoices.map((invoice) => {
             const StatusIcon = getStatusIcon(invoice.status);
             return (
               <div
@@ -479,11 +572,11 @@ const Invoices = () => {
                         View
                       </button>
                       <button
-                        onClick={() => handleDownloadPDF(invoice)}
+                        onClick={() => handleDownloadExcel(invoice)}
                         className="flex items-center gap-1 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-3 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                       >
                         <Download className="h-4 w-4" />
-                        PDF
+                        Excel
                       </button>
                     </div>
                   </div>
@@ -493,6 +586,17 @@ const Invoices = () => {
           })
         )}
       </div>
+
+      {/* Pagination */}
+      {filteredInvoices.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredInvoices.length}
+        />
+      )}
 
       {/* View Invoice Modal */}
       {showViewModal && selectedInvoice && (
@@ -669,11 +773,11 @@ const Invoices = () => {
                 Email
               </button>
               <button
-                onClick={() => handleDownloadPDF(selectedInvoice)}
+                onClick={() => handleDownloadExcel(selectedInvoice)}
                 className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
               >
                 <Download className="h-4 w-4" />
-                Download PDF
+                Download Excel
               </button>
             </div>
           </div>
