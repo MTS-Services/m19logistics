@@ -498,7 +498,7 @@ const CustomerDashboardHome = () => {
 
       {/* Request Delivery Modal */}
       {showRequestModal && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
               <h2 className="text-2xl font-bold text-gray-900">Request New Delivery</h2>
@@ -512,7 +512,7 @@ const CustomerDashboardHome = () => {
 
             <div className="space-y-4 p-6">
               <div className="flex items-start gap-3 rounded-lg bg-teal-50 p-4">
-                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-teal-600" />
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Same-day delivery notice</p>
                   <p className="mt-1 text-xs text-gray-600">
@@ -652,7 +652,7 @@ const CustomerDashboardHome = () => {
               </button>
               <button
                 onClick={handleRequestDelivery}
-                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+                className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
               >
                 <Plus className="h-5 w-5" />
                 Submit Request

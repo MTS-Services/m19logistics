@@ -418,7 +418,7 @@ const NewDelivery = () => {
           </button>
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+            className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
           >
             <Send className="h-5 w-5" />
             Submit Request
