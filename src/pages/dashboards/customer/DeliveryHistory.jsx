@@ -534,7 +534,7 @@ const DeliveryHistory = () => {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-start gap-2">
-                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                             <div>
                               <p className="text-sm text-gray-900">{delivery.customerName}</p>
                               <p className="text-xs text-gray-600">{delivery.address}</p>
@@ -724,7 +724,7 @@ const DeliveryHistory = () => {
 
       {/* View Modal */}
       {showViewModal && selectedDelivery && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-3xl rounded-lg bg-white shadow-xl">
             {/* Modal Header */}
             <div className="border-b border-gray-200 px-6 py-4">
