@@ -149,7 +149,7 @@ const NewDelivery = () => {
       {/* Same-day delivery warning */}
       {isSameDayDelivery() && (
         <div className="mb-6 flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 p-4">
-          <AlertCircle className="h-5 w-5 flex-shrink-0 text-orange-600" />
+          <AlertCircle className="h-5 w-5 shrink-0 text-orange-600" />
           <div>
             <h3 className="font-semibold text-orange-900">Same-Day Delivery Notice</h3>
             <p className="mt-1 text-sm text-orange-800">
@@ -166,7 +166,7 @@ const NewDelivery = () => {
       {/* Information Card */}
       <div className="mb-6 rounded-lg border border-teal-200 bg-teal-50 p-4">
         <div className="flex items-start gap-3">
-          <Info className="h-5 w-5 flex-shrink-0 text-teal-600" />
+          <Info className="h-5 w-5 shrink-0 text-teal-600" />
           <div className="text-sm text-teal-900">
             <p className="font-semibold">Pricing Information</p>
             <ul className="mt-2 space-y-1">
@@ -428,7 +428,7 @@ const NewDelivery = () => {
 
       {/* Preview Modal */}
       {showPreview && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-2xl rounded-lg bg-white shadow-xl">
             <div className="border-b border-gray-200 px-6 py-4">
               <div className="flex items-center justify-between">
