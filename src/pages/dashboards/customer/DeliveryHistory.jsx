@@ -601,7 +601,7 @@ const DeliveryHistory = () => {
                     {/* Card Content */}
                     <div className="space-y-2.5 text-sm">
                       <div className="flex items-start gap-2">
-                        <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                        <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                         <div className="flex-1">
                           <p className="text-xs text-gray-600">Date & Time</p>
                           <p className="font-medium text-gray-900">
@@ -611,7 +611,7 @@ const DeliveryHistory = () => {
                       </div>
 
                       <div className="flex items-start gap-2">
-                        <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                        <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                         <div className="flex-1">
                           <p className="text-xs text-gray-600">Delivery Address</p>
                           <p className="font-medium text-gray-900">{delivery.customerName}</p>
