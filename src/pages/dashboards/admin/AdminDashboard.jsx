@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
   LayoutDashboard,
@@ -14,12 +14,21 @@ import {
   Menu,
   X,
   ChevronRight,
+  Home,
+  ChevronDown,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navigationSections = [
     {
@@ -68,34 +77,16 @@ const AdminDashboard = () => {
       >
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex h-16 items-center justify-between border-b border-gray-700 px-6">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-blue-600">
-                <Truck className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-lg font-bold text-white">M19 Admin</span>
-            </div>
+          <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
+            <Link to="/" className="transition-opacity hover:opacity-80">
+              <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
+            </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="text-gray-400 hover:text-white lg:hidden"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white lg:hidden"
             >
               <X className="h-6 w-6" />
             </button>
-          </div>
-
-          {/* User Info */}
-          <div className="border-b border-gray-700 p-6">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 text-lg font-bold text-white">
-                {user?.name?.charAt(0) || 'A'}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">{user?.name}</p>
-                <p className="text-xs text-gray-400">
-                  {user?.role === 'admin' ? 'Administrator' : user?.role}
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Navigation */}
@@ -160,7 +151,7 @@ const AdminDashboard = () => {
           {/* Logout Button */}
           <div className="border-t border-gray-700 p-4">
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="flex w-full items-center space-x-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-red-600 hover:text-white"
             >
               <LogOut className="h-5 w-5" />
@@ -180,14 +171,45 @@ const AdminDashboard = () => {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">
-            {navigationSections.flatMap((s) => s.items).find((item) => isActive(item.href))?.name ||
-              'Admin Dashboard'}
-          </h1>
-          <div className="flex items-center space-x-4">
-            <span className="hidden text-sm text-gray-600 sm:inline">
-              Welcome back, {user?.name}
-            </span>
+          <div className="flex-1"></div>
+          <div className="relative">
+            <button
+              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+              className="flex items-center space-x-3 rounded-lg px-4 py-2 transition-colors hover:bg-gray-100"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
+                {user?.name?.charAt(0) || 'A'}
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                <p className="text-xs text-gray-500">Administrator</p>
+              </div>
+              <ChevronDown
+                className={`h-4 w-4 text-gray-500 transition-transform ${
+                  userDropdownOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {userDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setUserDropdownOpen(false)}
+                ></div>
+                <div className="absolute top-full right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <Link
+                    to="/"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center space-x-2 rounded-t-lg px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                  >
+                    <Home className="h-4 w-4" />
+                    <span>Homepage</span>
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
         </header>
 
