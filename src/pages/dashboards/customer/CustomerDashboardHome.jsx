@@ -391,22 +391,53 @@ const CustomerDashboardHome = () => {
               key={delivery.id}
               className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6"
             >
-              <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                 <div className="flex-1">
-                  <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
-                    <span className="text-base font-bold text-gray-900 sm:text-lg">
-                      {delivery.spoNumber}
-                    </span>
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold sm:px-3 sm:py-1 ${getStatusColor(delivery.status)}`}
-                    >
-                      {delivery.status}
-                    </span>
-                    {delivery.driver && (
-                      <span className="rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-semibold text-teal-600 sm:px-3 sm:py-1">
-                        Driver: {delivery.driver}
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <span className="text-base font-bold text-gray-900 sm:text-lg">
+                        {delivery.spoNumber}
                       </span>
-                    )}
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold sm:px-3 sm:py-1 ${getStatusColor(delivery.status)}`}
+                      >
+                        {delivery.status}
+                      </span>
+                      {delivery.driver && (
+                        <span className="rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-semibold text-teal-600 sm:px-3 sm:py-1">
+                          Driver: {delivery.driver}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Action buttons - top right on mobile, side column on desktop */}
+                    <div className="flex gap-1.5 lg:hidden">
+                      <button
+                        onClick={() => handleViewDelivery(delivery)}
+                        className="inline-flex items-center justify-center rounded-lg border border-teal-200 bg-teal-50 p-2 text-teal-600 transition-colors hover:bg-teal-100"
+                        title="View Details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      {delivery.status === 'Received' && (
+                        <>
+                          <button
+                            onClick={() => handleEditDelivery(delivery)}
+                            className="inline-flex items-center justify-center rounded-lg border border-teal-200 bg-teal-50 p-2 text-teal-600 transition-colors hover:bg-teal-100"
+                            title="Edit Delivery"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleCancelDelivery(delivery)}
+                            className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-red-50 p-2 text-red-600 transition-colors hover:bg-red-100"
+                            title="Cancel Delivery"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -473,7 +504,8 @@ const CustomerDashboardHome = () => {
                   )}
                 </div>
 
-                <div className="flex justify-end gap-2 border-t border-gray-100 pt-3 lg:flex-col lg:justify-start lg:border-0 lg:border-l lg:pt-0 lg:pl-4">
+                {/* Action buttons - desktop only (side column) */}
+                <div className="hidden lg:flex lg:flex-col lg:gap-2 lg:border-l lg:border-gray-100 lg:pl-4">
                   <button
                     onClick={() => handleViewDelivery(delivery)}
                     className="inline-flex items-center justify-center rounded-lg border border-teal-200 bg-teal-50 p-2.5 text-teal-600 transition-colors hover:bg-teal-100"
