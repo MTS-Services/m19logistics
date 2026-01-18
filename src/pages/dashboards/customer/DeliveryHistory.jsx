@@ -415,7 +415,7 @@ const DeliveryHistory = () => {
               onClick={() => handleFilterChange('all')}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'all'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -425,7 +425,7 @@ const DeliveryHistory = () => {
               onClick={() => handleFilterChange('received')}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'received'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -435,7 +435,7 @@ const DeliveryHistory = () => {
               onClick={() => handleFilterChange('allocated')}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'allocated'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -445,7 +445,7 @@ const DeliveryHistory = () => {
               onClick={() => handleFilterChange('delivered')}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'delivered'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -695,7 +695,7 @@ const DeliveryHistory = () => {
                       onClick={() => handlePageChange(page)}
                       className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${
                         currentPage === page
-                          ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                          ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                           : 'border border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-teal-50 hover:text-teal-600'
                       }`}
                     >
