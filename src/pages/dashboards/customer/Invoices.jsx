@@ -169,7 +169,7 @@ const Invoices = () => {
     },
     {
       id: 6,
-      invoiceNumber: 'T0323',
+      invoiceNumber: 'T0399',
       date: '2025-12-22',
       weekEnding: '2025-12-22',
       status: 'Overdue',
@@ -211,10 +211,18 @@ const Invoices = () => {
   const filteredInvoices = invoices.filter((invoice) => {
     const matchesStatus =
       filterStatus === 'all' || invoice.status.toLowerCase() === filterStatus.toLowerCase();
+
+    // Clean search query by removing "Invoice #", "Invoice#", or "#" prefix
+    const cleanedSearch = searchQuery
+      .toLowerCase()
+      .replace(/^invoice\s*#\s*/i, '')
+      .replace(/^#\s*/i, '')
+      .trim();
+
     const matchesSearch =
       searchQuery === '' ||
-      invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      invoice.deliveries.some((d) => d.spoNumber.toLowerCase().includes(searchQuery.toLowerCase()));
+      invoice.invoiceNumber.toLowerCase().includes(cleanedSearch) ||
+      invoice.deliveries.some((d) => d.spoNumber.toLowerCase().includes(cleanedSearch));
     return matchesStatus && matchesSearch;
   });
 
