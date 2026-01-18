@@ -15,6 +15,8 @@ import {
   Search,
   Download,
   Truck,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
@@ -585,18 +587,73 @@ const DeliveryHistory = () => {
             </div>
           </>
         )}
-      </div>
 
-      {/* Pagination */}
-      {filteredDeliveries.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalItems={filteredDeliveries.length}
-        />
-      )}
+        {/* Pagination - Inside table container */}
+        {filteredDeliveries.length > 0 && (
+          <div className="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+              {/* Items count */}
+              <div className="text-sm text-gray-600">
+                Showing{' '}
+                <span className="font-semibold text-gray-900">
+                  {(currentPage - 1) * itemsPerPage + 1}
+                </span>{' '}
+                to{' '}
+                <span className="font-semibold text-gray-900">
+                  {Math.min(currentPage * itemsPerPage, filteredDeliveries.length)}
+                </span>{' '}
+                of <span className="font-semibold text-gray-900">{filteredDeliveries.length}</span>{' '}
+                results
+              </div>
+
+              {/* Pagination controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+                    currentPage === 1
+                      ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-gray-50 hover:text-teal-600'
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="ml-1 hidden sm:inline">Previous</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${
+                        currentPage === page
+                          ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                          : 'border border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-teal-50 hover:text-teal-600'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+                    currentPage === totalPages
+                      ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-gray-50 hover:text-teal-600'
+                  }`}
+                >
+                  <span className="mr-1 hidden sm:inline">Next</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* View Modal */}
       {showViewModal && selectedDelivery && (
