@@ -248,10 +248,77 @@ const DeliveryHistory = () => {
     setShowViewModal(true);
   };
 
-  // Export to CSV
+  // Export to Excel
   const handleExportCSV = () => {
-    toast.success('Exporting delivery history to CSV...');
-    // CSV export logic would go here
+    // Prepare data for export based on current filter
+    const dataToExport = filteredDeliveries.map((delivery, index) => ({
+      'No.': index + 1,
+      'SPO Number': delivery.spoNumber,
+      Date: delivery.date,
+      'Time Slot': delivery.timeSlot,
+      'Customer Name': delivery.customerName,
+      Phone: delivery.phone,
+      'Delivery Address': delivery.address,
+      'Weight (kg)': delivery.weight,
+      'Distance (miles)': delivery.distance,
+      Status: delivery.status,
+      'Cost (£)': delivery.estimatedCost.toFixed(2),
+      Driver: delivery.driver || 'Not Assigned',
+      'Requested By': delivery.requestedBy || '',
+      Instructions: delivery.instructions || '',
+      'Created At': delivery.createdAt,
+      ...(delivery.deliveredAt && { 'Delivered At': delivery.deliveredAt }),
+      ...(delivery.receivedBy && { 'Received By': delivery.receivedBy }),
+      ...(delivery.driverNotes && { 'Driver Notes': delivery.driverNotes }),
+      ...(delivery.cancelledAt && { 'Cancelled At': delivery.cancelledAt }),
+      ...(delivery.cancelReason && { 'Cancel Reason': delivery.cancelReason }),
+    }));
+
+    // Convert to CSV
+    if (dataToExport.length === 0) {
+      return;
+    }
+
+    const headers = Object.keys(dataToExport[0]);
+    const csvContent = [
+      headers.join(','),
+      ...dataToExport.map((row) =>
+        headers
+          .map((header) => {
+            const value = row[header] || '';
+            // Escape commas and quotes in values
+            const escaped = String(value).replace(/"/g, '""');
+            return `"${escaped}"`;
+          })
+          .join(',')
+      ),
+    ].join('\n');
+
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    // Generate filename based on filter status
+    const statusLabel =
+      filterStatus === 'all'
+        ? 'All'
+        : filterStatus === 'received'
+          ? 'Pending'
+          : filterStatus === 'allocated'
+            ? 'In-Progress'
+            : filterStatus === 'delivered'
+              ? 'Completed'
+              : filterStatus;
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `M19Logistics_Delivery_History_${statusLabel}_${timestamp}.csv`;
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
