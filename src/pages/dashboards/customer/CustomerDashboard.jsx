@@ -16,6 +16,8 @@ import {
   X,
   ChevronRight,
   History,
+  Home,
+  ChevronDown,
 } from 'lucide-react';
 
 const CustomerDashboard = () => {
@@ -23,6 +25,7 @@ const CustomerDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -71,7 +74,9 @@ const CustomerDashboard = () => {
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
-            <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
+            <Link to="/" className="transition-opacity hover:opacity-80">
+              <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
+            </Link>
             <button
               onClick={() => setSidebarOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white lg:hidden"
@@ -163,14 +168,44 @@ const CustomerDashboard = () => {
             <Menu className="h-6 w-6" />
           </button>
           <div className="flex-1"></div>
-          <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
-              {user?.name?.charAt(0) || 'C'}
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-              <p className="text-xs text-gray-500">Customer</p>
-            </div>
+          <div className="relative">
+            <button
+              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+              className="flex items-center space-x-3 rounded-lg px-4 py-2 transition-colors hover:bg-gray-100"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
+                {user?.name?.charAt(0) || 'C'}
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                <p className="text-xs text-gray-500">Customer</p>
+              </div>
+              <ChevronDown
+                className={`h-4 w-4 text-gray-500 transition-transform ${
+                  userDropdownOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {userDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setUserDropdownOpen(false)}
+                ></div>
+                <div className="absolute top-full right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
+                  <Link
+                    to="/"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center space-x-2 rounded-t-lg px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                  >
+                    <Home className="h-4 w-4" />
+                    <span>Homepage</span>
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
         </header>
 
