@@ -72,32 +72,14 @@ const CustomerDashboard = () => {
       >
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex h-16 items-center justify-between border-b border-gray-700 px-6">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-blue-600">
-                <Truck className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-lg font-bold text-white">M19 Portal</span>
-            </div>
+          <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
+            <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
             <button
               onClick={() => setSidebarOpen(false)}
-              className="text-gray-400 hover:text-white lg:hidden"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white lg:hidden"
             >
               <X className="h-6 w-6" />
             </button>
-          </div>
-
-          {/* User Info */}
-          <div className="border-b border-gray-700 p-6">
-            <div className="flex items-center space-x-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-600 text-lg font-bold text-white">
-                {user?.name?.charAt(0) || 'C'}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">{user?.name}</p>
-                <p className="text-xs text-gray-400">Customer</p>
-              </div>
-            </div>
           </div>
 
           {/* Navigation */}
@@ -182,14 +164,15 @@ const CustomerDashboard = () => {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">
-            {navigationSections.flatMap((s) => s.items).find((item) => isActive(item.href))?.name ||
-              'Customer Portal'}
-          </h1>
-          <div className="flex items-center space-x-4">
-            <span className="hidden text-sm text-gray-600 sm:inline">
-              Welcome back, {user?.name}
-            </span>
+          <div className="flex-1"></div>
+          <div className="flex items-center space-x-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
+              {user?.name?.charAt(0) || 'C'}
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+              <p className="text-xs text-gray-500">Customer</p>
+            </div>
           </div>
         </header>
 
