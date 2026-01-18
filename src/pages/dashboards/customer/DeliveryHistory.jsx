@@ -18,8 +18,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { toast } from 'react-toastify';
-import Pagination from '../../../components/Pagination';
 
 const DeliveryHistory = () => {
   const [filterStatus, setFilterStatus] = useState('all');
