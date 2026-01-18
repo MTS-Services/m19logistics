@@ -254,59 +254,61 @@ const CustomerDashboardHome = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-2 text-gray-600">Manage your delivery requests and track shipments</p>
+        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Dashboard</h1>
+        <p className="mt-2 text-sm text-gray-600 sm:text-base">
+          Manage your delivery requests and track shipments
+        </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Pending</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.pending}</p>
+              <p className="text-xs text-gray-600 sm:text-sm">Pending</p>
+              <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.pending}</p>
             </div>
-            <div className="rounded-lg bg-red-50 p-3">
-              <Clock className="h-6 w-6 text-red-600" />
+            <div className="rounded-lg bg-red-50 p-2 sm:p-3">
+              <Clock className="h-5 w-5 text-red-600 sm:h-6 sm:w-6" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Allocated</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.allocated}</p>
+              <p className="text-xs text-gray-600 sm:text-sm">Allocated</p>
+              <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.allocated}</p>
             </div>
-            <div className="rounded-lg bg-blue-50 p-3">
-              <Package className="h-6 w-6 text-blue-600" />
+            <div className="rounded-lg bg-blue-50 p-2 sm:p-3">
+              <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Completed</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.completed}</p>
+              <p className="text-xs text-gray-600 sm:text-sm">Completed</p>
+              <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.completed}</p>
             </div>
-            <div className="rounded-lg bg-green-50 p-3">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="rounded-lg bg-green-50 p-2 sm:p-3">
+              <CheckCircle className="h-5 w-5 text-green-600 sm:h-6 sm:w-6" />
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Cancelled</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">{stats.cancelled}</p>
+              <p className="text-xs text-gray-600 sm:text-sm">Cancelled</p>
+              <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.cancelled}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 p-3">
-              <XCircle className="h-6 w-6 text-gray-600" />
+            <div className="rounded-lg bg-gray-50 p-2 sm:p-3">
+              <XCircle className="h-5 w-5 text-gray-600 sm:h-6 sm:w-6" />
             </div>
           </div>
         </div>
@@ -314,11 +316,11 @@ const CustomerDashboardHome = () => {
 
       {/* Action Bar */}
       <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-col justify-between gap-4 md:flex-row">
-          <div className="flex gap-2">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilterStatus('all')}
-              className={`rounded-lg px-4 py-2 font-medium transition-all ${
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'all'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -328,7 +330,7 @@ const CustomerDashboardHome = () => {
             </button>
             <button
               onClick={() => setFilterStatus('received')}
-              className={`rounded-lg px-4 py-2 font-medium transition-all ${
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'received'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -338,7 +340,7 @@ const CustomerDashboardHome = () => {
             </button>
             <button
               onClick={() => setFilterStatus('allocated')}
-              className={`rounded-lg px-4 py-2 font-medium transition-all ${
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'allocated'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -348,7 +350,7 @@ const CustomerDashboardHome = () => {
             </button>
             <button
               onClick={() => setFilterStatus('delivered')}
-              className={`rounded-lg px-4 py-2 font-medium transition-all ${
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
                 filterStatus === 'delivered'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -360,9 +362,9 @@ const CustomerDashboardHome = () => {
 
           <button
             onClick={() => setShowRequestModal(true)}
-            className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:text-base lg:w-auto lg:px-6"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             Request Delivery
           </button>
         </div>
@@ -387,19 +389,21 @@ const CustomerDashboardHome = () => {
           filteredDeliveries.map((delivery) => (
             <div
               key={delivery.id}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6"
             >
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+              <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
                 <div className="flex-1">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="text-lg font-bold text-gray-900">{delivery.spoNumber}</span>
+                  <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
+                    <span className="text-base font-bold text-gray-900 sm:text-lg">
+                      {delivery.spoNumber}
+                    </span>
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(delivery.status)}`}
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold sm:px-3 sm:py-1 ${getStatusColor(delivery.status)}`}
                     >
                       {delivery.status}
                     </span>
                     {delivery.driver && (
-                      <span className="rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
+                      <span className="rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-semibold text-teal-600 sm:px-3 sm:py-1">
                         Driver: {delivery.driver}
                       </span>
                     )}
@@ -469,10 +473,10 @@ const CustomerDashboardHome = () => {
                   )}
                 </div>
 
-                <div className="flex gap-2 md:flex-col">
+                <div className="flex justify-end gap-2 border-t border-gray-100 pt-3 lg:flex-col lg:justify-start lg:border-0 lg:border-l lg:pt-0 lg:pl-4">
                   <button
                     onClick={() => handleViewDelivery(delivery)}
-                    className="rounded-lg p-2 text-teal-600 transition-colors hover:bg-teal-50"
+                    className="inline-flex items-center justify-center rounded-lg border border-teal-200 bg-teal-50 p-2.5 text-teal-600 transition-colors hover:bg-teal-100"
                     title="View Details"
                   >
                     <Eye className="h-5 w-5" />
@@ -481,14 +485,14 @@ const CustomerDashboardHome = () => {
                     <>
                       <button
                         onClick={() => handleEditDelivery(delivery)}
-                        className="rounded-lg p-2 text-teal-600 transition-colors hover:bg-teal-50"
+                        className="inline-flex items-center justify-center rounded-lg border border-teal-200 bg-teal-50 p-2.5 text-teal-600 transition-colors hover:bg-teal-100"
                         title="Edit Delivery"
                       >
                         <Edit2 className="h-5 w-5" />
                       </button>
                       <button
                         onClick={() => handleCancelDelivery(delivery)}
-                        className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
+                        className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-red-50 p-2.5 text-red-600 transition-colors hover:bg-red-100"
                         title="Cancel Delivery"
                       >
                         <Trash2 className="h-5 w-5" />
@@ -506,17 +510,19 @@ const CustomerDashboardHome = () => {
       {showRequestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-            <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-              <h2 className="text-2xl font-bold text-gray-900">Request New Delivery</h2>
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+              <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
+                Request New Delivery
+              </h2>
               <button
                 onClick={() => setShowRequestModal(false)}
-                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+                className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
               >
-                <XCircle className="h-6 w-6" />
+                <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
 
-            <div className="space-y-4 p-6">
+            <div className="space-y-4 p-4 sm:p-6">
               <div className="flex items-start gap-3 rounded-lg bg-teal-50 p-4">
                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
                 <div>
@@ -649,18 +655,18 @@ const CustomerDashboardHome = () => {
               </div>
             </div>
 
-            <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
               <button
                 onClick={() => setShowRequestModal(false)}
-                className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRequestDelivery}
-                className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                 Submit Request
               </button>
             </div>
@@ -672,17 +678,19 @@ const CustomerDashboardHome = () => {
       {showViewModal && selectedDelivery && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-            <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-              <h2 className="text-2xl font-bold text-gray-900">Delivery Details</h2>
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+              <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
+                Delivery Details
+              </h2>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+                className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
               >
-                <XCircle className="h-6 w-6" />
+                <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
 
-            <div className="space-y-4 p-6">
+            <div className="space-y-4 p-4 sm:p-6">
               <div className="mb-4 flex items-center gap-3">
                 <span className="text-xl font-bold text-gray-900">
                   {selectedDelivery.spoNumber}
@@ -788,10 +796,10 @@ const CustomerDashboardHome = () => {
               )}
             </div>
 
-            <div className="sticky bottom-0 flex justify-end border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="sticky bottom-0 z-10 flex justify-end border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+                className="w-full rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
                 Close
               </button>
@@ -804,20 +812,22 @@ const CustomerDashboardHome = () => {
       {showEditModal && selectedDelivery && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-            <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-              <h2 className="text-2xl font-bold text-gray-900">Edit Delivery</h2>
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+              <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
+                Edit Delivery
+              </h2>
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setSelectedDelivery(null);
                 }}
-                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+                className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
               >
-                <XCircle className="h-6 w-6" />
+                <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
 
-            <div className="space-y-4 p-6">
+            <div className="space-y-4 p-4 sm:p-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">Date</label>
@@ -884,21 +894,21 @@ const CustomerDashboardHome = () => {
               </div>
             </div>
 
-            <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
               <button
                 onClick={() => {
                   setShowEditModal(false);
                   setSelectedDelivery(null);
                 }}
-                className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
-                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
-                <Edit2 className="h-5 w-5" />
+                <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />
                 Save Changes
               </button>
             </div>
@@ -910,29 +920,31 @@ const CustomerDashboardHome = () => {
       {showDeleteModal && selectedDelivery && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-              <h2 className="text-xl font-bold text-gray-900">Confirm Cancellation</h2>
+            <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+              <h2 className="text-base font-bold text-gray-900 sm:text-lg lg:text-xl">
+                Confirm Cancellation
+              </h2>
               <button
                 onClick={() => {
                   setShowDeleteModal(false);
                   setSelectedDelivery(null);
                 }}
-                className="rounded-lg p-2 transition-colors hover:bg-gray-100"
+                className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
               >
                 <XCircle className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-6">
-              <div className="mb-6 flex items-start gap-4">
-                <div className="rounded-full bg-red-100 p-3">
-                  <AlertCircle className="h-6 w-6 text-red-600" />
+            <div className="p-4 sm:p-6">
+              <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
+                <div className="rounded-full bg-red-100 p-2 sm:p-3">
+                  <AlertCircle className="h-5 w-5 text-red-600 sm:h-6 sm:w-6" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                  <h3 className="mb-2 text-base font-semibold text-gray-900 sm:text-lg">
                     Are you sure you want to cancel this delivery?
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs text-gray-600 sm:text-sm">
                     This action will cancel the delivery request for{' '}
                     <span className="font-semibold">{selectedDelivery.spoNumber}</span>. This cannot
                     be undone.
@@ -951,19 +963,19 @@ const CustomerDashboardHome = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+            <div className="flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
               <button
                 onClick={() => {
                   setShowDeleteModal(false);
                   setSelectedDelivery(null);
                 }}
-                className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100"
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
               >
                 No, Keep It
               </button>
               <button
                 onClick={confirmDeleteDelivery}
-                className="rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+                className="w-full rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
               >
                 Yes, Cancel Delivery
               </button>
