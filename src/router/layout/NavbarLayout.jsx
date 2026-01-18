@@ -78,7 +78,7 @@ const NavbarLayout = () => {
                         ? '/driver/dashboard'
                         : user.role === 'area_manager'
                           ? '/area-manager/dashboard'
-                          : '/customer/dashboard'
+                          : '/customer'
                   }
                   className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${
                     isScrolled
@@ -169,7 +169,7 @@ const NavbarLayout = () => {
                         ? '/driver/dashboard'
                         : user.role === 'area_manager'
                           ? '/area-manager/dashboard'
-                          : '/customer/dashboard'
+                          : '/customer'
                   }
                   onClick={() => setIsOpen(false)}
                   className="flex items-center justify-center rounded-lg bg-gray-50 px-4 py-3 text-base font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100"
