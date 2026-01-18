@@ -17,12 +17,15 @@ import {
   Truck,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Pagination from '../../../components/Pagination';
 
 const DeliveryHistory = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Sample delivery history data
   const deliveries = [
@@ -140,6 +143,30 @@ const DeliveryHistory = () => {
       delivery.address.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredDeliveries.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedDeliveries = filteredDeliveries.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle filter change with page reset
+  const handleFilterChange = (status) => {
+    setFilterStatus(status);
+    setCurrentPage(1);
+  };
+
+  // Handle search with page reset
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
 
   // Get status badge color
   const getStatusColor = (status) => {
@@ -267,8 +294,8 @@ const DeliveryHistory = () => {
                 type="text"
                 placeholder="Search by SPO, customer, or address..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 py-2.5 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none sm:text-base"
               />
             </div>
           </div>
@@ -276,8 +303,8 @@ const DeliveryHistory = () => {
           {/* Filter Buttons */}
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setFilterStatus('all')}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
+              onClick={() => handleFilterChange('all')}
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'all'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -286,8 +313,8 @@ const DeliveryHistory = () => {
               All
             </button>
             <button
-              onClick={() => setFilterStatus('received')}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
+              onClick={() => handleFilterChange('received')}
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'received'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -296,8 +323,8 @@ const DeliveryHistory = () => {
               Pending
             </button>
             <button
-              onClick={() => setFilterStatus('allocated')}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
+              onClick={() => handleFilterChange('allocated')}
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'allocated'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -306,8 +333,8 @@ const DeliveryHistory = () => {
               In Progress
             </button>
             <button
-              onClick={() => setFilterStatus('delivered')}
-              className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
+              onClick={() => handleFilterChange('delivered')}
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 filterStatus === 'delivered'
                   ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -317,10 +344,10 @@ const DeliveryHistory = () => {
             </button>
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 sm:gap-2 sm:px-4 sm:text-sm"
             >
-              <Download className="h-4 w-4" />
-              Export
+              <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Export</span>
             </button>
           </div>
         </div>
@@ -345,100 +372,191 @@ const DeliveryHistory = () => {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    SPO Number
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Date & Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Delivery Address
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Weight
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Cost
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {filteredDeliveries.map((delivery) => {
-                  const StatusIcon = getStatusIcon(delivery.status);
-                  return (
-                    <tr key={delivery.id} className="transition-colors hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-gray-400" />
-                          <span className="font-semibold text-gray-900">{delivery.spoNumber}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-gray-400" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">{delivery.date}</p>
-                            <p className="text-xs text-gray-600">{delivery.timeSlot}</p>
+          <>
+            {/* Desktop Table View - Hidden on mobile */}
+            <div className="hidden overflow-x-auto lg:block">
+              <table className="w-full">
+                <thead className="border-b border-gray-200 bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      SPO Number
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      Date & Time
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      Delivery Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      Weight
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      Cost
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {paginatedDeliveries.map((delivery) => {
+                    const StatusIcon = getStatusIcon(delivery.status);
+                    return (
+                      <tr key={delivery.id} className="transition-colors hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-gray-400" />
+                            <span className="font-semibold text-gray-900">
+                              {delivery.spoNumber}
+                            </span>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
-                          <div>
-                            <p className="text-sm text-gray-900">{delivery.customerName}</p>
-                            <p className="text-xs text-gray-600">{delivery.address}</p>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-gray-400" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">{delivery.date}</p>
+                              <p className="text-xs text-gray-600">{delivery.timeSlot}</p>
+                            </div>
                           </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                            <div>
+                              <p className="text-sm text-gray-900">{delivery.customerName}</p>
+                              <p className="text-xs text-gray-600">{delivery.address}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <Weight className="h-4 w-4 text-gray-400" />
+                            <span className="text-sm text-gray-900">{delivery.weight} kg</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
+                              delivery.status
+                            )}`}
+                          >
+                            <StatusIcon className="h-3 w-3" />
+                            {delivery.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-semibold text-gray-900">
+                            £{delivery.estimatedCost.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => handleViewDelivery(delivery)}
+                            className="flex items-center gap-1 rounded-lg border border-teal-300 bg-teal-50 px-3 py-1.5 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View - Hidden on desktop */}
+            <div className="divide-y divide-gray-200 lg:hidden">
+              {paginatedDeliveries.map((delivery) => {
+                const StatusIcon = getStatusIcon(delivery.status);
+                return (
+                  <div key={delivery.id} className="p-4 transition-colors hover:bg-gray-50">
+                    {/* Card Header */}
+                    <div className="mb-3 flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-gray-400" />
+                        <span className="font-semibold text-gray-900">{delivery.spoNumber}</span>
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${getStatusColor(
+                          delivery.status
+                        )}`}
+                      >
+                        <StatusIcon className="h-3 w-3" />
+                        {delivery.status}
+                      </span>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="space-y-2.5 text-sm">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                        <div className="flex-1">
+                          <p className="text-xs text-gray-600">Date & Time</p>
+                          <p className="font-medium text-gray-900">
+                            {delivery.date} - {delivery.timeSlot}
+                          </p>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      </div>
+
+                      <div className="flex items-start gap-2">
+                        <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                        <div className="flex-1">
+                          <p className="text-xs text-gray-600">Delivery Address</p>
+                          <p className="font-medium text-gray-900">{delivery.customerName}</p>
+                          <p className="text-xs text-gray-600">{delivery.address}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Weight className="h-4 w-4 text-gray-400" />
-                          <span className="text-sm text-gray-900">{delivery.weight} kg</span>
+                          <div>
+                            <p className="text-xs text-gray-600">Weight</p>
+                            <p className="font-medium text-gray-900">{delivery.weight} kg</p>
+                          </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
-                            delivery.status
-                          )}`}
-                        >
-                          <StatusIcon className="h-3 w-3" />
-                          {delivery.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-gray-900">
-                          £{delivery.estimatedCost.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => handleViewDelivery(delivery)}
-                          className="flex items-center gap-1 rounded-md border border-teal-300 bg-teal-50 px-3 py-1.5 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-600">Cost</p>
+                          <p className="font-semibold text-gray-900">
+                            £{delivery.estimatedCost.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Action */}
+                    <div className="mt-3 border-t border-gray-100 pt-3">
+                      <button
+                        onClick={() => handleViewDelivery(delivery)}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
+
+      {/* Pagination */}
+      {filteredDeliveries.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={filteredDeliveries.length}
+        />
+      )}
 
       {/* View Modal */}
       {showViewModal && selectedDelivery && (
