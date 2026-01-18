@@ -8,11 +8,9 @@ import Invoices from './Invoices';
 import Profile from './Profile';
 import {
   LayoutDashboard,
-  Package,
   FileText,
   User,
   LogOut,
-  Truck,
   PlusCircle,
   Menu,
   X,
@@ -66,7 +64,7 @@ const CustomerDashboard = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-3/4 transform bg-gradient-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-3/4 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -105,7 +103,7 @@ const CustomerDashboard = () => {
                         onClick={() => setSidebarOpen(false)}
                         className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
                           active
-                            ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
+                            ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                         }`}
                       >
