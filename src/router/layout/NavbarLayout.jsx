@@ -80,14 +80,13 @@ const NavbarLayout = () => {
                           ? '/area-manager/dashboard'
                           : '/customer/dashboard'
                   }
-                  className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                  className={`text-sm font-medium transition-colors ${
                     isScrolled
                       ? 'text-gray-900 hover:text-gray-700'
                       : 'text-gray-700 hover:text-gray-900'
                   }`}
                 >
-                  <User className="h-4 w-4" />
-                  <span>{user.name}</span>
+                  <span>Dashboard</span>
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -173,14 +172,13 @@ const NavbarLayout = () => {
                           : '/customer/dashboard'
                   }
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center space-x-3 rounded-lg bg-gray-50 px-4 py-3 text-base font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100"
+                  className="flex items-center justify-center rounded-lg bg-gray-50 px-4 py-3 text-base font-medium text-gray-700 transition-all duration-200 hover:bg-gray-100"
                   style={{
                     animation: isOpen ? 'slideIn 0.3s ease-out 0.2s forwards' : 'none',
                     opacity: isOpen ? 1 : 0,
                   }}
                 >
-                  <User className="h-5 w-5 text-gray-500" />
-                  <span>{user.name}</span>
+                  <span>Dashboard</span>
                 </Link>
                 <button
                   onClick={handleLogout}
