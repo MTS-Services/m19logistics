@@ -11,6 +11,7 @@ import {
   FileText,
   X,
 } from 'lucide-react';
+import Pagination from '../../../components/Pagination';
 
 const StoreDeliveries = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,6 +19,8 @@ const StoreDeliveries = () => {
   const [storeFilter, setStoreFilter] = useState('All');
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const stores = [
     'All',
@@ -75,21 +78,92 @@ const StoreDeliveries = () => {
       phone: '01234567892',
       cost: 135.0,
     },
+    {
+      id: 4,
+      spoNumber: 'SPO013352',
+      storeName: 'Topps Rhyl',
+      depot: 'Unit 7–9 Cambrian Price Ind. Est., Wrexham LL13 8DL',
+      deliveryAddress: '321 Oak Street, Leeds, LS1 1AA',
+      date: '2026-01-17',
+      timeSlot: 'PM',
+      weight: 700,
+      status: 'Received',
+      driver: 'BK',
+      customerName: 'Emily Davis',
+      phone: '01234567893',
+      cost: 45.0,
+    },
+    {
+      id: 5,
+      spoNumber: 'SPO013353',
+      storeName: 'Topps Nantwich',
+      depot: '4 Bumpers Lane, Sealand Ind Est, Chester, CH1 4LY',
+      deliveryAddress: '654 Cedar Road, Bristol, BS1 1AA',
+      date: '2026-01-18',
+      timeSlot: 'AM',
+      weight: 1100,
+      status: 'Cancelled',
+      driver: 'BK',
+      customerName: 'Anna Brown',
+      phone: '01234567894',
+      cost: 75.0,
+    },
+    {
+      id: 6,
+      spoNumber: 'SPO013354',
+      storeName: 'Topps Northwich',
+      depot: 'Unit 4, Lyme Court, ST5 3TF',
+      deliveryAddress: '987 Birch Avenue, Cardiff, CF1 1AA',
+      date: '2026-01-19',
+      timeSlot: 'PM',
+      weight: 900,
+      status: 'Allocated',
+      driver: 'BK',
+      customerName: 'David Green',
+      phone: '01234567895',
+      cost: 60.0,
+    },
   ]);
 
   const statusOptions = ['All', 'Received', 'Allocated', 'Delivered', 'Cancelled'];
 
   const filteredDeliveries = deliveries.filter((delivery) => {
+    // Normalize search query to extract SPO number
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    // Extract just the SPO number from formats like "SPO: SPO013349", "SPO:SPO013349", "SPO013349"
+    const spoMatch = normalizedQuery.match(/spo[:\s]*([a-z0-9]+)/);
+    const extractedSpo = spoMatch ? spoMatch[1] : normalizedQuery;
+    
     const matchesSearch =
-      delivery.spoNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      delivery.storeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      delivery.deliveryAddress.toLowerCase().includes(searchQuery.toLowerCase());
+      delivery.spoNumber.toLowerCase().includes(extractedSpo) ||
+      delivery.storeName.toLowerCase().includes(normalizedQuery) ||
+      delivery.deliveryAddress.toLowerCase().includes(normalizedQuery);
 
     const matchesStatus = statusFilter === 'All' || delivery.status === statusFilter;
     const matchesStore = storeFilter === 'All' || delivery.storeName === storeFilter;
 
     return matchesSearch && matchesStatus && matchesStore;
   });
+
+  // Pagination calculations
+  const totalItems = filteredDeliveries.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedDeliveries = filteredDeliveries.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  const handleFilterChange = (type, value) => {
+    if (type === 'search') setSearchQuery(value);
+    if (type === 'status') setStatusFilter(value);
+    if (type === 'store') setStoreFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleViewDetails = (delivery) => {
     setSelectedDelivery(delivery);
@@ -131,7 +205,7 @@ const StoreDeliveries = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
                 placeholder="Search by SPO, store, or address..."
                 className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               />
@@ -142,7 +216,7 @@ const StoreDeliveries = () => {
               <Building2 className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <select
                 value={storeFilter}
-                onChange={(e) => setStoreFilter(e.target.value)}
+                onChange={(e) => handleFilterChange('store', e.target.value)}
                 className="w-full appearance-none rounded-md border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               >
                 {stores.map((store) => (
@@ -158,7 +232,7 @@ const StoreDeliveries = () => {
               <Filter className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
                 className="w-full appearance-none rounded-md border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               >
                 {statusOptions.map((status) => (
@@ -172,9 +246,17 @@ const StoreDeliveries = () => {
         </div>
 
         {/* Deliveries List */}
-        <div className="space-y-4">
-          {filteredDeliveries.length === 0 ? (
-            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+            <h2 className="text-lg font-bold text-gray-900">Deliveries</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Showing {paginatedDeliveries.length} of {totalItems} deliveries
+            </p>
+          </div>
+
+          <div className="space-y-4 p-6">
+          {paginatedDeliveries.length === 0 ? (
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
               <Package className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-lg font-medium text-gray-900">No deliveries found</h3>
               <p className="mt-2 text-sm text-gray-600">
@@ -184,7 +266,7 @@ const StoreDeliveries = () => {
               </p>
             </div>
           ) : (
-            filteredDeliveries.map((delivery) => (
+            paginatedDeliveries.map((delivery) => (
               <div
                 key={delivery.id}
                 className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
@@ -250,6 +332,20 @@ const StoreDeliveries = () => {
                 </div>
               </div>
             ))
+          )}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-6 pb-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                totalItems={totalItems}
+              />
+            </div>
           )}
         </div>
 
