@@ -133,7 +133,7 @@ const StoreDeliveries = () => {
     // Extract just the SPO number from formats like "SPO: SPO013349", "SPO:SPO013349", "SPO013349"
     const spoMatch = normalizedQuery.match(/spo[:\s]*([a-z0-9]+)/);
     const extractedSpo = spoMatch ? spoMatch[1] : normalizedQuery;
-    
+
     const matchesSearch =
       delivery.spoNumber.toLowerCase().includes(extractedSpo) ||
       delivery.storeName.toLowerCase().includes(normalizedQuery) ||
@@ -255,84 +255,84 @@ const StoreDeliveries = () => {
           </div>
 
           <div className="space-y-4 p-6">
-          {paginatedDeliveries.length === 0 ? (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">No deliveries found</h3>
-              <p className="mt-2 text-sm text-gray-600">
-                {searchQuery || statusFilter !== 'All' || storeFilter !== 'All'
-                  ? 'Try adjusting your filters'
-                  : 'No deliveries available'}
-              </p>
-            </div>
-          ) : (
-            paginatedDeliveries.map((delivery) => (
-              <div
-                key={delivery.id}
-                className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
-              >
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  {/* Delivery Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start gap-4">
-                      <div className="rounded-lg bg-teal-50 p-3">
-                        <Package className="h-6 w-6 text-teal-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h3 className="text-lg font-bold text-gray-900">
-                            SPO: {delivery.spoNumber}
-                          </h3>
-                          <span
-                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
-                              delivery.status
-                            )}`}
-                          >
-                            {delivery.status}
-                          </span>
+            {paginatedDeliveries.length === 0 ? (
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
+                <Package className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-4 text-lg font-medium text-gray-900">No deliveries found</h3>
+                <p className="mt-2 text-sm text-gray-600">
+                  {searchQuery || statusFilter !== 'All' || storeFilter !== 'All'
+                    ? 'Try adjusting your filters'
+                    : 'No deliveries available'}
+                </p>
+              </div>
+            ) : (
+              paginatedDeliveries.map((delivery) => (
+                <div
+                  key={delivery.id}
+                  className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
+                >
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    {/* Delivery Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start gap-4">
+                        <div className="rounded-lg bg-teal-50 p-3">
+                          <Package className="h-6 w-6 text-teal-600" />
                         </div>
-
-                        <div className="mt-3 space-y-2">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Building2 className="h-4 w-4" />
-                            <span className="font-medium">{delivery.storeName}</span>
-                          </div>
-                          <div className="flex items-start gap-2 text-sm text-gray-600">
-                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                            <span>{delivery.deliveryAddress}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Calendar className="h-4 w-4" />
-                            <span>
-                              {delivery.date} - {delivery.timeSlot}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-lg font-bold text-gray-900">
+                              SPO: {delivery.spoNumber}
+                            </h3>
+                            <span
+                              className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
+                                delivery.status
+                              )}`}
+                            >
+                              {delivery.status}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <User className="h-4 w-4" />
-                            <span>{delivery.customerName}</span>
+
+                          <div className="mt-3 space-y-2">
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Building2 className="h-4 w-4" />
+                              <span className="font-medium">{delivery.storeName}</span>
+                            </div>
+                            <div className="flex items-start gap-2 text-sm text-gray-600">
+                              <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                              <span>{delivery.deliveryAddress}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Calendar className="h-4 w-4" />
+                              <span>
+                                {delivery.date} - {delivery.timeSlot}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <User className="h-4 w-4" />
+                              <span>{delivery.customerName}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Actions */}
-                  <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-[180px]">
-                    <button
-                      onClick={() => handleViewDetails(delivery)}
-                      className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
-                    >
-                      <Eye className="h-4 w-4" />
-                      View Details
-                    </button>
-                    <div className="rounded-md bg-green-50 px-4 py-2 text-center text-sm font-medium text-green-700">
-                      £{delivery.cost.toFixed(2)}
+                    {/* Actions */}
+                    <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-[180px]">
+                      <button
+                        onClick={() => handleViewDetails(delivery)}
+                        className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                      >
+                        <Eye className="h-4 w-4" />
+                        View Details
+                      </button>
+                      <div className="rounded-md bg-green-50 px-4 py-2 text-center text-sm font-medium text-green-700">
+                        £{delivery.cost.toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
           </div>
 
           {/* Pagination */}
