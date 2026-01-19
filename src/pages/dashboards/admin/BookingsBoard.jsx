@@ -244,94 +244,96 @@ const BookingsBoard = () => {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Bookings Board</h1>
-          <p className="mt-1 text-sm text-gray-600">Manage all delivery bookings in one place</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
-            + New Booking
-          </button>
-        </div>
-      </div>
-
-      {/* Alert Banner */}
-      <div className="flex items-center gap-3 rounded-lg border-l-4 border-red-500 bg-red-50 p-4">
-        <AlertCircle className="h-5 w-5 text-red-600" />
-        <div>
-          <p className="font-semibold text-red-900">
-            {bookings.received.filter((b) => b.isNew).length} new bookings require allocation
-          </p>
-          <p className="text-sm text-red-700">Please assign drivers to pending deliveries</p>
-        </div>
-      </div>
-
-      {/* Kanban Board */}
-      <div className="grid gap-4 lg:grid-cols-4">
-        {/* Received Column */}
-        <div className={`rounded-lg border-2 ${getColumnColor('received')} p-4`}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-              <Clock className="h-5 w-5 text-red-600" />
-              Received
-            </h2>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
-              {bookings.received.length}
-            </span>
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Bookings Board</h1>
+            <p className="mt-1 text-sm text-gray-600">Manage all delivery bookings in one place</p>
           </div>
-          <div className="space-y-3">
-            {bookings.received.map((booking) => renderBookingCard(booking, 'received'))}
+          <div className="flex items-center gap-2">
+            <button className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
+              + New Booking
+            </button>
           </div>
         </div>
 
-        {/* Allocated Column */}
-        <div className={`rounded-lg border-2 ${getColumnColor('allocated')} p-4`}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-              <Truck className="h-5 w-5 text-yellow-600" />
-              Allocated
-            </h2>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-600 text-xs font-bold text-white">
-              {bookings.allocated.length}
-            </span>
-          </div>
-          <div className="space-y-3">
-            {bookings.allocated.map((booking) => renderBookingCard(booking, 'allocated'))}
+        {/* Alert Banner */}
+        <div className="flex items-center gap-3 rounded-lg border-l-4 border-red-500 bg-red-50 p-4">
+          <AlertCircle className="h-5 w-5 text-red-600" />
+          <div>
+            <p className="font-semibold text-red-900">
+              {bookings.received.filter((b) => b.isNew).length} new bookings require allocation
+            </p>
+            <p className="text-sm text-red-700">Please assign drivers to pending deliveries</p>
           </div>
         </div>
 
-        {/* Delivered Column */}
-        <div className={`rounded-lg border-2 ${getColumnColor('delivered')} p-4`}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              Delivered
-            </h2>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white">
-              {bookings.delivered.length}
-            </span>
+        {/* Kanban Board */}
+        <div className="grid gap-4 lg:grid-cols-4">
+          {/* Received Column */}
+          <div className={`rounded-lg border-2 ${getColumnColor('received')} p-4`}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <Clock className="h-5 w-5 text-red-600" />
+                Received
+              </h2>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+                {bookings.received.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {bookings.received.map((booking) => renderBookingCard(booking, 'received'))}
+            </div>
           </div>
-          <div className="space-y-3">
-            {bookings.delivered.map((booking) => renderBookingCard(booking, 'delivered'))}
-          </div>
-        </div>
 
-        {/* Cancelled Column */}
-        <div className={`rounded-lg border-2 ${getColumnColor('cancelled')} p-4`}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-              <XCircle className="h-5 w-5 text-gray-600" />
-              Cancelled
-            </h2>
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-xs font-bold text-white">
-              {bookings.cancelled.length}
-            </span>
+          {/* Allocated Column */}
+          <div className={`rounded-lg border-2 ${getColumnColor('allocated')} p-4`}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <Truck className="h-5 w-5 text-yellow-600" />
+                Allocated
+              </h2>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-yellow-600 text-xs font-bold text-white">
+                {bookings.allocated.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {bookings.allocated.map((booking) => renderBookingCard(booking, 'allocated'))}
+            </div>
           </div>
-          <div className="space-y-3">
-            {bookings.cancelled.map((booking) => renderBookingCard(booking, 'cancelled'))}
+
+          {/* Delivered Column */}
+          <div className={`rounded-lg border-2 ${getColumnColor('delivered')} p-4`}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+                Delivered
+              </h2>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-xs font-bold text-white">
+                {bookings.delivered.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {bookings.delivered.map((booking) => renderBookingCard(booking, 'delivered'))}
+            </div>
+          </div>
+
+          {/* Cancelled Column */}
+          <div className={`rounded-lg border-2 ${getColumnColor('cancelled')} p-4`}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <XCircle className="h-5 w-5 text-gray-600" />
+                Cancelled
+              </h2>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-xs font-bold text-white">
+                {bookings.cancelled.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {bookings.cancelled.map((booking) => renderBookingCard(booking, 'cancelled'))}
+            </div>
           </div>
         </div>
       </div>
