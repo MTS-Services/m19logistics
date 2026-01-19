@@ -84,7 +84,8 @@ const AdminDashboardHome = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+      <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => {
@@ -206,6 +207,7 @@ const AdminDashboardHome = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
