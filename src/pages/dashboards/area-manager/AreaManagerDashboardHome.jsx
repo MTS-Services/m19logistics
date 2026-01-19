@@ -383,7 +383,7 @@ const AreaManagerDashboardHome = () => {
         {/* Read-Only Notice */}
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <div className="flex items-start gap-3">
-            <Eye className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
+            <Eye className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
             <div>
               <h3 className="text-sm font-semibold text-blue-900">Read-Only Access</h3>
               <p className="mt-1 text-sm text-blue-700">
@@ -447,21 +447,21 @@ const AreaManagerDashboardHome = () => {
                   <h4 className="mb-3 text-sm font-semibold text-gray-900">Contact Information</h4>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-500" />
+                      <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-700">Address</p>
                         <p className="text-sm text-gray-600">{selectedStore.address}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Phone className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-500" />
+                      <Phone className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-700">Phone</p>
                         <p className="text-sm text-gray-600">{selectedStore.phone}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <Mail className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-500" />
+                      <Mail className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-700">Email</p>
                         <p className="text-sm text-gray-600">{selectedStore.email}</p>
@@ -514,7 +514,7 @@ const AreaManagerDashboardHome = () => {
                 {/* Additional Info */}
                 <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
                   <div className="flex items-start gap-3">
-                    <Eye className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+                    <Eye className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
                     <div>
                       <h4 className="text-sm font-semibold text-amber-900">View Only</h4>
                       <p className="mt-1 text-sm text-amber-700">
