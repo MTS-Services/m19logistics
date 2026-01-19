@@ -252,11 +252,11 @@ const BookingsBoard = () => {
             <h1 className="text-2xl font-bold text-gray-900">Bookings Board</h1>
             <p className="mt-1 text-sm text-gray-600">Manage all delivery bookings in one place</p>
           </div>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <button className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700">
               + New Booking
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Alert Banner */}
