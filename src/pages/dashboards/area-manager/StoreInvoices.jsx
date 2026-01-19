@@ -254,7 +254,7 @@ const StoreInvoices = () => {
 
         {/* View Invoice Modal */}
         {showViewModal && selectedInvoice && (
-          <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+          <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
             <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-gray-200 p-6">

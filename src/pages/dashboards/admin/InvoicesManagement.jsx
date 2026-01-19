@@ -510,7 +510,7 @@ const InvoicesManagement = () => {
   );
 
   const EditInvoiceModal = ({ invoice, onClose }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
       <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
