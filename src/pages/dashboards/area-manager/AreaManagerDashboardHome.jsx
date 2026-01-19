@@ -11,11 +11,14 @@ import {
   Phone,
   Mail,
 } from 'lucide-react';
+import Pagination from '../../../components/Pagination';
 
 const AreaManagerDashboardHome = () => {
   const [timeFilter, setTimeFilter] = useState('week');
   const [selectedStore, setSelectedStore] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // All store data for different time periods
   const storeData = {
@@ -218,6 +221,28 @@ const AreaManagerDashboardHome = () => {
   const stats = currentData.stats;
   const stores = currentData.stores;
 
+  // Pagination calculations
+  const totalItems = stores.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedStores = stores.slice(startIndex, endIndex);
+
+  // Reset to page 1 when time filter changes
+  const handleTimeFilterChange = (filter) => {
+    setTimeFilter(filter);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to store performance section
+    const storeSection = document.getElementById('store-performance-section');
+    if (storeSection) {
+      storeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const openModal = (store) => {
     setSelectedStore(store);
     setIsModalOpen(true);
@@ -242,7 +267,7 @@ const AreaManagerDashboardHome = () => {
           {['week', 'month', 'year'].map((filter) => (
             <button
               key={filter}
-              onClick={() => setTimeFilter(filter)}
+              onClick={() => handleTimeFilterChange(filter)}
               className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all ${
                 timeFilter === filter
                   ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
@@ -310,14 +335,20 @@ const AreaManagerDashboardHome = () => {
         </div>
 
         {/* Store Performance */}
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div
+          id="store-performance-section"
+          className="rounded-lg border border-gray-200 bg-white shadow-sm"
+        >
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
             <h2 className="text-lg font-bold text-gray-900">Store Performance - Topps Tiles</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Showing {paginatedStores.length} of {totalItems} stores
+            </p>
           </div>
 
           <div className="p-6">
             <div className="space-y-4">
-              {stores.map((store, index) => (
+              {paginatedStores.map((store, index) => (
                 <div
                   key={index}
                   className="flex flex-col gap-4 rounded-lg border border-gray-200 p-4 transition-all hover:shadow-md lg:flex-row lg:items-start lg:justify-between"
@@ -376,6 +407,15 @@ const AreaManagerDashboardHome = () => {
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={totalItems}
+            />
           </div>
         </div>
 
