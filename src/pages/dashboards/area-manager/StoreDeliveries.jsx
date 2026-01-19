@@ -254,7 +254,7 @@ const StoreDeliveries = () => {
 
       {/* Detail Modal */}
       {showDetailModal && selectedDelivery && (
-        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Delivery Details</h2>
