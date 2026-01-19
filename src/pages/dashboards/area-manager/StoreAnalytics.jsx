@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   BarChart3,
   TrendingUp,
@@ -24,50 +24,144 @@ const StoreAnalytics = () => {
     'Topps Wrexham',
   ];
 
-  const storeData = [
-    {
-      name: 'Topps Chester',
-      deliveries: 156,
-      revenue: 7020,
-      avgPerDelivery: 45.0,
-      growth: 12.5,
-    },
-    {
-      name: 'Topps Nantwich',
-      deliveries: 98,
-      revenue: 4410,
-      avgPerDelivery: 45.0,
-      growth: 8.3,
-    },
-    {
-      name: 'Topps Newcastle',
-      deliveries: 210,
-      revenue: 10500,
-      avgPerDelivery: 50.0,
-      growth: 15.2,
-    },
-    {
-      name: 'Topps Northwich',
-      deliveries: 134,
-      revenue: 6030,
-      avgPerDelivery: 45.0,
-      growth: 6.7,
-    },
-    {
-      name: 'Topps Rhyl',
-      deliveries: 89,
-      revenue: 4005,
-      avgPerDelivery: 45.0,
-      growth: 4.2,
-    },
-    {
-      name: 'Topps Wrexham',
-      deliveries: 112,
-      revenue: 5040,
-      avgPerDelivery: 45.0,
-      growth: 9.8,
-    },
-  ];
+  // Analytics data for different time periods
+  const analyticsData = {
+    week: [
+      {
+        name: 'Topps Chester',
+        deliveries: 38,
+        revenue: 1710,
+        avgPerDelivery: 45.0,
+        growth: 12.5,
+      },
+      {
+        name: 'Topps Nantwich',
+        deliveries: 24,
+        revenue: 1080,
+        avgPerDelivery: 45.0,
+        growth: 8.3,
+      },
+      {
+        name: 'Topps Newcastle',
+        deliveries: 52,
+        revenue: 2340,
+        avgPerDelivery: 45.0,
+        growth: 15.2,
+      },
+      {
+        name: 'Topps Northwich',
+        deliveries: 33,
+        revenue: 1485,
+        avgPerDelivery: 45.0,
+        growth: 6.7,
+      },
+      {
+        name: 'Topps Rhyl',
+        deliveries: 22,
+        revenue: 990,
+        avgPerDelivery: 45.0,
+        growth: 4.2,
+      },
+      {
+        name: 'Topps Wrexham',
+        deliveries: 28,
+        revenue: 1260,
+        avgPerDelivery: 45.0,
+        growth: 9.8,
+      },
+    ],
+    month: [
+      {
+        name: 'Topps Chester',
+        deliveries: 156,
+        revenue: 7020,
+        avgPerDelivery: 45.0,
+        growth: 12.5,
+      },
+      {
+        name: 'Topps Nantwich',
+        deliveries: 98,
+        revenue: 4410,
+        avgPerDelivery: 45.0,
+        growth: 8.3,
+      },
+      {
+        name: 'Topps Newcastle',
+        deliveries: 210,
+        revenue: 9450,
+        avgPerDelivery: 45.0,
+        growth: 15.2,
+      },
+      {
+        name: 'Topps Northwich',
+        deliveries: 134,
+        revenue: 6030,
+        avgPerDelivery: 45.0,
+        growth: 6.7,
+      },
+      {
+        name: 'Topps Rhyl',
+        deliveries: 89,
+        revenue: 4005,
+        avgPerDelivery: 45.0,
+        growth: 4.2,
+      },
+      {
+        name: 'Topps Wrexham',
+        deliveries: 112,
+        revenue: 5040,
+        avgPerDelivery: 45.0,
+        growth: 9.8,
+      },
+    ],
+    year: [
+      {
+        name: 'Topps Chester',
+        deliveries: 1872,
+        revenue: 84240,
+        avgPerDelivery: 45.0,
+        growth: 12.5,
+      },
+      {
+        name: 'Topps Nantwich',
+        deliveries: 1176,
+        revenue: 52920,
+        avgPerDelivery: 45.0,
+        growth: 8.3,
+      },
+      {
+        name: 'Topps Newcastle',
+        deliveries: 2520,
+        revenue: 113400,
+        avgPerDelivery: 45.0,
+        growth: 15.2,
+      },
+      {
+        name: 'Topps Northwich',
+        deliveries: 1608,
+        revenue: 72360,
+        avgPerDelivery: 45.0,
+        growth: 6.7,
+      },
+      {
+        name: 'Topps Rhyl',
+        deliveries: 1068,
+        revenue: 48060,
+        avgPerDelivery: 45.0,
+        growth: 4.2,
+      },
+      {
+        name: 'Topps Wrexham',
+        deliveries: 1344,
+        revenue: 60480,
+        avgPerDelivery: 45.0,
+        growth: 9.8,
+      },
+    ],
+  };
+
+  // Get current data based on time filter
+  const storeData = useMemo(() => analyticsData[timeFilter], [timeFilter]);
 
   const filteredData =
     selectedStore === 'All' ? storeData : storeData.filter((store) => store.name === selectedStore);
