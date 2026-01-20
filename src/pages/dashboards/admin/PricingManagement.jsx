@@ -82,6 +82,9 @@ const PricingManagement = () => {
   const [filterType, setFilterType] = useState('all');
   const [showTierModal, setShowTierModal] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [deleteType, setDeleteType] = useState('tier'); // 'tier' or 'custom'
   const [editingTier, setEditingTier] = useState(null);
   const [editingCustom, setEditingCustom] = useState(null);
   const [viewMode, setViewMode] = useState('tiers'); // 'tiers' or 'custom'
@@ -149,17 +152,28 @@ const PricingManagement = () => {
   };
 
   // Handle Delete Tier
-  const handleDeleteTier = (id) => {
-    if (window.confirm('Are you sure you want to delete this pricing tier?')) {
-      setPricingTiers(pricingTiers.filter((t) => t.id !== id));
-    }
+  const handleDeleteTier = (tier) => {
+    setSelectedItem(tier);
+    setDeleteType('tier');
+    setShowDeleteModal(true);
   };
 
   // Handle Delete Custom
-  const handleDeleteCustom = (id) => {
-    if (window.confirm('Are you sure you want to remove this custom pricing?')) {
-      setCustomPricing(customPricing.filter((c) => c.id !== id));
+  const handleDeleteCustom = (custom) => {
+    setSelectedItem(custom);
+    setDeleteType('custom');
+    setShowDeleteModal(true);
+  };
+
+  // Confirm Delete
+  const confirmDelete = () => {
+    if (deleteType === 'tier') {
+      setPricingTiers(pricingTiers.filter((t) => t.id !== selectedItem.id));
+    } else {
+      setCustomPricing(customPricing.filter((c) => c.id !== selectedItem.id));
     }
+    setShowDeleteModal(false);
+    setSelectedItem(null);
   };
 
   return (
@@ -346,7 +360,7 @@ const PricingManagement = () => {
                   </button>
                   {!tier.isDefault && (
                     <button
-                      onClick={() => handleDeleteTier(tier.id)}
+                      onClick={() => handleDeleteTier(tier)}
                       className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
                     >
                       <Trash2 className="h-5 w-5" />
@@ -460,7 +474,7 @@ const PricingManagement = () => {
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteCustom(custom.id)}
+                          onClick={() => handleDeleteCustom(custom)}
                           className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -837,6 +851,113 @@ const PricingManagement = () => {
                 <Save className="h-5 w-5" />
                 Save Pricing
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedItem && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-900">Confirm Delete</h2>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                {deleteType === 'tier' ? 'Delete Pricing Tier' : 'Delete Custom Pricing'}
+              </h3>
+              <p className="mb-4 text-center text-sm text-gray-600">
+                Are you sure you want to delete{' '}
+                <strong>
+                  {deleteType === 'tier' ? selectedItem.tier : selectedItem.customerName}
+                </strong>
+                ? This action cannot be undone and will remove all{' '}
+                {deleteType === 'tier' ? 'tier' : 'pricing'} data.
+              </p>
+
+              {/* Summary */}
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div className="space-y-2 text-sm">
+                  {deleteType === 'tier' ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Tier Name:</span>
+                        <span className="font-medium text-gray-900">{selectedItem.tier}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Base Price:</span>
+                        <span className="font-medium text-gray-900">
+                          £{selectedItem.basePrice.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Total Price:</span>
+                        <span className="font-medium text-gray-900">
+                          £{selectedItem.totalPrice.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Active Customers:</span>
+                        <span className="font-medium text-gray-900">
+                          {selectedItem.customers?.length || 0}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Customer:</span>
+                        <span className="font-medium text-gray-900">
+                          {selectedItem.customerName}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Customer ID:</span>
+                        <span className="font-medium text-gray-900">{selectedItem.customerId}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Pricing Type:</span>
+                        <span className="font-medium text-gray-900">
+                          {selectedItem.pricingType}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Base Price:</span>
+                        <span className="font-medium text-gray-900">
+                          £{selectedItem.basePrice?.toFixed(2)}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="mt-6 flex items-center justify-end space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="inline-flex items-center space-x-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>{deleteType === 'tier' ? 'Delete Tier' : 'Delete Pricing'}</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
