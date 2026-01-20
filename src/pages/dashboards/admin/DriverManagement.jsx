@@ -555,7 +555,7 @@ const DriverManagement = () => {
         </div>
 
         {/* Driver Table */}
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-visible rounded-lg border border-gray-200 bg-white shadow-sm">
           {/* Table Header */}
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
             <h2 className="text-lg font-bold text-gray-900">Driver Records</h2>
@@ -580,7 +580,7 @@ const DriverManagement = () => {
           ) : (
             <>
               {/* Desktop Table View - Hidden on mobile */}
-              <div className="hidden overflow-x-auto lg:block">
+              <div className="hidden overflow-visible lg:block">
                 <table className="w-full">
                   <thead className="border-b border-gray-200 bg-gray-50">
                     <tr>
@@ -715,7 +715,8 @@ const DriverManagement = () => {
                             {/* Dropdown Menu */}
                             {showActionDropdown === driver.id && (
                               <div
-                                className={`absolute right-0 z-50 w-48 rounded-lg border border-gray-200 bg-white shadow-lg ${paginatedDrivers.indexOf(driver) >= paginatedDrivers.length - 2 ? 'bottom-full mb-2' : 'top-full mt-2'}`}
+                                className="absolute top-full right-0 z-[999] mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-xl"
+                                style={{ position: 'absolute' }}
                               >
                                 <div className="py-1">
                                   <button
@@ -875,7 +876,7 @@ const DriverManagement = () => {
                         {/* Dropdown Menu */}
                         {showActionDropdown === driver.id && (
                           <div
-                            className={`absolute right-0 left-0 z-50 rounded-lg border border-gray-200 bg-white shadow-lg ${paginatedDrivers.indexOf(driver) >= paginatedDrivers.length - 2 ? 'bottom-full mb-2' : 'top-full mt-2'}`}
+                            className={`absolute right-0 left-0 z-50 rounded-lg border border-gray-200 bg-white shadow-lg ${paginatedDrivers.length > 1 && paginatedDrivers.indexOf(driver) >= paginatedDrivers.length - 1 ? 'bottom-full mb-2' : 'top-full mt-2'}`}
                           >
                             <div className="py-1">
                               <button
