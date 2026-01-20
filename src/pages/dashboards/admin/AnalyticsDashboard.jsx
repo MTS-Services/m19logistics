@@ -23,54 +23,522 @@ const AnalyticsDashboard = () => {
   const [customEndDate, setCustomEndDate] = useState('');
   const [selectedMetric, setSelectedMetric] = useState('overview');
 
-  // Sample analytics data
-  const overviewStats = {
-    totalRevenue: 12450.0,
-    revenueChange: 12.5,
-    totalDeliveries: 278,
-    deliveriesChange: 8.3,
-    avgRevenuePerDelivery: 44.78,
-    avgChange: 3.8,
-    totalVAT: 2490.0,
-    vatChange: 12.5,
-    outstandingInvoices: 1250.0,
-    outstandingCount: 3,
-    completionRate: 94.6,
-    completionChange: 2.1,
+  // Dynamic data based on date range
+  const getDataByDateRange = () => {
+    const dataByRange = {
+      'this-week': {
+        overviewStats: {
+          totalRevenue: 12450.0,
+          revenueChange: 12.5,
+          totalDeliveries: 278,
+          deliveriesChange: 8.3,
+          avgRevenuePerDelivery: 44.78,
+          avgChange: 3.8,
+          totalVAT: 2490.0,
+          vatChange: 12.5,
+          outstandingInvoices: 1250.0,
+          outstandingCount: 3,
+          completionRate: 94.6,
+          completionChange: 2.1,
+        },
+        storePerformance: [
+          {
+            id: 1,
+            name: 'Topps Chester',
+            deliveries: 52,
+            revenue: 2340.0,
+            change: 15.2,
+            share: 18.7,
+          },
+          {
+            id: 2,
+            name: 'Topps Newcastle',
+            deliveries: 48,
+            revenue: 2400.0,
+            change: -5.3,
+            share: 17.3,
+          },
+          {
+            id: 3,
+            name: 'Topps Wrexham',
+            deliveries: 45,
+            revenue: 2025.0,
+            change: 8.7,
+            share: 16.2,
+          },
+          { id: 4, name: 'Topps Rhyl', deliveries: 42, revenue: 1890.0, change: 12.4, share: 15.1 },
+          {
+            id: 5,
+            name: 'Topps Nantwich',
+            deliveries: 38,
+            revenue: 1710.0,
+            change: 6.8,
+            share: 13.7,
+          },
+          {
+            id: 6,
+            name: 'Topps Northwich',
+            deliveries: 53,
+            revenue: 2085.0,
+            change: 18.9,
+            share: 19.0,
+          },
+        ],
+        driverPerformance: [
+          {
+            id: 1,
+            name: 'BK',
+            deliveries: 278,
+            avgTime: '45 mins',
+            completionRate: 94.6,
+            lateDeliveries: 15,
+            proofsAttached: 263,
+            feedbackCount: 245,
+            rating: 4.8,
+          },
+        ],
+        weeklyData: [
+          { day: 'Mon', deliveries: 42, revenue: 1890.0 },
+          { day: 'Tue', deliveries: 38, revenue: 1710.0 },
+          { day: 'Wed', deliveries: 45, revenue: 2025.0 },
+          { day: 'Thu', deliveries: 52, revenue: 2340.0 },
+          { day: 'Fri', deliveries: 48, revenue: 2160.0 },
+          { day: 'Sat', deliveries: 35, revenue: 1575.0 },
+          { day: 'Sun', deliveries: 18, revenue: 810.0 },
+        ],
+      },
+      'last-week': {
+        overviewStats: {
+          totalRevenue: 11100.0,
+          revenueChange: -10.8,
+          totalDeliveries: 256,
+          deliveriesChange: -7.9,
+          avgRevenuePerDelivery: 43.36,
+          avgChange: -3.2,
+          totalVAT: 2220.0,
+          vatChange: -10.8,
+          outstandingInvoices: 980.0,
+          outstandingCount: 2,
+          completionRate: 92.5,
+          completionChange: -2.1,
+        },
+        storePerformance: [
+          {
+            id: 1,
+            name: 'Topps Chester',
+            deliveries: 45,
+            revenue: 2025.0,
+            change: -13.5,
+            share: 17.6,
+          },
+          {
+            id: 2,
+            name: 'Topps Newcastle',
+            deliveries: 51,
+            revenue: 2550.0,
+            change: 6.3,
+            share: 19.9,
+          },
+          {
+            id: 3,
+            name: 'Topps Wrexham',
+            deliveries: 41,
+            revenue: 1845.0,
+            change: -8.9,
+            share: 16.0,
+          },
+          {
+            id: 4,
+            name: 'Topps Rhyl',
+            deliveries: 37,
+            revenue: 1665.0,
+            change: -11.9,
+            share: 14.5,
+          },
+          {
+            id: 5,
+            name: 'Topps Nantwich',
+            deliveries: 36,
+            revenue: 1620.0,
+            change: -5.3,
+            share: 14.1,
+          },
+          {
+            id: 6,
+            name: 'Topps Northwich',
+            deliveries: 46,
+            revenue: 1840.0,
+            change: -11.8,
+            share: 18.0,
+          },
+        ],
+        driverPerformance: [
+          {
+            id: 1,
+            name: 'BK',
+            deliveries: 256,
+            avgTime: '47 mins',
+            completionRate: 92.5,
+            lateDeliveries: 19,
+            proofsAttached: 237,
+            feedbackCount: 223,
+            rating: 4.6,
+          },
+        ],
+        weeklyData: [
+          { day: 'Mon', deliveries: 38, revenue: 1710.0 },
+          { day: 'Tue', deliveries: 35, revenue: 1575.0 },
+          { day: 'Wed', deliveries: 41, revenue: 1845.0 },
+          { day: 'Thu', deliveries: 45, revenue: 2025.0 },
+          { day: 'Fri', deliveries: 44, revenue: 1980.0 },
+          { day: 'Sat', deliveries: 37, revenue: 1665.0 },
+          { day: 'Sun', deliveries: 16, revenue: 720.0 },
+        ],
+      },
+      'this-month': {
+        overviewStats: {
+          totalRevenue: 48800.0,
+          revenueChange: 15.3,
+          totalDeliveries: 1098,
+          deliveriesChange: 12.7,
+          avgRevenuePerDelivery: 44.44,
+          avgChange: 2.3,
+          totalVAT: 9760.0,
+          vatChange: 15.3,
+          outstandingInvoices: 3250.0,
+          outstandingCount: 7,
+          completionRate: 93.8,
+          completionChange: 1.3,
+        },
+        storePerformance: [
+          {
+            id: 1,
+            name: 'Topps Chester',
+            deliveries: 205,
+            revenue: 9225.0,
+            change: 18.2,
+            share: 18.9,
+          },
+          {
+            id: 2,
+            name: 'Topps Newcastle',
+            deliveries: 192,
+            revenue: 9600.0,
+            change: 11.6,
+            share: 17.5,
+          },
+          {
+            id: 3,
+            name: 'Topps Wrexham',
+            deliveries: 178,
+            revenue: 8010.0,
+            change: 14.8,
+            share: 16.2,
+          },
+          { id: 4, name: 'Topps Rhyl', deliveries: 165, revenue: 7425.0, change: 9.9, share: 15.0 },
+          {
+            id: 5,
+            name: 'Topps Nantwich',
+            deliveries: 151,
+            revenue: 6795.0,
+            change: 12.4,
+            share: 13.8,
+          },
+          {
+            id: 6,
+            name: 'Topps Northwich',
+            deliveries: 207,
+            revenue: 8280.0,
+            change: 20.3,
+            share: 18.9,
+          },
+        ],
+        driverPerformance: [
+          {
+            id: 1,
+            name: 'BK',
+            deliveries: 1098,
+            avgTime: '46 mins',
+            completionRate: 93.8,
+            lateDeliveries: 68,
+            proofsAttached: 1030,
+            feedbackCount: 967,
+            rating: 4.7,
+          },
+        ],
+        weeklyData: [
+          { day: 'Week 1', deliveries: 256, revenue: 11520.0 },
+          { day: 'Week 2', deliveries: 278, revenue: 12510.0 },
+          { day: 'Week 3', deliveries: 285, revenue: 12825.0 },
+          { day: 'Week 4', deliveries: 279, revenue: 12555.0 },
+        ],
+      },
+      'last-month': {
+        overviewStats: {
+          totalRevenue: 42300.0,
+          revenueChange: -13.3,
+          totalDeliveries: 974,
+          deliveriesChange: -11.3,
+          avgRevenuePerDelivery: 43.43,
+          avgChange: -2.3,
+          totalVAT: 8460.0,
+          vatChange: -13.3,
+          outstandingInvoices: 2100.0,
+          outstandingCount: 5,
+          completionRate: 92.5,
+          completionChange: -1.3,
+        },
+        storePerformance: [
+          {
+            id: 1,
+            name: 'Topps Chester',
+            deliveries: 173,
+            revenue: 7785.0,
+            change: -15.6,
+            share: 17.8,
+          },
+          {
+            id: 2,
+            name: 'Topps Newcastle',
+            deliveries: 172,
+            revenue: 8600.0,
+            change: 0.6,
+            share: 17.7,
+          },
+          {
+            id: 3,
+            name: 'Topps Wrexham',
+            deliveries: 155,
+            revenue: 6975.0,
+            change: -10.9,
+            share: 15.9,
+          },
+          {
+            id: 4,
+            name: 'Topps Rhyl',
+            deliveries: 150,
+            revenue: 6750.0,
+            change: -3.2,
+            share: 15.4,
+          },
+          {
+            id: 5,
+            name: 'Topps Nantwich',
+            deliveries: 134,
+            revenue: 6030.0,
+            change: -10.7,
+            share: 13.8,
+          },
+          {
+            id: 6,
+            name: 'Topps Northwich',
+            deliveries: 190,
+            revenue: 7600.0,
+            change: 8.6,
+            share: 19.5,
+          },
+        ],
+        driverPerformance: [
+          {
+            id: 1,
+            name: 'BK',
+            deliveries: 974,
+            avgTime: '48 mins',
+            completionRate: 92.5,
+            lateDeliveries: 73,
+            proofsAttached: 901,
+            feedbackCount: 845,
+            rating: 4.5,
+          },
+        ],
+        weeklyData: [
+          { day: 'Week 1', deliveries: 234, revenue: 10530.0 },
+          { day: 'Week 2', deliveries: 245, revenue: 11025.0 },
+          { day: 'Week 3', deliveries: 251, revenue: 11295.0 },
+          { day: 'Week 4', deliveries: 244, revenue: 10980.0 },
+        ],
+      },
+      'this-year': {
+        overviewStats: {
+          totalRevenue: 585600.0,
+          revenueChange: 22.8,
+          totalDeliveries: 13200,
+          deliveriesChange: 19.5,
+          avgRevenuePerDelivery: 44.36,
+          avgChange: 2.8,
+          totalVAT: 117120.0,
+          vatChange: 22.8,
+          outstandingInvoices: 12500.0,
+          outstandingCount: 28,
+          completionRate: 94.2,
+          completionChange: 2.7,
+        },
+        storePerformance: [
+          {
+            id: 1,
+            name: 'Topps Chester',
+            deliveries: 2464,
+            revenue: 110880.0,
+            change: 25.2,
+            share: 18.7,
+          },
+          {
+            id: 2,
+            name: 'Topps Newcastle',
+            deliveries: 2310,
+            revenue: 115500.0,
+            change: 15.8,
+            share: 17.5,
+          },
+          {
+            id: 3,
+            name: 'Topps Wrexham',
+            deliveries: 2145,
+            revenue: 96525.0,
+            change: 20.3,
+            share: 16.3,
+          },
+          {
+            id: 4,
+            name: 'Topps Rhyl',
+            deliveries: 1980,
+            revenue: 89100.0,
+            change: 18.7,
+            share: 15.0,
+          },
+          {
+            id: 5,
+            name: 'Topps Nantwich',
+            deliveries: 1815,
+            revenue: 81675.0,
+            change: 16.2,
+            share: 13.8,
+          },
+          {
+            id: 6,
+            name: 'Topps Northwich',
+            deliveries: 2486,
+            revenue: 99440.0,
+            change: 28.9,
+            share: 18.8,
+          },
+        ],
+        driverPerformance: [
+          {
+            id: 1,
+            name: 'BK',
+            deliveries: 13200,
+            avgTime: '46 mins',
+            completionRate: 94.2,
+            lateDeliveries: 765,
+            proofsAttached: 12435,
+            feedbackCount: 11616,
+            rating: 4.7,
+          },
+        ],
+        weeklyData: [
+          { day: 'Jan', deliveries: 1098, revenue: 48800.0 },
+          { day: 'Feb', deliveries: 1045, revenue: 46980.0 },
+          { day: 'Mar', deliveries: 1123, revenue: 50535.0 },
+          { day: 'Apr', deliveries: 1089, revenue: 49005.0 },
+          { day: 'May', deliveries: 1134, revenue: 51030.0 },
+          { day: 'Jun', deliveries: 1156, revenue: 52020.0 },
+          { day: 'Jul', deliveries: 1201, revenue: 54045.0 },
+          { day: 'Aug', deliveries: 1178, revenue: 53010.0 },
+          { day: 'Sep', deliveries: 1167, revenue: 52515.0 },
+          { day: 'Oct', deliveries: 1189, revenue: 53505.0 },
+          { day: 'Nov', deliveries: 1145, revenue: 51525.0 },
+          { day: 'Dec', deliveries: 1175, revenue: 52875.0 },
+        ],
+      },
+      custom: {
+        overviewStats: {
+          totalRevenue: 28900.0,
+          revenueChange: 8.5,
+          totalDeliveries: 645,
+          deliveriesChange: 6.2,
+          avgRevenuePerDelivery: 44.81,
+          avgChange: 2.2,
+          totalVAT: 5780.0,
+          vatChange: 8.5,
+          outstandingInvoices: 1890.0,
+          outstandingCount: 4,
+          completionRate: 93.2,
+          completionChange: 0.7,
+        },
+        storePerformance: [
+          {
+            id: 1,
+            name: 'Topps Chester',
+            deliveries: 120,
+            revenue: 5400.0,
+            change: 10.1,
+            share: 18.6,
+          },
+          {
+            id: 2,
+            name: 'Topps Newcastle',
+            deliveries: 113,
+            revenue: 5650.0,
+            change: 5.6,
+            share: 17.5,
+          },
+          {
+            id: 3,
+            name: 'Topps Wrexham',
+            deliveries: 105,
+            revenue: 4725.0,
+            change: 7.7,
+            share: 16.3,
+          },
+          { id: 4, name: 'Topps Rhyl', deliveries: 97, revenue: 4365.0, change: 6.6, share: 15.0 },
+          {
+            id: 5,
+            name: 'Topps Nantwich',
+            deliveries: 89,
+            revenue: 4005.0,
+            change: 8.5,
+            share: 13.8,
+          },
+          {
+            id: 6,
+            name: 'Topps Northwich',
+            deliveries: 121,
+            revenue: 4840.0,
+            change: 12.0,
+            share: 18.8,
+          },
+        ],
+        driverPerformance: [
+          {
+            id: 1,
+            name: 'BK',
+            deliveries: 645,
+            avgTime: '45 mins',
+            completionRate: 93.2,
+            lateDeliveries: 44,
+            proofsAttached: 601,
+            feedbackCount: 567,
+            rating: 4.7,
+          },
+        ],
+        weeklyData: [
+          { day: 'Period 1', deliveries: 161, revenue: 7245.0 },
+          { day: 'Period 2', deliveries: 163, revenue: 7335.0 },
+          { day: 'Period 3', deliveries: 159, revenue: 7155.0 },
+          { day: 'Period 4', deliveries: 162, revenue: 7290.0 },
+        ],
+      },
+    };
+
+    return dataByRange[dateRange] || dataByRange['this-week'];
   };
 
-  const storePerformance = [
-    { id: 1, name: 'Topps Chester', deliveries: 52, revenue: 2340.0, change: 15.2, share: 18.7 },
-    { id: 2, name: 'Topps Newcastle', deliveries: 48, revenue: 2400.0, change: -5.3, share: 17.3 },
-    { id: 3, name: 'Topps Wrexham', deliveries: 45, revenue: 2025.0, change: 8.7, share: 16.2 },
-    { id: 4, name: 'Topps Rhyl', deliveries: 42, revenue: 1890.0, change: 12.4, share: 15.1 },
-    { id: 5, name: 'Topps Nantwich', deliveries: 38, revenue: 1710.0, change: 6.8, share: 13.7 },
-    { id: 6, name: 'Topps Northwich', deliveries: 53, revenue: 2085.0, change: 18.9, share: 19.0 },
-  ];
-
-  const driverPerformance = [
-    {
-      id: 1,
-      name: 'BK',
-      deliveries: 278,
-      avgTime: '45 mins',
-      completionRate: 94.6,
-      lateDeliveries: 15,
-      proofsAttached: 263,
-      feedbackCount: 245,
-      rating: 4.8,
-    },
-  ];
-
-  const weeklyData = [
-    { day: 'Mon', deliveries: 42, revenue: 1890.0 },
-    { day: 'Tue', deliveries: 38, revenue: 1710.0 },
-    { day: 'Wed', deliveries: 45, revenue: 2025.0 },
-    { day: 'Thu', deliveries: 52, revenue: 2340.0 },
-    { day: 'Fri', deliveries: 48, revenue: 2160.0 },
-    { day: 'Sat', deliveries: 35, revenue: 1575.0 },
-    { day: 'Sun', deliveries: 18, revenue: 810.0 },
-  ];
+  const currentData = getDataByDateRange();
+  const overviewStats = currentData.overviewStats;
+  const storePerformance = currentData.storePerformance;
+  const driverPerformance = currentData.driverPerformance;
+  const weeklyData = currentData.weeklyData;
 
   const monthlyTrends = [
     { month: 'Aug', revenue: 48500, deliveries: 1078 },
@@ -687,6 +1155,211 @@ const AnalyticsDashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* Overview Content */}
+      {selectedMetric === 'overview' && (
+        <div className="space-y-6">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Revenue Summary */}
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                  <DollarSign className="h-5 w-5 text-teal-600" />
+                  Revenue Overview
+                </h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Total Revenue</span>
+                  <span className="text-lg font-bold text-teal-600">
+                    £{overviewStats.totalRevenue.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Total VAT</span>
+                  <span className="text-lg font-bold text-gray-900">
+                    £{overviewStats.totalVAT.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Avg per Delivery</span>
+                  <span className="text-lg font-bold text-gray-900">
+                    £{overviewStats.avgRevenuePerDelivery}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Outstanding</span>
+                  <span className="text-lg font-bold text-red-600">
+                    £{overviewStats.outstandingInvoices.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Summary */}
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                  <Package className="h-5 w-5 text-teal-600" />
+                  Delivery Overview
+                </h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Total Deliveries</span>
+                  <span className="text-lg font-bold text-teal-600">
+                    {overviewStats.totalDeliveries}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Completion Rate</span>
+                  <span className="text-lg font-bold text-green-600">
+                    {overviewStats.completionRate}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Pending Invoices</span>
+                  <span className="text-lg font-bold text-gray-900">
+                    {overviewStats.outstandingCount}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Change vs Last Period</span>
+                  <span
+                    className={`text-lg font-bold ${overviewStats.deliveriesChange > 0 ? 'text-green-600' : 'text-red-600'}`}
+                  >
+                    {overviewStats.deliveriesChange > 0 ? '+' : ''}
+                    {overviewStats.deliveriesChange}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Top Performing Stores */}
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <BarChart3 className="h-5 w-5 text-teal-600" />
+                Top Performing Stores
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {storePerformance
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, 5)
+                .map((store, index) => (
+                  <div key={store.id} className="flex items-center gap-4">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-sm font-bold text-teal-600">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-900">{store.name}</p>
+                      <p className="text-sm text-gray-600">
+                        {store.deliveries} deliveries • £{store.revenue.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span
+                        className={`text-sm font-semibold ${store.change > 0 ? 'text-green-600' : 'text-red-600'}`}
+                      >
+                        {store.change > 0 ? '+' : ''}
+                        {store.change}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Performance Metrics */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm text-gray-600">Revenue Growth</span>
+                {overviewStats.revenueChange > 0 ? (
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-red-600" />
+                )}
+              </div>
+              <p
+                className={`text-2xl font-bold ${overviewStats.revenueChange > 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {overviewStats.revenueChange > 0 ? '+' : ''}
+                {overviewStats.revenueChange}%
+              </p>
+              <p className="mt-1 text-xs text-gray-500">vs last period</p>
+            </div>
+
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm text-gray-600">Delivery Growth</span>
+                {overviewStats.deliveriesChange > 0 ? (
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                ) : (
+                  <TrendingDown className="h-4 w-4 text-red-600" />
+                )}
+              </div>
+              <p
+                className={`text-2xl font-bold ${overviewStats.deliveriesChange > 0 ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {overviewStats.deliveriesChange > 0 ? '+' : ''}
+                {overviewStats.deliveriesChange}%
+              </p>
+              <p className="mt-1 text-xs text-gray-500">vs last period</p>
+            </div>
+
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm text-gray-600">Completion Rate</span>
+                <CheckCircle className="h-4 w-4 text-green-600" />
+              </div>
+              <p className="text-2xl font-bold text-green-600">{overviewStats.completionRate}%</p>
+              <p className="mt-1 text-xs text-gray-500">
+                {overviewStats.completionChange > 0 ? '+' : ''}
+                {overviewStats.completionChange}% vs last period
+              </p>
+            </div>
+          </div>
+
+          {/* Weekly Trend Chart */}
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <LineChart className="h-5 w-5 text-teal-600" />
+                {dateRange === 'this-month' || dateRange === 'last-month' ? 'Weekly' : 'Daily'}{' '}
+                Performance
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {weeklyData.map((day) => (
+                <div key={day.day} className="flex items-center gap-4">
+                  <div className="w-20 text-sm font-semibold text-gray-600">{day.day}</div>
+                  <div className="flex flex-1 items-center gap-4">
+                    <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
+                      <div
+                        className="flex h-8 items-center justify-end rounded-full bg-gradient-to-r from-teal-600 to-teal-500 pr-3 transition-all"
+                        style={{
+                          width: `${(day.deliveries / getMaxValue(weeklyData, 'deliveries')) * 100}%`,
+                        }}
+                      >
+                        <span className="text-sm font-semibold text-white">{day.deliveries}</span>
+                      </div>
+                    </div>
+                    <div className="w-24 text-right">
+                      <span className="text-sm font-bold text-teal-600">
+                        £{day.revenue.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Store Performance View */}
       {selectedMetric === 'stores' && (
