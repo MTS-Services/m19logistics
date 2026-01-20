@@ -460,20 +460,24 @@ const DriverManagement = () => {
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Driver Management</h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Manage drivers, view performance, and track deliveries
-            </p>
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+                Driver Management
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Manage drivers, view performance, and track deliveries
+              </p>
+            </div>
+            <button
+              onClick={handleAddDriver}
+              className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+            >
+              <UserPlus className="h-5 w-5" />
+              <span>Add Driver</span>
+            </button>
           </div>
-          <button
-            onClick={handleAddDriver}
-            className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
-          >
-            <UserPlus className="h-5 w-5" />
-            <span>Add Driver</span>
-          </button>
         </div>
 
         {/* Stats Overview */}
