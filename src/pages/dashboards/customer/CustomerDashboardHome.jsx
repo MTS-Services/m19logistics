@@ -979,7 +979,7 @@ const CustomerDashboardHome = () => {
             <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
               <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
                 <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
-                  Request New Delivery
+                  Request New Deliveryy
                 </h2>
                 <button
                   onClick={() => setShowRequestModal(false)}

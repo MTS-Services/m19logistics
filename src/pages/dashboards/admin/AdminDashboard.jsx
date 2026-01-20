@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
-  LayoutManage your delivery requests and track shipments
-
-,
+  LayoutDashboard,
   Package,
   Users,
   Truck,
