@@ -1442,7 +1442,7 @@ const InvoicesManagement = () => {
             </div>
           </div>
         )}
-        
+
         {/* Toast Container */}
         <ToastContainer
           position="top-right"
