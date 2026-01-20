@@ -28,6 +28,9 @@ const InvoicesManagement = () => {
   const [filterCustomer, setFilterCustomer] = useState('all');
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   // Invoice data based on requirements
@@ -206,17 +209,42 @@ const InvoicesManagement = () => {
   };
 
   const handleDownloadInvoice = (invoice) => {
-    alert(`Downloading invoice ${invoice.invoiceNumber} as PDF...`);
+    setSelectedInvoice(invoice);
+    setShowPDFModal(true);
   };
 
   const handleEmailInvoice = (invoice) => {
-    if (window.confirm(`Send invoice ${invoice.invoiceNumber} to ${invoice.customerEmail}?`)) {
-      alert('Invoice email sent!');
-    }
+    setSelectedInvoice(invoice);
+    setShowEmailModal(true);
   };
 
   const handlePrintInvoice = (invoice) => {
-    alert(`Printing invoice ${invoice.invoiceNumber}...`);
+    setSelectedInvoice(invoice);
+    setShowPrintModal(true);
+  };
+
+  const confirmDownloadPDF = () => {
+    console.log('Downloading PDF for invoice:', selectedInvoice.invoiceNumber);
+    // Add actual PDF generation logic here
+    alert('PDF download started!');
+    setShowPDFModal(false);
+    setSelectedInvoice(null);
+  };
+
+  const confirmEmailInvoice = () => {
+    console.log('Sending email for invoice:', selectedInvoice.invoiceNumber);
+    // Add actual email sending logic here
+    alert(`Invoice email sent to ${selectedInvoice.customerEmail}`);
+    setShowEmailModal(false);
+    setSelectedInvoice(null);
+  };
+
+  const confirmPrintInvoice = () => {
+    console.log('Printing invoice:', selectedInvoice.invoiceNumber);
+    // Add actual print logic here
+    window.print();
+    setShowPrintModal(false);
+    setSelectedInvoice(null);
   };
 
   const calculateStats = () => {
@@ -825,6 +853,226 @@ const InvoicesManagement = () => {
               setSelectedInvoice(null);
             }}
           />
+        )}
+
+        {/* PDF Download Modal */}
+        {showPDFModal && selectedInvoice && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Download Invoice PDF</h2>
+                <button
+                  onClick={() => setShowPDFModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Download PDF
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Download invoice <strong>{selectedInvoice.invoiceNumber}</strong> as PDF?
+                </p>
+
+                {/* Invoice Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Customer:</span>
+                      <span className="font-medium text-gray-900">{selectedInvoice.customer}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Invoice Date:</span>
+                      <span className="font-medium text-gray-900">
+                        {new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-GB')}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Total Amount:</span>
+                      <span className="font-medium text-teal-600">
+                        £{selectedInvoice.total.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowPDFModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDownloadPDF}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Download PDF</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Email Invoice Modal */}
+        {showEmailModal && selectedInvoice && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Email Invoice</h2>
+                <button
+                  onClick={() => setShowEmailModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Send Invoice via Email
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Send invoice <strong>{selectedInvoice.invoiceNumber}</strong> to customer?
+                </p>
+
+                {/* Invoice Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Building className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-gray-900">{selectedInvoice.customer}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-gray-900">
+                        {selectedInvoice.customerEmail}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-teal-600">
+                        £{selectedInvoice.total.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg bg-blue-50 p-3">
+                  <p className="text-xs text-blue-800">
+                    📧 The invoice will be sent as a PDF attachment to the customer's registered
+                    email address.
+                  </p>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowEmailModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmEmailInvoice}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Mail className="h-4 w-4" />
+                    <span>Send Email</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Print Invoice Modal */}
+        {showPrintModal && selectedInvoice && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Print Invoice</h2>
+                <button
+                  onClick={() => setShowPrintModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Print Invoice
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Print invoice <strong>{selectedInvoice.invoiceNumber}</strong>?
+                </p>
+
+                {/* Invoice Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Invoice #:</span>
+                      <span className="font-medium text-gray-900">
+                        {selectedInvoice.invoiceNumber}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Customer:</span>
+                      <span className="font-medium text-gray-900">{selectedInvoice.customer}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Deliveries:</span>
+                      <span className="font-medium text-gray-900">
+                        {selectedInvoice.deliveries.length}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Total:</span>
+                      <span className="font-medium text-teal-600">
+                        £{selectedInvoice.total.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg bg-gray-50 p-3">
+                  <p className="text-xs text-gray-600">
+                    🖨️ This will open the browser's print dialog. Make sure your printer is ready.
+                  </p>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowPrintModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmPrintInvoice}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Printer className="h-4 w-4" />
+                    <span>Print Invoice</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
