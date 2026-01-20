@@ -21,6 +21,7 @@ import {
   TrendingUp,
   Printer,
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 const InvoicesManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -224,9 +225,187 @@ const InvoicesManagement = () => {
   };
 
   const confirmDownloadPDF = () => {
-    console.log('Downloading PDF for invoice:', selectedInvoice.invoiceNumber);
-    // Add actual PDF generation logic here
-    alert('PDF download started!');
+    if (!selectedInvoice) return;
+
+    // Create a new PDF document
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Header - Company Info
+    doc.setFontSize(20);
+    doc.setTextColor(13, 148, 136);
+    doc.text('M19 LOGISTICS', 20, 20);
+
+    doc.setFontSize(10);
+    doc.setTextColor(102, 102, 102);
+    doc.text('Invoice', 20, 28);
+
+    // Invoice Details - Right Side
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Invoice #${selectedInvoice.invoiceNumber}`, pageWidth - 20, 20, { align: 'right' });
+
+    doc.setFontSize(9);
+    doc.setTextColor(102, 102, 102);
+    doc.text(
+      `Date: ${new Date(selectedInvoice.invoiceDate).toLocaleDateString('en-GB')}`,
+      pageWidth - 20,
+      27,
+      { align: 'right' }
+    );
+    doc.text(
+      `Due: ${new Date(selectedInvoice.dueDate).toLocaleDateString('en-GB')}`,
+      pageWidth - 20,
+      33,
+      { align: 'right' }
+    );
+
+    // Status Badge
+    const statusColors = {
+      paid: [16, 185, 129],
+      sent: [59, 130, 246],
+      draft: [107, 114, 128],
+      overdue: [239, 68, 68],
+    };
+    const color = statusColors[selectedInvoice.status] || [107, 114, 128];
+    doc.setFontSize(10);
+    doc.setTextColor(color[0], color[1], color[2]);
+    doc.text(selectedInvoice.status.toUpperCase(), pageWidth - 20, 40, { align: 'right' });
+
+    // Line separator
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.5);
+    doc.line(20, 48, pageWidth - 20, 48);
+
+    // Bill To Section
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Bill To:', 20, 58);
+
+    doc.setFontSize(10);
+    doc.setTextColor(102, 102, 102);
+    doc.text(selectedInvoice.customer, 20, 66);
+    doc.text(`Username: ${selectedInvoice.customerUsername}`, 20, 72);
+    doc.text(selectedInvoice.customerEmail, 20, 78);
+
+    // Deliveries Table Header
+    let yPosition = 95;
+    doc.setFillColor(13, 148, 136);
+    doc.rect(20, yPosition, pageWidth - 40, 10, 'F');
+
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255);
+    doc.text('SPO', 25, yPosition + 7);
+    doc.text('Date', 60, yPosition + 7);
+    doc.text('Address', 90, yPosition + 7);
+    doc.text('Amount', pageWidth - 25, yPosition + 7, { align: 'right' });
+
+    yPosition += 10;
+
+    // Deliveries Table Rows
+    doc.setTextColor(0, 0, 0);
+    selectedInvoice.deliveries.forEach((delivery, index) => {
+      const rowColor = index % 2 === 0 ? [249, 250, 251] : [255, 255, 255];
+      doc.setFillColor(rowColor[0], rowColor[1], rowColor[2]);
+      doc.rect(20, yPosition, pageWidth - 40, 12, 'F');
+
+      doc.setFontSize(8);
+      doc.setTextColor(0, 0, 0);
+      doc.text(delivery.spo, 25, yPosition + 8);
+      doc.text(new Date(delivery.date).toLocaleDateString('en-GB'), 60, yPosition + 8);
+
+      const addressLines = doc.splitTextToSize(delivery.address, 80);
+      doc.text(addressLines[0], 90, yPosition + 8);
+
+      doc.text(`£${delivery.basePrice.toFixed(2)}`, pageWidth - 25, yPosition + 8, {
+        align: 'right',
+      });
+
+      yPosition += 12;
+
+      // Distance Surcharge
+      if (delivery.distanceSurcharge > 0) {
+        doc.setFillColor(rowColor[0], rowColor[1], rowColor[2]);
+        doc.rect(20, yPosition, pageWidth - 40, 8, 'F');
+
+        doc.setFontSize(7);
+        doc.setTextColor(102, 102, 102);
+        doc.text('Distance Surcharge', 90, yPosition + 5);
+        doc.text(`£${delivery.distanceSurcharge.toFixed(2)}`, pageWidth - 25, yPosition + 5, {
+          align: 'right',
+        });
+        yPosition += 8;
+      }
+
+      // Extra Charges
+      delivery.extraCharges?.forEach((charge) => {
+        doc.setFillColor(rowColor[0], rowColor[1], rowColor[2]);
+        doc.rect(20, yPosition, pageWidth - 40, 8, 'F');
+
+        doc.setFontSize(7);
+        doc.setTextColor(102, 102, 102);
+        doc.text(charge.description, 90, yPosition + 5);
+        doc.text(`£${charge.amount.toFixed(2)}`, pageWidth - 25, yPosition + 5, { align: 'right' });
+        yPosition += 8;
+      });
+    });
+
+    // Totals Section
+    yPosition += 10;
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.5);
+    doc.line(130, yPosition, pageWidth - 20, yPosition);
+
+    yPosition += 8;
+    doc.setFontSize(9);
+    doc.setTextColor(102, 102, 102);
+    doc.text('Subtotal:', 130, yPosition);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`£${selectedInvoice.subtotal.toFixed(2)}`, pageWidth - 25, yPosition, {
+      align: 'right',
+    });
+
+    yPosition += 8;
+    doc.setTextColor(102, 102, 102);
+    doc.text('VAT (20%):', 130, yPosition);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`£${selectedInvoice.vat.toFixed(2)}`, pageWidth - 25, yPosition, { align: 'right' });
+
+    yPosition += 8;
+    doc.setDrawColor(229, 231, 235);
+    doc.line(130, yPosition, pageWidth - 20, yPosition);
+
+    yPosition += 8;
+    doc.setFontSize(11);
+    doc.setTextColor(13, 148, 136);
+    doc.text('Total:', 130, yPosition);
+    doc.setFontSize(12);
+    doc.text(`£${selectedInvoice.total.toFixed(2)}`, pageWidth - 25, yPosition, { align: 'right' });
+
+    // Payment Info
+    if (selectedInvoice.paidDate) {
+      yPosition += 12;
+      doc.setFontSize(9);
+      doc.setTextColor(16, 185, 129);
+      doc.text(
+        `Paid on ${new Date(selectedInvoice.paidDate).toLocaleDateString('en-GB')}`,
+        130,
+        yPosition
+      );
+    }
+
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(153, 153, 153);
+    doc.text('Thank you for your business!', pageWidth / 2, pageHeight - 20, { align: 'center' });
+    doc.text('M19 Logistics - Professional Delivery Services', pageWidth / 2, pageHeight - 15, {
+      align: 'center',
+    });
+
+    // Download the PDF
+    doc.save(`Invoice_${selectedInvoice.invoiceNumber}.pdf`);
+
     setShowPDFModal(false);
     setSelectedInvoice(null);
   };
