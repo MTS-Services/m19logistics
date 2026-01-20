@@ -16,12 +16,15 @@ import {
   PieChart,
   LineChart,
 } from 'lucide-react';
+import Pagination from '../../../components/Pagination';
 
 const AnalyticsDashboard = () => {
   const [dateRange, setDateRange] = useState('this-week');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
   const [selectedMetric, setSelectedMetric] = useState('overview');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Dynamic data based on date range
   const getDataByDateRange = () => {
@@ -887,6 +890,16 @@ const AnalyticsDashboard = () => {
 
   const getMaxValue = (data, key) => Math.max(...data.map((item) => item[key]));
 
+  // Pagination logic for Store Performance
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentStores = storePerformance.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(storePerformance.length / itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       {/* Header */}
@@ -1395,7 +1408,7 @@ const AnalyticsDashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {storePerformance.map((store) => (
+                {currentStores.map((store) => (
                   <tr key={store.id} className="transition-colors hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <p className="font-semibold text-gray-900">{store.name}</p>
@@ -1460,6 +1473,15 @@ const AnalyticsDashboard = () => {
               </tbody>
             </table>
           </div>
+          {storePerformance.length > itemsPerPage && (
+            <div className="border-t border-gray-200 px-6 py-4">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </div>
       )}
 
