@@ -163,7 +163,7 @@ const PricingManagement = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl p-6">
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Pricing Management</h1>
