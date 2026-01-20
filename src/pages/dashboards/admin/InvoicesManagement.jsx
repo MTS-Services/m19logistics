@@ -1385,14 +1385,17 @@ const InvoicesManagement = () => {
                         const customerMap = {
                           'Topps Rhyl': { username: 'T211', email: 'topps211@toppstiles.co.uk' },
                           'Topps Chester': { username: 'T022', email: 'topps022@toppstiles.co.uk' },
-                          'Topps Newcastle': { username: 'T167', email: 'topps167@toppstiles.co.uk' },
+                          'Topps Newcastle': {
+                            username: 'T167',
+                            email: 'topps167@toppstiles.co.uk',
+                          },
                           'Topps Wrexham': { username: 'T217', email: 'topps217@toppstiles.co.uk' },
                         };
 
                         const customerInfo = customerMap[newInvoice.customer];
-                        
+
                         // Generate new invoice number
-                        const maxId = Math.max(...invoices.map(inv => inv.id));
+                        const maxId = Math.max(...invoices.map((inv) => inv.id));
                         const newInvoiceNumber = `T0${330 + maxId}`;
 
                         // Create new invoice object
@@ -1414,7 +1417,7 @@ const InvoicesManagement = () => {
 
                         // Add to invoices list
                         setInvoices([...invoices, createdInvoice]);
-                        
+
                         // Close modal and reset form
                         setShowGenerateModal(false);
                         setNewInvoice({
