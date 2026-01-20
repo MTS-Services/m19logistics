@@ -546,145 +546,147 @@ const DriverManagement = () => {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Driver Management</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Manage drivers, view performance, and track deliveries
-          </p>
-        </div>
-        <button
-          onClick={handleAddDriver}
-          className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
-        >
-          <UserPlus className="h-5 w-5" />
-          <span>Add Driver</span>
-        </button>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Drivers</p>
-              <p className="text-2xl font-bold text-gray-900">{drivers.length}</p>
-            </div>
-            <Truck className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Active Drivers</p>
-              <p className="text-2xl font-bold text-teal-600">
-                {drivers.filter((d) => d.status === 'active').length}
-              </p>
-            </div>
-            <CheckCircle className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">This Week</p>
-              <p className="text-2xl font-bold text-teal-600">
-                {drivers.reduce((sum, d) => sum + d.completedThisWeek, 0)}
-              </p>
-            </div>
-            <Calendar className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Avg. Rating</p>
-              <p className="text-2xl font-bold text-teal-600">
-                {(drivers.reduce((sum, d) => sum + d.rating, 0) / drivers.length).toFixed(1)}
-              </p>
-            </div>
-            <Star className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
-        {/* Search */}
-        <div className="relative flex-1 md:max-w-md">
-          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search drivers by name, email, or username..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          />
-        </div>
-
-        {/* Status Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-gray-400" />
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-          >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Driver List */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {filteredDrivers.length > 0 ? (
-          filteredDrivers.map((driver) => <DriverCard key={driver.id} driver={driver} />)
-        ) : (
-          <div className="col-span-full rounded-lg bg-white p-12 text-center shadow-sm">
-            <Truck className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900">No drivers found</h3>
-            <p className="mt-2 text-sm text-gray-600">
-              Try adjusting your search or filter criteria, or add a new driver
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Driver Management</h1>
+            <p className="mt-1 text-sm text-gray-600">
+              Manage drivers, view performance, and track deliveries
             </p>
-            <button
-              onClick={handleAddDriver}
-              className="mt-4 inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
-            >
-              <UserPlus className="h-4 w-4" />
-              <span>Add First Driver</span>
-            </button>
           </div>
+          <button
+            onClick={handleAddDriver}
+            className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+          >
+            <UserPlus className="h-5 w-5" />
+            <span>Add Driver</span>
+          </button>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid gap-6 md:grid-cols-4">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Drivers</p>
+                <p className="text-2xl font-bold text-gray-900">{drivers.length}</p>
+              </div>
+              <Truck className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Active Drivers</p>
+                <p className="text-2xl font-bold text-teal-600">
+                  {drivers.filter((d) => d.status === 'active').length}
+                </p>
+              </div>
+              <CheckCircle className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">This Week</p>
+                <p className="text-2xl font-bold text-teal-600">
+                  {drivers.reduce((sum, d) => sum + d.completedThisWeek, 0)}
+                </p>
+              </div>
+              <Calendar className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Avg. Rating</p>
+                <p className="text-2xl font-bold text-teal-600">
+                  {(drivers.reduce((sum, d) => sum + d.rating, 0) / drivers.length).toFixed(1)}
+                </p>
+              </div>
+              <Star className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
+          {/* Search */}
+          <div className="relative flex-1 md:max-w-md">
+            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search drivers by name, email, or username..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          {/* Status Filter */}
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Driver List */}
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {filteredDrivers.length > 0 ? (
+            filteredDrivers.map((driver) => <DriverCard key={driver.id} driver={driver} />)
+          ) : (
+            <div className="col-span-full rounded-lg bg-white p-12 text-center shadow-sm">
+              <Truck className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No drivers found</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Try adjusting your search or filter criteria, or add a new driver
+              </p>
+              <button
+                onClick={handleAddDriver}
+                className="mt-4 inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>Add First Driver</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Modals */}
+        {showAddModal && <AddEditModal onClose={() => setShowAddModal(false)} />}
+        {showEditModal && (
+          <AddEditModal
+            isEdit
+            driver={selectedDriver}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedDriver(null);
+            }}
+          />
+        )}
+        {showAnalyticsModal && (
+          <AnalyticsModal
+            driver={selectedDriver}
+            onClose={() => {
+              setShowAnalyticsModal(false);
+              setSelectedDriver(null);
+            }}
+          />
         )}
       </div>
-
-      {/* Modals */}
-      {showAddModal && <AddEditModal onClose={() => setShowAddModal(false)} />}
-      {showEditModal && (
-        <AddEditModal
-          isEdit
-          driver={selectedDriver}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedDriver(null);
-          }}
-        />
-      )}
-      {showAnalyticsModal && (
-        <AnalyticsModal
-          driver={selectedDriver}
-          onClose={() => {
-            setShowAnalyticsModal(false);
-            setSelectedDriver(null);
-          }}
-        />
-      )}
     </div>
   );
 };
