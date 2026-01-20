@@ -27,6 +27,8 @@ const UsersManagement = () => {
   const [filterRole, setFilterRole] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showActionDropdown, setShowActionDropdown] = useState(null);
@@ -205,20 +207,32 @@ const UsersManagement = () => {
   const handleEditUser = (user) => {
     setSelectedUser(user);
     setShowEditModal(true);
+    setShowActionDropdown(null);
   };
 
-  const handleDeleteUser = (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      setUsers(users.filter((u) => u.id !== userId));
-    }
+  const handleDeleteUser = (user) => {
+    setSelectedUser(user);
+    setShowDeleteModal(true);
+    setShowActionDropdown(null);
   };
 
-  const handleResetPassword = (userId) => {
-    if (window.confirm('Send password reset email to this user?')) {
-      // API call to reset password
-      alert('Password reset email sent!');
-      setShowActionDropdown(null);
-    }
+  const confirmDelete = () => {
+    setUsers(users.filter((u) => u.id !== selectedUser.id));
+    setShowDeleteModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleResetPassword = (user) => {
+    setSelectedUser(user);
+    setShowResetPasswordModal(true);
+    setShowActionDropdown(null);
+  };
+
+  const confirmResetPassword = () => {
+    // API call to reset password
+    alert('Password reset email sent to ' + selectedUser.email);
+    setShowResetPasswordModal(false);
+    setSelectedUser(null);
   };
 
   const AddEditModal = ({ isEdit = false, user = null, onClose }) => (
@@ -616,7 +630,7 @@ const UsersManagement = () => {
                                       Edit User
                                     </button>
                                     <button
-                                      onClick={() => handleResetPassword(user.id)}
+                                      onClick={() => handleResetPassword(user)}
                                       className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                                     >
                                       <Key className="h-4 w-4" />
@@ -624,7 +638,7 @@ const UsersManagement = () => {
                                     </button>
                                     {user.role !== 'admin' && (
                                       <button
-                                        onClick={() => handleDeleteUser(user.id)}
+                                        onClick={() => handleDeleteUser(user)}
                                         className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                                       >
                                         <Trash2 className="h-4 w-4" />
@@ -720,7 +734,7 @@ const UsersManagement = () => {
                                   Edit User
                                 </button>
                                 <button
-                                  onClick={() => handleResetPassword(user.id)}
+                                  onClick={() => handleResetPassword(user)}
                                   className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                                 >
                                   <Key className="h-4 w-4" />
@@ -728,7 +742,7 @@ const UsersManagement = () => {
                                 </button>
                                 {user.role !== 'admin' && (
                                   <button
-                                    onClick={() => handleDeleteUser(user.id)}
+                                    onClick={() => handleDeleteUser(user)}
                                     className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                                   >
                                     <Trash2 className="h-4 w-4" />
@@ -770,6 +784,148 @@ const UsersManagement = () => {
               setSelectedUser(null);
             }}
           />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && selectedUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Confirm Delete</h2>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="rounded-full bg-red-100 p-3">
+                    <Trash2 className="h-8 w-8 text-red-600" />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Delete User
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Are you sure you want to delete <strong>{selectedUser.name}</strong>? This action
+                  cannot be undone.
+                </p>
+
+                {/* User Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Username:</span>
+                      <span className="font-medium text-gray-900">@{selectedUser.username}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span className="font-medium text-gray-900">{selectedUser.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Role:</span>
+                      <span className="font-medium text-gray-900 capitalize">
+                        {selectedUser.role}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete User</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reset Password Confirmation Modal */}
+        {showResetPasswordModal && selectedUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Reset Password</h2>
+                <button
+                  onClick={() => setShowResetPasswordModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="rounded-full bg-blue-100 p-3">
+                    <Key className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Send Password Reset Email
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Send a password reset link to <strong>{selectedUser.name}</strong>?
+                </p>
+
+                {/* User Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-gray-900">{selectedUser.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-gray-900">{selectedUser.phone}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg bg-blue-50 p-3">
+                  <p className="text-xs text-blue-800">
+                    📧 A password reset link will be sent to the user's email address. The link will
+                    expire in 24 hours.
+                  </p>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowResetPasswordModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmResetPassword}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Key className="h-4 w-4" />
+                    <span>Send Reset Link</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

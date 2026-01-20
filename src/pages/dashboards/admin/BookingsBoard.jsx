@@ -19,6 +19,8 @@ import {
   EllipsisVertical,
   ChevronLeft,
   ChevronRight,
+  X,
+  Save,
 } from 'lucide-react';
 import Pagination from '../../../components/Pagination';
 
@@ -27,6 +29,10 @@ const BookingsBoard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showActionDropdown, setShowActionDropdown] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedDelivery, setSelectedDelivery] = useState(null);
   const itemsPerPage = 5;
 
   // Convert bookings to a flat array structure
@@ -207,20 +213,28 @@ const BookingsBoard = () => {
 
   // Handle actions
   const handleViewDelivery = (delivery) => {
-    console.log('View delivery:', delivery);
+    setSelectedDelivery(delivery);
+    setShowViewModal(true);
     setShowActionDropdown(null);
   };
 
   const handleEditDelivery = (delivery) => {
-    console.log('Edit delivery:', delivery);
+    setSelectedDelivery(delivery);
+    setShowEditModal(true);
     setShowActionDropdown(null);
   };
 
   const handleDeleteDelivery = (delivery) => {
-    if (window.confirm(`Are you sure you want to delete ${delivery.spoNumber}?`)) {
-      console.log('Delete delivery:', delivery);
-      setShowActionDropdown(null);
-    }
+    setSelectedDelivery(delivery);
+    setShowDeleteModal(true);
+    setShowActionDropdown(null);
+  };
+
+  const confirmDelete = () => {
+    console.log('Delete delivery:', selectedDelivery);
+    // Add actual delete logic here
+    setShowDeleteModal(false);
+    setSelectedDelivery(null);
   };
 
   return (
@@ -644,6 +658,368 @@ const BookingsBoard = () => {
           />
         )}
       </div>
+
+      {/* View Details Modal */}
+      {showViewModal && selectedDelivery && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-teal-600 to-teal-500 p-6">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Delivery Details</h2>
+                <p className="mt-1 text-sm text-teal-50">{selectedDelivery.spoNumber}</p>
+              </div>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="rounded-lg p-2 text-white transition-colors hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <div className="space-y-6">
+                {/* Status Badge */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">Status</h3>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold ${getStatusColor(selectedDelivery.status)}`}
+                  >
+                    {selectedDelivery.status}
+                  </span>
+                </div>
+
+                {/* Customer Information */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="mb-3 font-semibold text-gray-900">Customer Information</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <User className="mt-0.5 h-4 w-4 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-600">Customer</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.customer}</p>
+                      </div>
+                    </div>
+                    {selectedDelivery.contact && (
+                      <div className="flex items-start gap-2">
+                        <User className="mt-0.5 h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Contact Person</p>
+                          <p className="font-medium text-gray-900">{selectedDelivery.contact}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedDelivery.phone && (
+                      <div className="flex items-start gap-2">
+                        <Phone className="mt-0.5 h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Phone</p>
+                          <p className="font-medium text-gray-900">{selectedDelivery.phone}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Delivery Information */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="mb-3 font-semibold text-gray-900">Delivery Information</h3>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="mt-0.5 h-4 w-4 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-600">Address</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.address}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Calendar className="mt-0.5 h-4 w-4 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-600">Scheduled Date & Time</p>
+                        <p className="font-medium text-gray-900">
+                          {selectedDelivery.deliveryDate} - {selectedDelivery.timeSlot}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Weight className="mt-0.5 h-4 w-4 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-600">Weight</p>
+                        <p className="font-medium text-gray-900">{selectedDelivery.weight}</p>
+                      </div>
+                    </div>
+                    {selectedDelivery.driver && (
+                      <div className="flex items-start gap-2">
+                        <Truck className="mt-0.5 h-4 w-4 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-600">Assigned Driver</p>
+                          <p className="font-medium text-gray-900">{selectedDelivery.driver}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Cost Information */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="mb-3 font-semibold text-gray-900">Cost</h3>
+                  <p className="text-2xl font-bold text-teal-600">
+                    £{selectedDelivery.cost.toFixed(2)}
+                  </p>
+                </div>
+
+                {/* Additional Info */}
+                {selectedDelivery.deliveredAt && (
+                  <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                    <h3 className="mb-2 font-semibold text-green-900">Delivery Completed</h3>
+                    <p className="text-sm text-green-700">
+                      Delivered at: {selectedDelivery.deliveredAt}
+                    </p>
+                    {selectedDelivery.receivedBy && (
+                      <p className="text-sm text-green-700">
+                        Received by: {selectedDelivery.receivedBy}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {selectedDelivery.cancelReason && (
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <h3 className="mb-2 font-semibold text-gray-900">Cancellation Reason</h3>
+                    <p className="text-sm text-gray-700">{selectedDelivery.cancelReason}</p>
+                    {selectedDelivery.cancelledAt && (
+                      <p className="mt-1 text-xs text-gray-500">
+                        Cancelled at: {selectedDelivery.cancelledAt}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Actions */}
+              <div className="mt-6 flex items-center justify-end space-x-3 border-t border-gray-200 pt-4">
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && selectedDelivery && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-900">Edit Delivery</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <form className="space-y-6">
+                {/* SPO Number */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">SPO Number</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedDelivery.spoNumber}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    readOnly
+                  />
+                </div>
+
+                {/* Customer */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Customer</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedDelivery.customer}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Delivery Address
+                  </label>
+                  <textarea
+                    defaultValue={selectedDelivery.address}
+                    rows={3}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                  ></textarea>
+                </div>
+
+                {/* Date and Time */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Delivery Date</label>
+                    <input
+                      type="date"
+                      defaultValue={selectedDelivery.deliveryDate}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Time Slot</label>
+                    <select
+                      defaultValue={selectedDelivery.timeSlot}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Weight and Cost */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Weight</label>
+                    <input
+                      type="text"
+                      defaultValue={selectedDelivery.weight}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Cost (£)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      defaultValue={selectedDelivery.cost}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Status</label>
+                  <select
+                    defaultValue={selectedDelivery.status}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                  >
+                    <option value="Received">Received</option>
+                    <option value="Allocated">Allocated</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="flex items-center justify-end space-x-3 border-t border-gray-200 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowEditModal(false);
+                    }}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Save className="h-4 w-4" />
+                    <span>Save Changes</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedDelivery && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-900">Confirm Delete</h2>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              <div className="mb-4 flex items-center justify-center">
+                <div className="rounded-full bg-red-100 p-3">
+                  <AlertCircle className="h-8 w-8 text-red-600" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                Delete Delivery
+              </h3>
+              <p className="mb-4 text-center text-sm text-gray-600">
+                Are you sure you want to delete delivery{' '}
+                <strong>{selectedDelivery.spoNumber}</strong>? This action cannot be undone.
+              </p>
+
+              {/* Delivery Summary */}
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Customer:</span>
+                    <span className="font-medium text-gray-900">{selectedDelivery.customer}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Date:</span>
+                    <span className="font-medium text-gray-900">
+                      {selectedDelivery.deliveryDate}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Status:</span>
+                    <span
+                      className={`font-medium ${selectedDelivery.status === 'Cancelled' ? 'text-gray-600' : 'text-red-600'}`}
+                    >
+                      {selectedDelivery.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="mt-6 flex items-center justify-end space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="inline-flex items-center space-x-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>Delete Delivery</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

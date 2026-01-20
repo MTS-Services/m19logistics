@@ -336,6 +336,8 @@ const DriverManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showActionDropdown, setShowActionDropdown] = useState(null);
@@ -421,6 +423,7 @@ const DriverManagement = () => {
   const handleEditDriver = (driver) => {
     setSelectedDriver(driver);
     setShowEditModal(true);
+    setShowActionDropdown(null);
   };
 
   const handleViewAnalytics = (driver) => {
@@ -429,20 +432,28 @@ const DriverManagement = () => {
     setShowActionDropdown(null);
   };
 
-  const handleDeleteDriver = (driverId) => {
-    if (
-      window.confirm('Are you sure you want to delete this driver? This action cannot be undone.')
-    ) {
-      setDrivers(drivers.filter((d) => d.id !== driverId));
-      setShowActionDropdown(null);
-    }
+  const handleDeleteDriver = (driver) => {
+    setSelectedDriver(driver);
+    setShowDeleteModal(true);
+    setShowActionDropdown(null);
   };
 
-  const handleResetPassword = () => {
-    if (window.confirm('Send password reset email to this driver?')) {
-      alert('Password reset email sent!');
-      setShowActionDropdown(null);
-    }
+  const confirmDelete = () => {
+    setDrivers(drivers.filter((d) => d.id !== selectedDriver.id));
+    setShowDeleteModal(false);
+    setSelectedDriver(null);
+  };
+
+  const handleResetPassword = (driver) => {
+    setSelectedDriver(driver);
+    setShowResetPasswordModal(true);
+    setShowActionDropdown(null);
+  };
+
+  const confirmResetPassword = () => {
+    alert('Password reset email sent to ' + selectedDriver.email);
+    setShowResetPasswordModal(false);
+    setSelectedDriver(null);
   };
 
   return (
@@ -722,14 +733,14 @@ const DriverManagement = () => {
                                     Edit Driver
                                   </button>
                                   <button
-                                    onClick={() => handleResetPassword(driver.id)}
+                                    onClick={() => handleResetPassword(driver)}
                                     className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                                   >
                                     <Key className="h-4 w-4" />
                                     Reset Password
                                   </button>
                                   <button
-                                    onClick={() => handleDeleteDriver(driver.id)}
+                                    onClick={() => handleDeleteDriver(driver)}
                                     className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                                   >
                                     <Trash2 className="h-4 w-4" />
@@ -882,14 +893,14 @@ const DriverManagement = () => {
                                 Edit Driver
                               </button>
                               <button
-                                onClick={() => handleResetPassword(driver.id)}
+                                onClick={() => handleResetPassword(driver)}
                                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
                               >
                                 <Key className="h-4 w-4" />
                                 Reset Password
                               </button>
                               <button
-                                onClick={() => handleDeleteDriver(driver.id)}
+                                onClick={() => handleDeleteDriver(driver)}
                                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -938,6 +949,155 @@ const DriverManagement = () => {
               setSelectedDriver(null);
             }}
           />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && selectedDriver && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Confirm Delete</h2>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="rounded-full bg-red-100 p-3">
+                    <Trash2 className="h-8 w-8 text-red-600" />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Delete Driver
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Are you sure you want to delete <strong>{selectedDriver.name}</strong>? This
+                  action cannot be undone and will remove all driver data.
+                </p>
+
+                {/* Driver Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Username:</span>
+                      <span className="font-medium text-gray-900">@{selectedDriver.username}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span className="font-medium text-gray-900">{selectedDriver.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Total Deliveries:</span>
+                      <span className="font-medium text-gray-900">
+                        {selectedDriver.totalDeliveries}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Rating:</span>
+                      <span className="flex items-center gap-1 font-medium text-gray-900">
+                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                        {selectedDriver.rating}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:bg-red-700 hover:shadow-lg"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>Delete Driver</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reset Password Confirmation Modal */}
+        {showResetPasswordModal && selectedDriver && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between border-b border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900">Reset Password</h2>
+                <button
+                  onClick={() => setShowResetPasswordModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="rounded-full bg-blue-100 p-3">
+                    <Key className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                  Send Password Reset Email
+                </h3>
+                <p className="mb-4 text-center text-sm text-gray-600">
+                  Send a password reset link to <strong>{selectedDriver.name}</strong>?
+                </p>
+
+                {/* Driver Summary */}
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-gray-900">{selectedDriver.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                      <span className="font-medium text-gray-900">{selectedDriver.phone}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg bg-blue-50 p-3">
+                  <p className="text-xs text-blue-800">
+                    📧 A password reset link will be sent to the driver's email address. The link
+                    will expire in 24 hours.
+                  </p>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowResetPasswordModal(false)}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmResetPassword}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Key className="h-4 w-4" />
+                    <span>Send Reset Link</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
