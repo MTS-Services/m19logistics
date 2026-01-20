@@ -87,11 +87,13 @@ const AdminDashboardHome = () => {
     <div className="p-4 sm:p-6 md:p-8">
       <div className="space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Admin Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
-            Manage your delivery requests and track shipments
-          </p>
+        <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Admin Dashboard</h1>
+            <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
+              Manage your delivery requests and track shipments
+            </p>
+          </div>
         </div>
 
         {/* Stats Grid */}
