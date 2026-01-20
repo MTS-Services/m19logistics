@@ -32,7 +32,14 @@ const InvoicesManagement = () => {
   const [showPDFModal, setShowPDFModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [newInvoice, setNewInvoice] = useState({
+    customer: '',
+    invoiceDate: '',
+    dueDate: '',
+    status: 'draft',
+  });
 
   // Invoice data based on requirements
   const [invoices, setInvoices] = useState([
@@ -907,7 +914,10 @@ const InvoicesManagement = () => {
               Generate, manage, and track customer invoices
             </p>
           </div>
-          <button className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg">
+          <button
+            onClick={() => setShowGenerateModal(true)}
+            className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+          >
             <Plus className="h-5 w-5" />
             <span>Generate Invoice</span>
           </button>
@@ -1247,6 +1257,147 @@ const InvoicesManagement = () => {
                   >
                     <Printer className="h-4 w-4" />
                     <span>Print Invoice</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Generate Invoice Modal */}
+        {showGenerateModal && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
+            <div className="relative w-full max-w-2xl rounded-lg bg-white shadow-xl">
+              <div className="max-h-[90vh] overflow-y-auto">
+                {/* Modal Header */}
+                <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-6 py-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Generate New Invoice</h2>
+                  <button
+                    onClick={() => setShowGenerateModal(false)}
+                    className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {/* Customer Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Customer <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={newInvoice.customer}
+                        onChange={(e) => setNewInvoice({ ...newInvoice, customer: e.target.value })}
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                      >
+                        <option value="">Select a customer</option>
+                        <option value="Topps Rhyl">Topps Rhyl (T211)</option>
+                        <option value="Topps Chester">Topps Chester (T022)</option>
+                        <option value="Topps Newcastle">Topps Newcastle (T167)</option>
+                        <option value="Topps Wrexham">Topps Wrexham (T217)</option>
+                      </select>
+                    </div>
+
+                    {/* Invoice Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Invoice Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={newInvoice.invoiceDate}
+                        onChange={(e) =>
+                          setNewInvoice({ ...newInvoice, invoiceDate: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Due Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Due Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={newInvoice.dueDate}
+                        onChange={(e) => setNewInvoice({ ...newInvoice, dueDate: e.target.value })}
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Status <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        value={newInvoice.status}
+                        onChange={(e) => setNewInvoice({ ...newInvoice, status: e.target.value })}
+                        className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="sent">Sent</option>
+                        <option value="paid">Paid</option>
+                        <option value="overdue">Overdue</option>
+                      </select>
+                    </div>
+
+                    {/* Info Note */}
+                    <div className="rounded-lg bg-teal-50 p-4">
+                      <div className="flex items-start space-x-3">
+                        <FileText className="h-5 w-5 text-teal-600" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-teal-900">Invoice Generation</p>
+                          <p className="mt-1 text-xs text-teal-700">
+                            After creating the invoice, you'll be able to add deliveries and
+                            calculate totals in the edit screen.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Modal Actions */}
+                <div className="flex items-center justify-end space-x-3 border-t bg-gray-50 px-6 py-4">
+                  <button
+                    onClick={() => {
+                      setShowGenerateModal(false);
+                      setNewInvoice({
+                        customer: '',
+                        invoiceDate: '',
+                        dueDate: '',
+                        status: 'draft',
+                      });
+                    }}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (newInvoice.customer && newInvoice.invoiceDate && newInvoice.dueDate) {
+                        console.log('Generating invoice:', newInvoice);
+                        // Add logic to create new invoice
+                        setShowGenerateModal(false);
+                        setNewInvoice({
+                          customer: '',
+                          invoiceDate: '',
+                          dueDate: '',
+                          status: 'draft',
+                        });
+                      } else {
+                        alert('Please fill in all required fields');
+                      }
+                    }}
+                    className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Generate Invoice</span>
                   </button>
                 </div>
               </div>
