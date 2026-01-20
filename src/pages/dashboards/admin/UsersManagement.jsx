@@ -236,7 +236,7 @@ const UsersManagement = () => {
   };
 
   const AddEditModal = ({ isEdit = false, user = null, onClose }) => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
@@ -788,7 +788,7 @@ const UsersManagement = () => {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && selectedUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-gray-200 p-6">
@@ -803,11 +803,6 @@ const UsersManagement = () => {
 
               {/* Modal Body */}
               <div className="p-6">
-                <div className="mb-4 flex items-center justify-center">
-                  <div className="rounded-full bg-red-100 p-3">
-                    <Trash2 className="h-8 w-8 text-red-600" />
-                  </div>
-                </div>
                 <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
                   Delete User
                 </h3>
@@ -859,7 +854,7 @@ const UsersManagement = () => {
 
         {/* Reset Password Confirmation Modal */}
         {showResetPasswordModal && selectedUser && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
             <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
               {/* Modal Header */}
               <div className="flex items-center justify-between border-b border-gray-200 p-6">
@@ -874,13 +869,8 @@ const UsersManagement = () => {
 
               {/* Modal Body */}
               <div className="p-6">
-                <div className="mb-4 flex items-center justify-center">
-                  <div className="rounded-full bg-blue-100 p-3">
-                    <Key className="h-8 w-8 text-blue-600" />
-                  </div>
-                </div>
                 <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
-                  Send Password Reset Email
+                  Reset Password
                 </h3>
                 <p className="mb-4 text-center text-sm text-gray-600">
                   Send a password reset link to <strong>{selectedUser.name}</strong>?

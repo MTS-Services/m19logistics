@@ -661,17 +661,17 @@ const BookingsBoard = () => {
 
       {/* View Details Modal */}
       {showViewModal && selectedDelivery && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-200 bg-gradient-to-r from-teal-600 to-teal-500 p-6">
+            <div className="flex items-center justify-between border-b border-gray-200 bg-white p-6">
               <div>
-                <h2 className="text-xl font-semibold text-white">Delivery Details</h2>
-                <p className="mt-1 text-sm text-teal-50">{selectedDelivery.spoNumber}</p>
+                <h2 className="text-xl font-semibold text-gray-900">Delivery Details</h2>
+                <p className="mt-1 text-sm text-gray-600">{selectedDelivery.spoNumber}</p>
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="rounded-lg p-2 text-white transition-colors hover:bg-white/20"
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -813,7 +813,7 @@ const BookingsBoard = () => {
 
       {/* Edit Modal */}
       {showEditModal && selectedDelivery && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
           <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
@@ -948,7 +948,7 @@ const BookingsBoard = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedDelivery && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
