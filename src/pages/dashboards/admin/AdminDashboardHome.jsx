@@ -88,7 +88,9 @@ const AdminDashboardHome = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+            Admin Dashboard
+          </h1>
           <p className="mt-2 text-gray-600">Manage your delivery requests and track shipments</p>
         </div>
         {/* Stats Grid */}
