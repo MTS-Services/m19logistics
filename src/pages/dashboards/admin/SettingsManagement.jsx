@@ -194,10 +194,14 @@ const SettingsManagement = () => {
 
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">System Settings</h1>
-        <p className="mt-2 text-gray-600">Manage system configuration and preferences</p>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+            System Settings
+          </h1>
+          <p className="mt-2 text-gray-600">Manage system configuration and preferences</p>
+        </div>
       </div>
 
       {/* Stats Overview */}
