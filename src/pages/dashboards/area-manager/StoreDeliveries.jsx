@@ -189,11 +189,15 @@ const StoreDeliveries = () => {
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Store Deliveries</h1>
-          <p className="mt-2 text-gray-600">
-            View deliveries for all assigned Topps Tiles stores (Read-Only)
-          </p>
+        <div className="mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+              Store Deliveries
+            </h1>
+            <p className="mt-2 text-gray-600">
+              View deliveries for all assigned Topps Tiles stores (Read-Only)
+            </p>
+          </div>
         </div>
 
         {/* Filters */}
