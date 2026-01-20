@@ -16,7 +16,11 @@ import {
   X,
   Save,
   Upload,
+  EllipsisVertical,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
+import Pagination from '../../../components/Pagination';
 
 const UsersManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +28,9 @@ const UsersManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showActionDropdown, setShowActionDropdown] = useState(null);
+  const itemsPerPage = 5;
 
   // Pre-loaded users based on requirements
   const [users, setUsers] = useState([
@@ -167,6 +174,30 @@ const UsersManagement = () => {
     return matchesSearch && matchesRole;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle filter change with page reset
+  const handleFilterChange = (role) => {
+    setFilterRole(role);
+    setCurrentPage(1);
+  };
+
+  // Handle search with page reset
+  const handleSearchChange = (query) => {
+    setSearchTerm(query);
+    setCurrentPage(1);
+  };
+
   const handleAddUser = () => {
     setShowAddModal(true);
   };
@@ -182,122 +213,12 @@ const UsersManagement = () => {
     }
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = (userId) => {
     if (window.confirm('Send password reset email to this user?')) {
       // API call to reset password
       alert('Password reset email sent!');
+      setShowActionDropdown(null);
     }
-  };
-
-  const UserCard = ({ user }) => {
-    const RoleIcon = roleConfig[user.role]?.icon || Users;
-
-    return (
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-4">
-            {/* Profile Photo */}
-            <div className="relative">
-              {user.profilePhoto ? (
-                <img
-                  src={user.profilePhoto}
-                  alt={user.name}
-                  className="h-16 w-16 rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-blue-600 text-xl font-bold text-white">
-                  {user.name.charAt(0)}
-                </div>
-              )}
-              {user.passwordReset && (
-                <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-xs text-white">
-                  !
-                </div>
-              )}
-            </div>
-
-            {/* User Info */}
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-semibold text-gray-900">{user.name}</h3>
-                <span
-                  className={`inline-flex items-center space-x-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${roleConfig[user.role]?.color}`}
-                >
-                  <RoleIcon className="h-3 w-3" />
-                  <span>{roleConfig[user.role]?.label}</span>
-                </span>
-              </div>
-              <p className="mt-1 text-sm text-gray-600">@{user.username}</p>
-
-              <div className="mt-2 space-y-1">
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <Mail className="h-4 w-4" />
-                  <span>{user.email}</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <Phone className="h-4 w-4" />
-                  <span>{user.phone}</span>
-                </div>
-              </div>
-
-              {/* Customer-specific info */}
-              {user.role === 'customer' && (
-                <div className="mt-2">
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium">Depot:</span> {user.depot}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium">Pricing:</span> {user.pricingTier}
-                  </p>
-                </div>
-              )}
-
-              {/* Area Manager-specific info */}
-              {user.role === 'area_manager' && (
-                <div className="mt-2">
-                  <p className="text-xs text-gray-500">
-                    <span className="font-medium">Access Scope:</span> {user.accessScope}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => handleEditUser(user)}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-              title="Edit user"
-            >
-              <Edit className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => handleResetPassword(user.id)}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-yellow-600"
-              title="Reset password"
-            >
-              <Key className="h-5 w-5" />
-            </button>
-            {user.role !== 'admin' && (
-              <button
-                onClick={() => handleDeleteUser(user.id)}
-                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-600"
-                title="Delete user"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {user.passwordReset && (
-          <div className="mt-4 rounded-md bg-yellow-50 p-3">
-            <p className="text-xs text-yellow-800">⚠️ Password reset required on first login</p>
-          </div>
-        )}
-      </div>
-    );
   };
 
   const AddEditModal = ({ isEdit = false, user = null, onClose }) => (
@@ -551,7 +472,7 @@ const UsersManagement = () => {
               type="text"
               placeholder="Search users by name, email, or username..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
             />
           </div>
@@ -561,7 +482,7 @@ const UsersManagement = () => {
             <Filter className="h-5 w-5 text-gray-400" />
             <select
               value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
+              onChange={(e) => handleFilterChange(e.target.value)}
               className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
             >
               <option value="all">All Roles</option>
@@ -573,18 +494,268 @@ const UsersManagement = () => {
           </div>
         </div>
 
-        {/* User List */}
-        <div className="space-y-4">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => <UserCard key={user.id} user={user} />)
-          ) : (
-            <div className="rounded-lg bg-white p-12 text-center shadow-sm">
+        {/* User Table */}
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          {/* Table Header */}
+          <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+            <h2 className="text-lg font-bold text-gray-900">User Records</h2>
+          </div>
+
+          {/* Table Content */}
+          {filteredUsers.length === 0 ? (
+            <div className="p-12 text-center">
               <Users className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-lg font-medium text-gray-900">No users found</h3>
               <p className="mt-2 text-sm text-gray-600">
                 Try adjusting your search or filter criteria
               </p>
             </div>
+          ) : (
+            <>
+              {/* Desktop Table View - Hidden on mobile */}
+              <div className="hidden overflow-x-auto lg:block">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200 bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                        User
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                        Contact
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                        Role
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {paginatedUsers.map((user) => {
+                      const RoleIcon = roleConfig[user.role]?.icon || Users;
+                      return (
+                        <tr key={user.id} className="transition-colors hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              {user.profilePhoto ? (
+                                <img
+                                  src={user.profilePhoto}
+                                  alt={user.name}
+                                  className="h-10 w-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-blue-600 text-sm font-bold text-white">
+                                  {user.name.charAt(0)}
+                                </div>
+                              )}
+                              <div>
+                                <p className="font-semibold text-gray-900">{user.name}</p>
+                                <p className="text-xs text-gray-600">@{user.username}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div>
+                              <div className="flex items-center gap-2 text-sm text-gray-900">
+                                <Mail className="h-4 w-4 text-gray-400" />
+                                <span>{user.email}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Phone className="h-4 w-4 text-gray-400" />
+                                <span>{user.phone}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${roleConfig[user.role]?.color}`}
+                            >
+                              <RoleIcon className="h-3 w-3" />
+                              {roleConfig[user.role]?.label}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {user.passwordReset ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-800">
+                                Password Reset Required
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                                Active
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="relative">
+                              <button
+                                onClick={() =>
+                                  setShowActionDropdown(
+                                    showActionDropdown === user.id ? null : user.id
+                                  )
+                                }
+                                className="rounded-lg border border-gray-300 bg-white p-2 text-gray-700 transition-all hover:bg-gray-50"
+                              >
+                                <EllipsisVertical className="h-4 w-4" />
+                              </button>
+
+                              {/* Dropdown Menu */}
+                              {showActionDropdown === user.id && (
+                                <div
+                                  className={`absolute right-0 z-50 w-48 rounded-lg border border-gray-200 bg-white shadow-lg ${paginatedUsers.indexOf(user) >= paginatedUsers.length - 2 ? 'bottom-full mb-2' : 'top-full mt-2'}`}
+                                >
+                                  <div className="py-1">
+                                    <button
+                                      onClick={() => handleEditUser(user)}
+                                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                      Edit User
+                                    </button>
+                                    <button
+                                      onClick={() => handleResetPassword(user.id)}
+                                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                                    >
+                                      <Key className="h-4 w-4" />
+                                      Reset Password
+                                    </button>
+                                    {user.role !== 'admin' && (
+                                      <button
+                                        onClick={() => handleDeleteUser(user.id)}
+                                        className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                        Delete User
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View - Hidden on desktop */}
+              <div className="divide-y divide-gray-200 lg:hidden">
+                {paginatedUsers.map((user) => {
+                  const RoleIcon = roleConfig[user.role]?.icon || Users;
+                  return (
+                    <div key={user.id} className="p-4 transition-colors hover:bg-gray-50">
+                      {/* Card Header */}
+                      <div className="mb-3 flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-3">
+                          {user.profilePhoto ? (
+                            <img
+                              src={user.profilePhoto}
+                              alt={user.name}
+                              className="h-12 w-12 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-blue-600 text-lg font-bold text-white">
+                              {user.name.charAt(0)}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-semibold text-gray-900">{user.name}</p>
+                            <p className="text-xs text-gray-600">@{user.username}</p>
+                          </div>
+                        </div>
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${roleConfig[user.role]?.color}`}
+                        >
+                          <RoleIcon className="h-3 w-3" />
+                          {roleConfig[user.role]?.label}
+                        </span>
+                      </div>
+
+                      {/* Card Content */}
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-900">{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-400" />
+                          <span className="text-gray-900">{user.phone}</span>
+                        </div>
+                        {user.passwordReset && (
+                          <div className="rounded-md bg-yellow-50 p-2">
+                            <p className="text-xs text-yellow-800">⚠️ Password reset required</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Card Actions */}
+                      <div className="mt-3 border-t border-gray-100 pt-3">
+                        <div className="relative">
+                          <button
+                            onClick={() =>
+                              setShowActionDropdown(showActionDropdown === user.id ? null : user.id)
+                            }
+                            className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
+                          >
+                            <EllipsisVertical className="h-4 w-4" />
+                            Actions
+                          </button>
+
+                          {/* Dropdown Menu */}
+                          {showActionDropdown === user.id && (
+                            <div
+                              className={`absolute right-0 left-0 z-50 rounded-lg border border-gray-200 bg-white shadow-lg ${paginatedUsers.indexOf(user) >= paginatedUsers.length - 2 ? 'bottom-full mb-2' : 'top-full mt-2'}`}
+                            >
+                              <div className="py-1">
+                                <button
+                                  onClick={() => handleEditUser(user)}
+                                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                  Edit User
+                                </button>
+                                <button
+                                  onClick={() => handleResetPassword(user.id)}
+                                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+                                >
+                                  <Key className="h-4 w-4" />
+                                  Reset Password
+                                </button>
+                                {user.role !== 'admin' && (
+                                  <button
+                                    onClick={() => handleDeleteUser(user.id)}
+                                    className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 transition-colors hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete User
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Pagination */}
+          {filteredUsers.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredUsers.length}
+            />
           )}
         </div>
 
