@@ -85,13 +85,16 @@ const StoreInvoices = () => {
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Store Invoices</h1>
-          <p className="mt-2 text-gray-600">
-            View invoices for all assigned Topps Tiles stores (Read-Only)
-          </p>
+        <div className="mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+              Store Invoices
+            </h1>
+            <p className="mt-2 text-gray-600">
+              View invoices for all assigned Topps Tiles stores (Read-Only)
+            </p>
+          </div>
         </div>
-
         {/* Stats */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
