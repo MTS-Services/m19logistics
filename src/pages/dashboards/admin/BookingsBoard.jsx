@@ -963,11 +963,6 @@ const BookingsBoard = () => {
 
             {/* Modal Body */}
             <div className="p-6">
-              <div className="mb-4 flex items-center justify-center">
-                <div className="rounded-full bg-red-100 p-3">
-                  <AlertCircle className="h-8 w-8 text-red-600" />
-                </div>
-              </div>
               <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">
                 Delete Delivery
               </h3>
