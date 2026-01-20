@@ -1381,8 +1381,41 @@ const InvoicesManagement = () => {
                   <button
                     onClick={() => {
                       if (newInvoice.customer && newInvoice.invoiceDate && newInvoice.dueDate) {
-                        console.log('Generating invoice:', newInvoice);
-                        // Add logic to create new invoice
+                        // Get customer details based on selection
+                        const customerMap = {
+                          'Topps Rhyl': { username: 'T211', email: 'topps211@toppstiles.co.uk' },
+                          'Topps Chester': { username: 'T022', email: 'topps022@toppstiles.co.uk' },
+                          'Topps Newcastle': { username: 'T167', email: 'topps167@toppstiles.co.uk' },
+                          'Topps Wrexham': { username: 'T217', email: 'topps217@toppstiles.co.uk' },
+                        };
+
+                        const customerInfo = customerMap[newInvoice.customer];
+                        
+                        // Generate new invoice number
+                        const maxId = Math.max(...invoices.map(inv => inv.id));
+                        const newInvoiceNumber = `T0${330 + maxId}`;
+
+                        // Create new invoice object
+                        const createdInvoice = {
+                          id: maxId + 1,
+                          invoiceNumber: newInvoiceNumber,
+                          customer: newInvoice.customer,
+                          customerUsername: customerInfo.username,
+                          customerEmail: customerInfo.email,
+                          invoiceDate: newInvoice.invoiceDate,
+                          dueDate: newInvoice.dueDate,
+                          status: newInvoice.status,
+                          deliveries: [],
+                          subtotal: 0,
+                          vat: 0,
+                          total: 0,
+                          paidDate: newInvoice.status === 'paid' ? newInvoice.invoiceDate : null,
+                        };
+
+                        // Add to invoices list
+                        setInvoices([...invoices, createdInvoice]);
+                        
+                        // Close modal and reset form
                         setShowGenerateModal(false);
                         setNewInvoice({
                           customer: '',
