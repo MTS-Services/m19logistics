@@ -4,11 +4,9 @@ import {
   UserPlus,
   Search,
   Filter,
-  MoreVertical,
   Edit,
   Trash2,
   Key,
-  Camera,
   Shield,
   Truck,
   UserCheck,
@@ -184,7 +182,7 @@ const UsersManagement = () => {
     }
   };
 
-  const handleResetPassword = (userId) => {
+  const handleResetPassword = () => {
     if (window.confirm('Send password reset email to this user?')) {
       // API call to reset password
       alert('Password reset email sent!');
@@ -476,131 +474,133 @@ const UsersManagement = () => {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Manage admins, drivers, customers, and area managers
-          </p>
-        </div>
-        <button
-          onClick={handleAddUser}
-          className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
-        >
-          <UserPlus className="h-5 w-5" />
-          <span>Add User</span>
-        </button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-            </div>
-            <Users className="h-10 w-10 text-gray-400" />
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Customers</p>
-              <p className="text-2xl font-bold text-teal-600">
-                {users.filter((u) => u.role === 'customer').length}
-              </p>
-            </div>
-            <Building className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Drivers</p>
-              <p className="text-2xl font-bold text-teal-600">
-                {users.filter((u) => u.role === 'driver').length}
-              </p>
-            </div>
-            <Truck className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Admins</p>
-              <p className="text-2xl font-bold text-teal-600">
-                {users.filter((u) => u.role === 'admin').length}
-              </p>
-            </div>
-            <Shield className="h-10 w-10 text-teal-600" />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
-        {/* Search */}
-        <div className="relative flex-1 md:max-w-md">
-          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search users by name, email, or username..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-          />
-        </div>
-
-        {/* Role Filter */}
-        <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-gray-400" />
-          <select
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-          >
-            <option value="all">All Roles</option>
-            <option value="customer">Customers</option>
-            <option value="driver">Drivers</option>
-            <option value="area_manager">Area Managers</option>
-            <option value="admin">Admins</option>
-          </select>
-        </div>
-      </div>
-
-      {/* User List */}
-      <div className="space-y-4">
-        {filteredUsers.length > 0 ? (
-          filteredUsers.map((user) => <UserCard key={user.id} user={user} />)
-        ) : (
-          <div className="rounded-lg bg-white p-12 text-center shadow-sm">
-            <Users className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900">No users found</h3>
-            <p className="mt-2 text-sm text-gray-600">
-              Try adjusting your search or filter criteria
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+            <p className="mt-1 text-sm text-gray-600">
+              Manage admins, drivers, customers, and area managers
             </p>
           </div>
+          <button
+            onClick={handleAddUser}
+            className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+          >
+            <UserPlus className="h-5 w-5" />
+            <span>Add User</span>
+          </button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid gap-6 md:grid-cols-4">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Users</p>
+                <p className="text-2xl font-bold text-gray-900">{users.length}</p>
+              </div>
+              <Users className="h-10 w-10 text-gray-400" />
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Customers</p>
+                <p className="text-2xl font-bold text-teal-600">
+                  {users.filter((u) => u.role === 'customer').length}
+                </p>
+              </div>
+              <Building className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Drivers</p>
+                <p className="text-2xl font-bold text-teal-600">
+                  {users.filter((u) => u.role === 'driver').length}
+                </p>
+              </div>
+              <Truck className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Admins</p>
+                <p className="text-2xl font-bold text-teal-600">
+                  {users.filter((u) => u.role === 'admin').length}
+                </p>
+              </div>
+              <Shield className="h-10 w-10 text-teal-600" />
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
+          {/* Search */}
+          <div className="relative flex-1 md:max-w-md">
+            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search users by name, email, or username..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+            />
+          </div>
+
+          {/* Role Filter */}
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <select
+              value={filterRole}
+              onChange={(e) => setFilterRole(e.target.value)}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+            >
+              <option value="all">All Roles</option>
+              <option value="customer">Customers</option>
+              <option value="driver">Drivers</option>
+              <option value="area_manager">Area Managers</option>
+              <option value="admin">Admins</option>
+            </select>
+          </div>
+        </div>
+
+        {/* User List */}
+        <div className="space-y-4">
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((user) => <UserCard key={user.id} user={user} />)
+          ) : (
+            <div className="rounded-lg bg-white p-12 text-center shadow-sm">
+              <Users className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No users found</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Try adjusting your search or filter criteria
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Modals */}
+        {showAddModal && <AddEditModal onClose={() => setShowAddModal(false)} />}
+        {showEditModal && (
+          <AddEditModal
+            isEdit
+            user={selectedUser}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedUser(null);
+            }}
+          />
         )}
       </div>
-
-      {/* Modals */}
-      {showAddModal && <AddEditModal onClose={() => setShowAddModal(false)} />}
-      {showEditModal && (
-        <AddEditModal
-          isEdit
-          user={selectedUser}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedUser(null);
-          }}
-        />
-      )}
     </div>
   );
 };
