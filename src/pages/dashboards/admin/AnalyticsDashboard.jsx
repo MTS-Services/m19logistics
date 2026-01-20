@@ -904,7 +904,8 @@ const AnalyticsDashboard = () => {
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>Store Performance
+        Analysis
         <p className="mt-2 text-gray-600">Comprehensive performance metrics and reports</p>
       </div>
 
@@ -1474,13 +1475,13 @@ const AnalyticsDashboard = () => {
             </table>
           </div>
           {storePerformance.length > itemsPerPage && (
-            <div className="border-t border-gray-200 px-6 py-4">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={storePerformance.length}
+            />
           )}
         </div>
       )}
