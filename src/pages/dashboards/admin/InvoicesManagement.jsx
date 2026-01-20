@@ -690,141 +690,143 @@ const InvoicesManagement = () => {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoice Management</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Generate, manage, and track customer invoices
-          </p>
-        </div>
-        <button className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg">
-          <Plus className="h-5 w-5" />
-          <span>Generate Invoice</span>
-        </button>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">£{stats.total.toFixed(2)}</p>
-            </div>
-            <DollarSign className="h-10 w-10 text-teal-600" />
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Invoice Management</h1>
+            <p className="mt-1 text-sm text-gray-600">
+              Generate, manage, and track customer invoices
+            </p>
           </div>
+          <button className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg">
+            <Plus className="h-5 w-5" />
+            <span>Generate Invoice</span>
+          </button>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Paid</p>
-              <p className="text-2xl font-bold text-teal-600">£{stats.paid.toFixed(2)}</p>
+        {/* Stats Overview */}
+        <div className="grid gap-6 md:grid-cols-4">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">£{stats.total.toFixed(2)}</p>
+              </div>
+              <DollarSign className="h-10 w-10 text-teal-600" />
             </div>
-            <CheckCircle className="h-10 w-10 text-teal-600" />
           </div>
-        </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Outstanding</p>
-              <p className="text-2xl font-bold text-teal-600">£{stats.outstanding.toFixed(2)}</p>
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Paid</p>
+                <p className="text-2xl font-bold text-teal-600">£{stats.paid.toFixed(2)}</p>
+              </div>
+              <CheckCircle className="h-10 w-10 text-teal-600" />
             </div>
-            <Clock className="h-10 w-10 text-teal-600" />
           </div>
-        </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Overdue</p>
-              <p className="text-2xl font-bold text-red-600">£{stats.overdue.toFixed(2)}</p>
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Outstanding</p>
+                <p className="text-2xl font-bold text-teal-600">£{stats.outstanding.toFixed(2)}</p>
+              </div>
+              <Clock className="h-10 w-10 text-teal-600" />
             </div>
-            <AlertCircle className="h-10 w-10 text-red-600" />
           </div>
-        </div>
-      </div>
 
-      {/* Filters */}
-      <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
-        {/* Search */}
-        <div className="relative flex-1 md:max-w-md">
-          <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search invoices by number or customer..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-          />
+          <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Overdue</p>
+                <p className="text-2xl font-bold text-red-600">£{stats.overdue.toFixed(2)}</p>
+              </div>
+              <AlertCircle className="h-10 w-10 text-red-600" />
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-gray-400" />
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-          >
-            <option value="all">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="sent">Sent</option>
-            <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
-          </select>
-
-          <select
-            value={filterCustomer}
-            onChange={(e) => setFilterCustomer(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-          >
-            {customers.map((customer) => (
-              <option key={customer.value} value={customer.value}>
-                {customer.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Invoice List */}
-      <div className="space-y-4">
-        {filteredInvoices.length > 0 ? (
-          filteredInvoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} />)
-        ) : (
-          <div className="rounded-lg bg-white p-12 text-center shadow-sm">
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900">No invoices found</h3>
-            <p className="mt-2 text-sm text-gray-600">
-              Try adjusting your search or filter criteria
-            </p>
+        <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
+          {/* Search */}
+          <div className="relative flex-1 md:max-w-md">
+            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search invoices by number or customer..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+            />
           </div>
+
+          {/* Filters */}
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5 text-gray-400" />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+            >
+              <option value="all">All Status</option>
+              <option value="draft">Draft</option>
+              <option value="sent">Sent</option>
+              <option value="paid">Paid</option>
+              <option value="overdue">Overdue</option>
+            </select>
+
+            <select
+              value={filterCustomer}
+              onChange={(e) => setFilterCustomer(e.target.value)}
+              className="rounded-lg border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+            >
+              {customers.map((customer) => (
+                <option key={customer.value} value={customer.value}>
+                  {customer.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Invoice List */}
+        <div className="space-y-4">
+          {filteredInvoices.length > 0 ? (
+            filteredInvoices.map((invoice) => <InvoiceCard key={invoice.id} invoice={invoice} />)
+          ) : (
+            <div className="rounded-lg bg-white p-12 text-center shadow-sm">
+              <FileText className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-4 text-lg font-medium text-gray-900">No invoices found</h3>
+              <p className="mt-2 text-sm text-gray-600">
+                Try adjusting your search or filter criteria
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Modals */}
+        {showViewModal && selectedInvoice && (
+          <ViewInvoiceModal
+            invoice={selectedInvoice}
+            onClose={() => {
+              setShowViewModal(false);
+              setSelectedInvoice(null);
+            }}
+          />
+        )}
+        {showEditModal && selectedInvoice && (
+          <EditInvoiceModal
+            invoice={selectedInvoice}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedInvoice(null);
+            }}
+          />
         )}
       </div>
-
-      {/* Modals */}
-      {showViewModal && selectedInvoice && (
-        <ViewInvoiceModal
-          invoice={selectedInvoice}
-          onClose={() => {
-            setShowViewModal(false);
-            setSelectedInvoice(null);
-          }}
-        />
-      )}
-      {showEditModal && selectedInvoice && (
-        <EditInvoiceModal
-          invoice={selectedInvoice}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedInvoice(null);
-          }}
-        />
-      )}
     </div>
   );
 };
