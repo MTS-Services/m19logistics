@@ -22,6 +22,8 @@ import {
   Printer,
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const InvoicesManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -1427,7 +1429,7 @@ const InvoicesManagement = () => {
                           status: 'draft',
                         });
                       } else {
-                        alert('Please fill in all required fields');
+                        toast.error('Please fill in all required fields');
                       }
                     }}
                     className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
@@ -1440,6 +1442,20 @@ const InvoicesManagement = () => {
             </div>
           </div>
         )}
+        
+        {/* Toast Container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );
