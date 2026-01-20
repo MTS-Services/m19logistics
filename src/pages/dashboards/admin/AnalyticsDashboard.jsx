@@ -902,11 +902,14 @@ const AnalyticsDashboard = () => {
 
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>Store Performance
-        Analysis
-        <p className="mt-2 text-gray-600">Comprehensive performance metrics and reports</p>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+            Analytics Dashboard
+          </h1>
+          <p className="mt-2 text-gray-600">Comprehensive performance metrics and reports</p>
+        </div>
       </div>
 
       {/* Date Range Selector */}
