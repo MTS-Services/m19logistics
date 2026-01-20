@@ -461,7 +461,7 @@ const DriverManagement = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                 Driver Management
@@ -472,7 +472,7 @@ const DriverManagement = () => {
             </div>
             <button
               onClick={handleAddDriver}
-              className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
             >
               <UserPlus className="h-5 w-5" />
               <span>Add Driver</span>
