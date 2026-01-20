@@ -91,8 +91,7 @@ const Profile = () => {
 
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
-      {/* Header */}
-      <div className="mb-6">
+      <div className="space-y-6">
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
           Profile Settings
         </h1>
