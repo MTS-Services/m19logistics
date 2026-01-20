@@ -413,18 +413,18 @@ const UsersManagement = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                 User Management
               </h1>
-              <p className="mt-1 text-sm text-gray-600">
+              <p className="mt-1 text-sm text-gray-600 sm:mt-2">
                 Manage admins, drivers, customers, and area managers
               </p>
             </div>
             <button
               onClick={handleAddUser}
-              className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
             >
               <UserPlus className="h-5 w-5" />
               <span>Add User</span>
