@@ -82,8 +82,339 @@ const AnalyticsDashboard = () => {
   ];
 
   const handleExport = (format) => {
-    alert(`Exporting analytics as ${format.toUpperCase()}...`);
-    // In real implementation: generate and download file
+    if (format === 'csv') {
+      exportCSV();
+    } else if (format === 'pdf') {
+      exportPDF();
+    }
+  };
+
+  const exportCSV = () => {
+    let csvContent = '';
+
+    if (selectedMetric === 'overview' || selectedMetric === 'stores') {
+      // Overview Stats CSV
+      csvContent += 'Overview Statistics\n';
+      csvContent += 'Metric,Value,Change\n';
+      csvContent += `Total Revenue,£${overviewStats.totalRevenue.toLocaleString()},${overviewStats.revenueChange}%\n`;
+      csvContent += `Total Deliveries,${overviewStats.totalDeliveries},${overviewStats.deliveriesChange}%\n`;
+      csvContent += `Avg Revenue/Delivery,£${overviewStats.avgRevenuePerDelivery},${overviewStats.avgChange}%\n`;
+      csvContent += `Total VAT,£${overviewStats.totalVAT.toLocaleString()},${overviewStats.vatChange}%\n`;
+      csvContent += `Outstanding Invoices,£${overviewStats.outstandingInvoices.toLocaleString()},${overviewStats.outstandingCount} invoices\n`;
+      csvContent += `Completion Rate,${overviewStats.completionRate}%,${overviewStats.completionChange}%\n\n`;
+    }
+
+    if (selectedMetric === 'stores' || selectedMetric === 'overview') {
+      // Store Performance CSV
+      csvContent += 'Store Performance\n';
+      csvContent += 'Store Name,Deliveries,Revenue,Change %,Market Share %\n';
+      storePerformance.forEach((store) => {
+        csvContent += `${store.name},${store.deliveries},£${store.revenue.toLocaleString()},${store.change}%,${store.share}%\n`;
+      });
+      csvContent += '\n';
+    }
+
+    if (selectedMetric === 'drivers' || selectedMetric === 'overview') {
+      // Driver Performance CSV
+      csvContent += 'Driver Performance\n';
+      csvContent +=
+        'Driver,Deliveries,Avg Time,Completion Rate,Late Deliveries,Proofs Attached,Feedback Count,Rating\n';
+      driverPerformance.forEach((driver) => {
+        csvContent += `${driver.name},${driver.deliveries},${driver.avgTime},${driver.completionRate}%,${driver.lateDeliveries},${driver.proofsAttached},${driver.feedbackCount},${driver.rating}\n`;
+      });
+      csvContent += '\n';
+    }
+
+    if (selectedMetric === 'trends' || selectedMetric === 'overview') {
+      // Weekly Data CSV
+      csvContent += 'Weekly Performance\n';
+      csvContent += 'Day,Deliveries,Revenue\n';
+      weeklyData.forEach((day) => {
+        csvContent += `${day.day},${day.deliveries},£${day.revenue.toLocaleString()}\n`;
+      });
+      csvContent += '\n';
+
+      // Monthly Trends CSV
+      csvContent += 'Monthly Trends\n';
+      csvContent += 'Month,Revenue,Deliveries\n';
+      monthlyTrends.forEach((month) => {
+        csvContent += `${month.month},£${month.revenue.toLocaleString()},${month.deliveries}\n`;
+      });
+    }
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute(
+      'download',
+      `analytics_${selectedMetric}_${dateRange}_${new Date().toISOString().split('T')[0]}.csv`
+    );
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportPDF = async () => {
+    // Dynamic import jsPDF
+    const { jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+
+    let yPosition = 20;
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    const lineHeight = 7;
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(13, 148, 136); // Teal color
+    doc.text('M19 LOGISTICS', margin, yPosition);
+    yPosition += 10;
+
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text('Analytics Dashboard Report', margin, yPosition);
+    yPosition += 8;
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(
+      `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+      margin,
+      yPosition
+    );
+    yPosition += 5;
+    doc.text(`Date Range: ${dateRange}`, margin, yPosition);
+    yPosition += 5;
+    doc.text(
+      `Report Type: ${selectedMetric.charAt(0).toUpperCase() + selectedMetric.slice(1)}`,
+      margin,
+      yPosition
+    );
+    yPosition += 10;
+
+    // Line separator
+    doc.setDrawColor(200, 200, 200);
+    doc.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 10;
+
+    if (selectedMetric === 'overview' || selectedMetric === 'stores') {
+      // Overview Statistics
+      doc.setFontSize(14);
+      doc.setTextColor(13, 148, 136);
+      doc.text('Overview Statistics', margin, yPosition);
+      yPosition += 8;
+
+      doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
+
+      const overviewData = [
+        [
+          'Total Revenue:',
+          `£${overviewStats.totalRevenue.toLocaleString()}`,
+          `+${overviewStats.revenueChange}%`,
+        ],
+        [
+          'Total Deliveries:',
+          `${overviewStats.totalDeliveries}`,
+          `+${overviewStats.deliveriesChange}%`,
+        ],
+        [
+          'Avg Revenue/Delivery:',
+          `£${overviewStats.avgRevenuePerDelivery}`,
+          `+${overviewStats.avgChange}%`,
+        ],
+        [
+          'Total VAT:',
+          `£${overviewStats.totalVAT.toLocaleString()}`,
+          `+${overviewStats.vatChange}%`,
+        ],
+        [
+          'Outstanding Invoices:',
+          `£${overviewStats.outstandingInvoices.toLocaleString()}`,
+          `${overviewStats.outstandingCount} invoices`,
+        ],
+        [
+          'Completion Rate:',
+          `${overviewStats.completionRate}%`,
+          `+${overviewStats.completionChange}%`,
+        ],
+      ];
+
+      overviewData.forEach(([label, value, change]) => {
+        doc.text(label, margin, yPosition);
+        doc.text(value, margin + 60, yPosition);
+        doc.setTextColor(0, 128, 0);
+        doc.text(change, margin + 110, yPosition);
+        doc.setTextColor(0, 0, 0);
+        yPosition += lineHeight;
+      });
+
+      yPosition += 5;
+    }
+
+    if (selectedMetric === 'stores' || selectedMetric === 'overview') {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Store Performance
+      doc.setFontSize(14);
+      doc.setTextColor(13, 148, 136);
+      doc.text('Store Performance', margin, yPosition);
+      yPosition += 8;
+
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont(undefined, 'bold');
+      doc.text('Store', margin, yPosition);
+      doc.text('Deliveries', margin + 60, yPosition);
+      doc.text('Revenue', margin + 90, yPosition);
+      doc.text('Change', margin + 120, yPosition);
+      doc.text('Share', margin + 145, yPosition);
+      yPosition += 6;
+      doc.setFont(undefined, 'normal');
+
+      storePerformance.forEach((store) => {
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(store.name, margin, yPosition);
+        doc.text(store.deliveries.toString(), margin + 60, yPosition);
+        doc.text(`£${store.revenue.toLocaleString()}`, margin + 90, yPosition);
+        doc.setTextColor(store.change > 0 ? 0 : 255, store.change > 0 ? 128 : 0, 0);
+        doc.text(`${store.change > 0 ? '+' : ''}${store.change}%`, margin + 120, yPosition);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${store.share}%`, margin + 145, yPosition);
+        yPosition += lineHeight;
+      });
+
+      yPosition += 5;
+    }
+
+    if (selectedMetric === 'drivers' || selectedMetric === 'overview') {
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Driver Performance
+      doc.setFontSize(14);
+      doc.setTextColor(13, 148, 136);
+      doc.text('Driver Performance', margin, yPosition);
+      yPosition += 8;
+
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+
+      driverPerformance.forEach((driver) => {
+        doc.setFont(undefined, 'bold');
+        doc.text(`Driver: ${driver.name}`, margin, yPosition);
+        yPosition += 6;
+        doc.setFont(undefined, 'normal');
+
+        doc.text(`Deliveries: ${driver.deliveries}`, margin + 5, yPosition);
+        doc.text(`Avg Time: ${driver.avgTime}`, margin + 60, yPosition);
+        yPosition += 6;
+        doc.text(`Completion Rate: ${driver.completionRate}%`, margin + 5, yPosition);
+        doc.text(`Late: ${driver.lateDeliveries}`, margin + 60, yPosition);
+        yPosition += 6;
+        doc.text(`Proofs: ${driver.proofsAttached}`, margin + 5, yPosition);
+        doc.text(`Feedback: ${driver.feedbackCount}`, margin + 60, yPosition);
+        yPosition += 6;
+        doc.text(`Rating: ${driver.rating}/5.0`, margin + 5, yPosition);
+        yPosition += 8;
+      });
+    }
+
+    if (selectedMetric === 'trends' || selectedMetric === 'overview') {
+      if (yPosition > 200) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Weekly Performance
+      doc.setFontSize(14);
+      doc.setTextColor(13, 148, 136);
+      doc.text('Weekly Performance', margin, yPosition);
+      yPosition += 8;
+
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont(undefined, 'bold');
+      doc.text('Day', margin, yPosition);
+      doc.text('Deliveries', margin + 40, yPosition);
+      doc.text('Revenue', margin + 80, yPosition);
+      yPosition += 6;
+      doc.setFont(undefined, 'normal');
+
+      weeklyData.forEach((day) => {
+        doc.text(day.day, margin, yPosition);
+        doc.text(day.deliveries.toString(), margin + 40, yPosition);
+        doc.text(`£${day.revenue.toLocaleString()}`, margin + 80, yPosition);
+        yPosition += lineHeight;
+      });
+
+      yPosition += 8;
+
+      if (yPosition > 200) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Monthly Trends
+      doc.setFontSize(14);
+      doc.setTextColor(13, 148, 136);
+      doc.text('Monthly Trends', margin, yPosition);
+      yPosition += 8;
+
+      doc.setFontSize(9);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont(undefined, 'bold');
+      doc.text('Month', margin, yPosition);
+      doc.text('Revenue', margin + 40, yPosition);
+      doc.text('Deliveries', margin + 80, yPosition);
+      yPosition += 6;
+      doc.setFont(undefined, 'normal');
+
+      monthlyTrends.forEach((month, index) => {
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(month.month, margin, yPosition);
+        doc.text(`£${month.revenue.toLocaleString()}`, margin + 40, yPosition);
+        doc.text(month.deliveries.toString(), margin + 80, yPosition);
+
+        if (index > 0) {
+          const prevRevenue = monthlyTrends[index - 1].revenue;
+          const change = (((month.revenue - prevRevenue) / prevRevenue) * 100).toFixed(1);
+          doc.setTextColor(parseFloat(change) > 0 ? 0 : 255, parseFloat(change) > 0 ? 128 : 0, 0);
+          doc.text(`${parseFloat(change) > 0 ? '+' : ''}${change}%`, margin + 120, yPosition);
+          doc.setTextColor(0, 0, 0);
+        }
+        yPosition += lineHeight;
+      });
+    }
+
+    // Footer
+    const pageCount = doc.internal.getNumberOfPages();
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.text(`Page ${i} of ${pageCount}`, pageWidth - 30, doc.internal.pageSize.height - 10);
+      doc.text('M19 Logistics - Confidential', margin, doc.internal.pageSize.height - 10);
+    }
+
+    // Save PDF
+    doc.save(
+      `analytics_${selectedMetric}_${dateRange}_${new Date().toISOString().split('T')[0]}.pdf`
+    );
   };
 
   const getMaxValue = (data, key) => Math.max(...data.map((item) => item[key]));
