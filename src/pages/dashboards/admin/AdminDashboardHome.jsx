@@ -130,24 +130,30 @@ const AdminDashboardHome = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
+          <div className="rounded-lg bg-linear-to-br from-teal-500 to-teal-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
             <Package className="mb-2 h-6 w-6 sm:mb-3 sm:h-8 sm:w-8" />
-            <h3 className="mb-1 text-base font-semibold sm:mb-2 sm:text-lg">Pending Bookings</h3>
-            <p className="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">8</p>
+            <h3 className="mb-1 text-base font-semibold text-white sm:mb-2 sm:text-lg">
+              Pending Bookings
+            </h3>
+            <p className="mb-2 text-2xl font-bold text-white sm:mb-4 sm:text-3xl">8</p>
             <p className="text-xs text-teal-100 sm:text-sm">Requires allocation to drivers</p>
           </div>
 
-          <div className="rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
+          <div className="rounded-lg bg-linear-to-br from-blue-500 to-blue-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
             <Clock className="mb-2 h-6 w-6 sm:mb-3 sm:h-8 sm:w-8" />
-            <h3 className="mb-1 text-base font-semibold sm:mb-2 sm:text-lg">In Progress</h3>
-            <p className="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">15</p>
+            <h3 className="mb-1 text-base font-semibold text-white sm:mb-2 sm:text-lg">
+              In Progress
+            </h3>
+            <p className="mb-2 text-2xl font-bold text-white sm:mb-4 sm:text-3xl">15</p>
             <p className="text-xs text-blue-100 sm:text-sm">Currently out for delivery</p>
           </div>
 
-          <div className="rounded-lg bg-gradient-to-br from-green-500 to-green-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
+          <div className="rounded-lg bg-linear-to-br from-green-500 to-green-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
             <CheckCircle className="mb-2 h-6 w-6 sm:mb-3 sm:h-8 sm:w-8" />
-            <h3 className="mb-1 text-base font-semibold sm:mb-2 sm:text-lg">Completed Today</h3>
-            <p className="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">23</p>
+            <h3 className="mb-1 text-base font-semibold text-white sm:mb-2 sm:text-lg">
+              Completed Today
+            </h3>
+            <p className="mb-2 text-2xl font-bold text-white sm:mb-4 sm:text-3xl">23</p>
             <p className="text-xs text-green-100 sm:text-sm">Successfully delivered</p>
           </div>
         </div>
