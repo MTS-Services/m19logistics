@@ -186,7 +186,7 @@ const AssignedDeliveries = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Assigned Deliveries</h1>
@@ -313,7 +313,7 @@ const AssignedDeliveries = () => {
                   ) : (
                     <button
                       onClick={() => handleComplete(delivery)}
-                      className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-green-700 hover:to-green-600"
+                      className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-green-700 hover:to-green-600"
                     >
                       <Check className="h-4 w-4" />
                       Complete
@@ -366,7 +366,7 @@ const AssignedDeliveries = () => {
               </button>
               <button
                 onClick={confirmDecline}
-                className="flex-1 rounded-md bg-gradient-to-r from-red-600 to-red-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-red-700 hover:to-red-600"
+                className="flex-1 rounded-md bg-linear-to-r from-red-600 to-red-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-red-700 hover:to-red-600"
               >
                 Confirm Decline
               </button>
@@ -450,7 +450,7 @@ const AssignedDeliveries = () => {
                   </button>
                   <button
                     onClick={saveSignature}
-                    className="rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-3 py-1 text-sm text-white transition-all hover:from-teal-700 hover:to-teal-600"
+                    className="rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-3 py-1 text-sm text-white transition-all hover:from-teal-700 hover:to-teal-600"
                   >
                     <PenTool className="inline h-3 w-3" /> Save Signature
                   </button>
@@ -499,7 +499,7 @@ const AssignedDeliveries = () => {
               </button>
               <button
                 onClick={submitCompletion}
-                className="flex-1 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                className="flex-1 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
               >
                 Complete Delivery
               </button>
