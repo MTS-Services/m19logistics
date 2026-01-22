@@ -5,7 +5,7 @@ import { BarChart3, TrendingUp, Package, DollarSign, LogOut, Eye } from 'lucide-
 const DashboardHome = () => (
   <div>
     <h1 className="mb-6 text-3xl font-bold">Analytics Dashboard</h1>
-    <div className="mb-6 grid gap-6 md:grid-cols-4">
+    <div className="mb-6 grid gap-6 md:grid-cols-3">
       <div className="rounded-lg bg-white p-6 shadow">
         <div className="flex items-center justify-between">
           <div>
@@ -13,15 +13,6 @@ const DashboardHome = () => (
             <p className="text-2xl font-bold">1,243</p>
           </div>
           <Package className="h-10 w-10 text-teal-600" />
-        </div>
-      </div>
-      <div className="rounded-lg bg-white p-6 shadow">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Total Revenue</p>
-            <p className="text-2xl font-bold">£45,230</p>
-          </div>
-          <DollarSign className="h-10 w-10 text-green-600" />
         </div>
       </div>
       <div className="rounded-lg bg-white p-6 shadow">
