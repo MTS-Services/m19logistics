@@ -81,12 +81,6 @@ const ContactView = () => {
                     <h3 className="font-semibold text-gray-900">Email</h3>
                     <div className="space-y-1">
                       <a
-                        href="mailto:m19logistics@gmail.com"
-                        className="block text-blue-600 hover:text-blue-700"
-                      >
-                        m19logistics@gmail.com
-                      </a>
-                      <a
                         href="mailto:enquiries@m19logistics.com"
                         className="block text-blue-600 hover:text-blue-700"
                       >

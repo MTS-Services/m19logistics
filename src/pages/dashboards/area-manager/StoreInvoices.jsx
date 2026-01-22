@@ -284,8 +284,6 @@ const StoreInvoices = () => {
                     <br />
                     Tel.: 07971415430 / 01978439739
                     <br />
-                    Email: m19logistics@gmail.com
-                    <br />
                     VAT Number: 447 5918 54
                   </p>
                 </div>
