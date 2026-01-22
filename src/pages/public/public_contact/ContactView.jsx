@@ -65,8 +65,11 @@ const ContactView = () => {
                       07971 415430
                     </a>
                     <br />
-                    <a href="tel:01978439739" className="text-teal-600 hover:text-teal-700">
-                      01978 439739
+                    <a
+                      href="https://wa.me/447577574676"
+                      className="text-teal-600 hover:text-teal-700"
+                    >
+                      WhatsApp 07577 574676
                     </a>
                   </div>
                 </div>

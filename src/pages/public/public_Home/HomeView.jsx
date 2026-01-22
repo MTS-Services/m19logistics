@@ -262,11 +262,11 @@ const HomeView = () => {
                 <span>07971 415430</span>
               </a>
               <a
-                href="tel:01978439739"
+                href="https://wa.me/447577574676"
                 className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 sm:w-auto"
               >
                 <Phone className="h-5 w-5" />
-                <span>01978 439739</span>
+                <span>WhatsApp 07577 574676</span>
               </a>
               <a
                 href="mailto:enquiries@m19logistics.com"

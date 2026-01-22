@@ -154,7 +154,7 @@ export const invoiceSettings = {
   companyDetails: {
     name: 'M19 Logistics Limited',
     address: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-    phone: '07971415430 / 01978439739',
+    phone: '07971415430 / WhatsApp 07577574676',
     email: '',
     vatNumber: '447 5918 54',
     bankDetails: {

@@ -290,7 +290,7 @@ const Invoices = () => {
     const invoiceData = [
       ['M19 Logistics Limited'],
       ['84 Acton Hall Walks, Wrexham, LL12 7YJ'],
-      ['Tel: 07971415430 / 01978439739'],
+      ['Tel: 07971415430 / WhatsApp 07577574676'],
       ['VAT Number: 447 5918 54'],
       [''],
       ['Invoice Number', invoice.invoiceNumber],
@@ -646,7 +646,7 @@ const Invoices = () => {
                   <h4 className="text-lg font-bold text-gray-900">M19 Logistics Limited</h4>
                   <p className="text-sm text-gray-600">84 Acton Hall Walks</p>
                   <p className="text-sm text-gray-600">Wrexham, LL12 7YJ</p>
-                  <p className="text-sm text-gray-600">Tel: 07971415430 / 01978439739</p>
+                  <p className="text-sm text-gray-600">Tel: 07971415430 / WhatsApp 07577574676</p>
                   <p className="text-sm text-gray-600">VAT Number: 447 5918 54</p>
                 </div>
                 <div className="border-t border-gray-300 pt-4">

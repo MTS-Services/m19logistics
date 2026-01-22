@@ -575,7 +575,9 @@ const InvoicesManagement = () => {
                 <p className="mt-2 text-sm text-gray-600">84 Acton Hall Walks</p>
                 <p className="text-sm text-gray-600">Wrexham</p>
                 <p className="text-sm text-gray-600">LL12 7YJ</p>
-                <p className="mt-2 text-sm text-gray-600">Tel: 07971415430 / 01978439739</p>
+                <p className="mt-2 text-sm text-gray-600">
+                  Tel: 07971415430 / WhatsApp 07577574676
+                </p>
                 <p className="mt-2 text-sm font-medium text-gray-700">VAT Number: 447 5918 54</p>
               </div>
 

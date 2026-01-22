@@ -78,8 +78,11 @@ const FooterLayout = () => {
                   <a href="tel:07971415430" className="block text-gray-400 hover:text-[#31A2A2]">
                     07971 415430
                   </a>
-                  <a href="tel:01978439739" className="block text-gray-400 hover:text-[#31A2A2]">
-                    01978 439739
+                  <a
+                    href="https://wa.me/447577574676"
+                    className="block text-gray-400 hover:text-[#31A2A2]"
+                  >
+                    WhatsApp 07577 574676
                   </a>
                 </div>
               </li>

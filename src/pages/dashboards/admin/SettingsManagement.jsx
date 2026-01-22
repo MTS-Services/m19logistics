@@ -23,7 +23,7 @@ const SettingsManagement = () => {
     companyName: 'M19 Logistics Limited',
     vatNumber: '447 5918 54',
     phone: '07971415430',
-    altPhone: '01978439739',
+    altPhone: 'WhatsApp 07577574676',
     email: 'ben@m19logistics.com',
     website: 'www.m19logistics.com',
     address: 'Wrexham, United Kingdom',

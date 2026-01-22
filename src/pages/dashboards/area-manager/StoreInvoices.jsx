@@ -282,7 +282,7 @@ const StoreInvoices = () => {
                     <br />
                     LL12 7YJ
                     <br />
-                    Tel.: 07971415430 / 01978439739
+                    Tel.: 07971415430 / WhatsApp 07577574676
                     <br />
                     VAT Number: 447 5918 54
                   </p>
