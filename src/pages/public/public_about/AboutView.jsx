@@ -60,28 +60,44 @@ const AboutView = () => {
 
             <div className="space-y-6 text-lg leading-relaxed text-gray-700">
               <p>
-                Founded in 2019 in Wrexham, United Kingdom, <strong>M19 Logistics Limited</strong> is a modern courier and last-mile delivery company providing fast, reliable, and secure movement of parcels and goods across the UK and beyond. What began as a local delivery service has grown into a trusted logistics partner supporting individuals, e-commerce businesses, and organisations of every size.
+                Founded in 2019 in Wrexham, United Kingdom, <strong>M19 Logistics Limited</strong>{' '}
+                is a modern courier and last-mile delivery company providing fast, reliable, and
+                secure movement of parcels and goods across the UK and beyond. What began as a local
+                delivery service has grown into a trusted logistics partner supporting individuals,
+                e-commerce businesses, and organisations of every size.
               </p>
 
               <p>
-                At M19 Logistics, we believe logistics is about more than moving goods — it's about building relationships. Every delivery we handle represents a promise to our customers, and we take that responsibility personally. Whether collecting a single parcel or managing complex multi-drop routes, our focus is always on delivering with care, precision, and transparency.
+                At M19 Logistics, we believe logistics is about more than moving goods — it's about
+                building relationships. Every delivery we handle represents a promise to our
+                customers, and we take that responsibility personally. Whether collecting a single
+                parcel or managing complex multi-drop routes, our focus is always on delivering with
+                care, precision, and transparency.
               </p>
 
               <p>
-                We specialise in final-mile distribution, nationwide parcel delivery, secure item handling, and personalised logistics solutions tailored to individual customer needs. Our experienced team, efficient fleet, and smart route-planning tools allow us to provide same-day, next-day, and scheduled courier services with consistency and confidence.
+                We specialise in final-mile distribution, nationwide parcel delivery, secure item
+                handling, and personalised logistics solutions tailored to individual customer
+                needs. Our experienced team, efficient fleet, and smart route-planning tools allow
+                us to provide same-day, next-day, and scheduled courier services with consistency
+                and confidence.
               </p>
 
               <p>
-                What truly sets us apart is our human touch. We take the time to understand our customers, communicate clearly, and adapt quickly. We don't see our customers as transactions — we see them as partners. This relationship-focused approach enables us to respond efficiently, solve problems proactively, and consistently exceed expectations in an ever-moving world.
+                What truly sets us apart is our human touch. We take the time to understand our
+                customers, communicate clearly, and adapt quickly. We don't see our customers as
+                transactions — we see them as partners. This relationship-focused approach enables
+                us to respond efficiently, solve problems proactively, and consistently exceed
+                expectations in an ever-moving world.
               </p>
 
               <p>
-                From our beginnings in Wrexham to the growing regions we now serve, we remain driven by integrity, professionalism, and long-lasting customer relationships. With M19 Logistics Limited, your parcel is not just a package — it's a promise delivered.
+                From our beginnings in Wrexham to the growing regions we now serve, we remain driven
+                by integrity, professionalism, and long-lasting customer relationships. With M19
+                Logistics Limited, your parcel is not just a package — it's a promise delivered.
               </p>
 
-              <p className="font-semibold text-teal-600">
-                More Than Logistics — It's Personal
-              </p>
+              <p className="font-semibold text-teal-600">More Than Logistics — It's Personal</p>
             </div>
           </div>
         </div>
