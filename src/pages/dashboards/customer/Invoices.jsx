@@ -300,13 +300,12 @@ const Invoices = () => {
       ...(invoice.paidDate ? [['Paid Date', invoice.paidDate]] : []),
       [''],
       ['Delivery Items'],
-      ['SPO Number', 'Date', 'Address', 'Base Price', 'Distance Surcharge', 'VAT', 'Total'],
+      ['SPO Number', 'Date', 'Address', 'Unit Price', 'VAT (20%)', 'Amount'],
       ...invoice.deliveries.map((d) => [
         d.spoNumber,
         d.date,
         d.address,
         `£${d.basePrice.toFixed(2)}`,
-        `£${d.distanceSurcharge.toFixed(2)}`,
         `£${d.vat.toFixed(2)}`,
         `£${d.total.toFixed(2)}`,
       ]),
@@ -680,6 +679,12 @@ const Invoices = () => {
                           Address
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                          Unit Price
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                          VAT
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
                           Amount
                         </th>
                       </tr>
@@ -694,6 +699,12 @@ const Invoices = () => {
                             {delivery.date}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600">{delivery.address}</td>
+                          <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                            £{delivery.basePrice.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                            £{delivery.vat.toFixed(2)}
+                          </td>
                           <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
                             £{delivery.total.toFixed(2)}
                           </td>
