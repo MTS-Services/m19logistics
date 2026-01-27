@@ -73,9 +73,9 @@ const CustomerDashboard = () => {
       >
         <div className="flex h-full flex-col">
           {/* Header */}
-          <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
+          <div className="flex h-28 items-center justify-center px-6">
             <Link to="/" className="transition-opacity hover:opacity-80">
-              <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
+              <img src="/images/logo.png" alt="M19 Logistics" className="h-22 w-auto" />
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
