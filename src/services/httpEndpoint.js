@@ -11,4 +11,11 @@ export const ENDPOINT = {
     PROFILE: '/profile',
     SETTINGS: '/settings',
   },
+  API: {
+    AUTH: {
+      LOGIN: '/api/auth/login',
+      LOGOUT: '/api/auth/logout',
+      REGISTER: '/api/auth/register',
+    },
+  },
 };

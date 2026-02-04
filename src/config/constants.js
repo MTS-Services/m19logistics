@@ -14,7 +14,7 @@ export const APP_CONFIG = Object.freeze({
 
 /* ----------------------------- API ----------------------------- */
 export const API_CONFIG = Object.freeze({
-  BASE_URL: ENV.API_BASE_URL,
+  BASE_URL: ENV.API_BASE_URL || 'https://m19logisticsbackend.mtscorporate.com',
   TIMEOUT: ENV.IS_DEV ? 10_000 : 5_000,
   WITH_CREDENTIALS: false,
 });
