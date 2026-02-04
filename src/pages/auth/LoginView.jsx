@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { Eye, EyeOff, Truck } from 'lucide-react';
 import axiosInstance from '../../services/axiosInstance';
 import { ENDPOINT } from '../../services/httpEndpoint';
+import { setToken } from '../../utils/storage';
 
 const LoginView = () => {
   const [email, setEmail] = useState('');
@@ -34,6 +35,16 @@ const LoginView = () => {
       // Check if login was successful
       if (response.data && response.data.success && response.data.data && response.data.data.user) {
         const userData = response.data.data.user;
+
+        // Save the authentication token - check multiple possible locations
+        const token = response.data.data.token ||
+          response.data.token ||
+          response.data.data.accessToken ||
+          response.data.accessToken;
+
+        if (token) {
+          setToken(token);
+        }
 
         // Map API role to frontend role format (case-insensitive)
         const userRole = userData.role ? userData.role.toLowerCase() : '';

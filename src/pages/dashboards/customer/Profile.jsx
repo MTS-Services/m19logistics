@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   User,
   Mail,
@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
+import axiosInstance from '../../../services/axiosInstance';
+import { ENDPOINT } from '../../../services/httpEndpoint';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -23,15 +25,18 @@ const Profile = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(true);
 
   // Profile form state
   const [profileData, setProfileData] = useState({
-    name: user?.name || 'Topps Chester',
-    email: user?.email || 'topps022@toppstiles.co.uk',
-    phone: user?.phone || '01244398888',
-    depotAddress: user?.depotAddress || '4 Bumpers Lane, Sealand Ind Est, Chester, CH1 4LY',
-    loginId: user?.username || 'T022',
+    fullName: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    depotAddress: user?.depotAddress || '',
+    loginId: user?.username || '',
   });
+  const [profilePicture, setProfilePicture] = useState(null);
 
   // Password form state
   const [passwordData, setPasswordData] = useState({
@@ -48,6 +53,34 @@ const Profile = () => {
     memberSince: '2019',
   };
 
+  // Fetch profile data from API
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setFetchingProfile(true);
+        const response = await axiosInstance.get(ENDPOINT.API.AUTH.GET_PROFILE);
+
+        if (response.data && response.data.success && response.data.data && response.data.data.user) {
+          const userData = response.data.data.user;
+          setProfileData({
+            fullName: userData.fullName || '',
+            email: userData.email || '',
+            phone: userData.phone || '',
+            depotAddress: userData.customerProfile?.depotAddress || '',
+            loginId: userData.username || '',
+          });
+        }
+      } catch (error) {
+        // Silently fail and use data from AuthContext if available
+        console.error('Failed to fetch profile:', error);
+      } finally {
+        setFetchingProfile(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   // Handle profile change
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -61,10 +94,47 @@ const Profile = () => {
   };
 
   // Save profile
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
-    toast.success('Profile updated successfully!');
-    console.log('Profile data:', profileData);
+    setLoading(true);
+
+    try {
+      // Create FormData for file upload support
+      const formData = new FormData();
+      formData.append('fullName', profileData.fullName);
+      if (profileData.email) formData.append('email', profileData.email);
+      if (profileData.phone) formData.append('phone', profileData.phone);
+      if (profileData.depotAddress) formData.append('depotAddress', profileData.depotAddress);
+      if (profilePicture) formData.append('profilePicture', profilePicture);
+
+      const response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data && response.data.success) {
+        toast.success('Profile updated successfully!');
+        setProfilePicture(null); // Clear file input after success
+      } else {
+        toast.error(response.data?.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+
+      if (error.response) {
+        const errorMessage = error.response.data?.message ||
+          error.response.data?.error ||
+          'Failed to update profile';
+        toast.error(errorMessage);
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Change password
@@ -157,22 +227,20 @@ const Profile = () => {
         <div className="flex border-b border-gray-200">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${
-              activeTab === 'profile'
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${activeTab === 'profile'
                 ? 'border-b-2 border-teal-600 text-teal-600'
                 : 'text-gray-600 hover:text-gray-900'
-            }`}
+              }`}
           >
             <User className="mx-auto mb-1 h-5 w-5" />
             Profile Information
           </button>
           <button
             onClick={() => setActiveTab('security')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${
-              activeTab === 'security'
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${activeTab === 'security'
                 ? 'border-b-2 border-teal-600 text-teal-600'
                 : 'text-gray-600 hover:text-gray-900'
-            }`}
+              }`}
           >
             <Lock className="mx-auto mb-1 h-5 w-5" />
             Security
@@ -191,19 +259,19 @@ const Profile = () => {
                 </h3>
 
                 <div className="grid gap-6 md:grid-cols-2">
-                  {/* Store Name */}
+                  {/* Full Name */}
                   <div>
                     <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
                       <Building className="h-4 w-4 text-gray-400" />
-                      Store Name
+                      Full Name
                     </label>
                     <input
                       type="text"
-                      name="name"
-                      value={profileData.name}
+                      name="fullName"
+                      value={profileData.fullName}
                       onChange={handleProfileChange}
                       className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                      placeholder="Enter store name"
+                      placeholder="Enter full name"
                     />
                   </div>
 
@@ -222,6 +290,21 @@ const Profile = () => {
                       placeholder="Login ID"
                     />
                     <p className="mt-1 text-xs text-gray-500">Login ID cannot be changed</p>
+                  </div>
+
+                  {/* Profile Picture */}
+                  <div className="md:col-span-2">
+                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <User className="h-4 w-4 text-gray-400" />
+                      Profile Picture
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setProfilePicture(e.target.files[0])}
+                      className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">Upload a new profile picture (optional)</p>
                   </div>
                 </div>
               </div>
@@ -297,10 +380,20 @@ const Profile = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                  disabled={loading}
+                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Save className="h-5 w-5" />
-                  Save Changes
+                  {loading ? (
+                    <>
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-5 w-5" />
+                      Save Changes
+                    </>
+                  )}
                 </button>
               </div>
             </form>

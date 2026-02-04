@@ -16,6 +16,8 @@ export const ENDPOINT = {
       LOGIN: '/api/auth/login',
       LOGOUT: '/api/auth/logout',
       REGISTER: '/api/auth/register',
+      PROFILE: '/api/auth/profile',
+      GET_PROFILE: '/api/auth/me',
     },
   },
 };
