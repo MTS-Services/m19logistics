@@ -47,7 +47,12 @@ const LoginView = () => {
         }
 
         // Map API role to frontend role format (case-insensitive)
-        const userRole = userData.role ? userData.role.toLowerCase() : '';
+        let userRole = userData.role ? userData.role.toLowerCase() : '';
+
+        // Map MANAGER role to area_manager for frontend routing
+        if (userRole === 'manager') {
+          userRole = 'area_manager';
+        }
 
         // Transform API response to match the app's user structure
         const user = {
@@ -61,6 +66,7 @@ const LoginView = () => {
           isActive: userData.isActive !== undefined ? userData.isActive : true,
           customerProfile: userData.customerProfile || null,
           driverProfile: userData.driverProfile || null,
+          managerProfile: userData.managerProfile || null,
         };
 
         // Store user data

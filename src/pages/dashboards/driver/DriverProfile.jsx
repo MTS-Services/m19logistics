@@ -1,20 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Camera, Lock, Save, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../../context/AuthContext';
+import axiosInstance from '../../../services/axiosInstance';
+import { ENDPOINT } from '../../../services/httpEndpoint';
 
 const DriverProfile = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [fetchingProfile, setFetchingProfile] = useState(true);
 
   const [profileData, setProfileData] = useState({
-    name: 'John Driver',
-    email: 'wwwbk@yahoo.co.uk',
-    phone: '07123456789',
-    address: '123 Driver Street, Wrexham, LL12 7YJ',
-    licenseNumber: 'DL123456',
-    vehicleReg: 'AB12 CDE',
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
+    licenseNumber: '',
+    vehicleReg: '',
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -23,12 +30,72 @@ const DriverProfile = () => {
     confirmPassword: '',
   });
 
-  const handleProfileUpdate = (e) => {
+  // Fetch profile data from API
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setFetchingProfile(true);
+        const response = await axiosInstance.get('/api/auth/me');
+
+        if (response.data && response.data.success && response.data.data && response.data.data.user) {
+          const userData = response.data.data.user;
+          setProfileData({
+            name: userData.fullName || '',
+            email: userData.email || '',
+            phone: userData.phone || '',
+            address: userData.driverProfile?.address || '',
+            licenseNumber: userData.driverProfile?.licenseNumber || '',
+            vehicleReg: userData.driverProfile?.vehicleRegistration || '',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile:', error);
+      } finally {
+        setFetchingProfile(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleProfileUpdate = async (e) => {
     e.preventDefault();
-    toast.success('Profile updated successfully');
+    setLoading(true);
+
+    try {
+      const response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, {
+        fullName: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        address: profileData.address,
+        licenseNumber: profileData.licenseNumber,
+        vehicleRegistration: profileData.vehicleReg,
+      });
+
+      if (response.data && response.data.success) {
+        toast.success('Profile updated successfully!');
+      } else {
+        toast.error(response.data?.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+
+      if (error.response) {
+        const errorMessage = error.response.data?.message ||
+          error.response.data?.error ||
+          'Failed to update profile';
+        toast.error(errorMessage);
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -41,12 +108,40 @@ const DriverProfile = () => {
       return;
     }
 
-    toast.success('Password changed successfully');
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
+    setPasswordLoading(true);
+
+    try {
+      const response = await axiosInstance.post('/api/auth/change-password', {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+
+      if (response.data && response.data.success) {
+        toast.success('Password changed successfully!');
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        });
+      } else {
+        toast.error(response.data?.message || 'Failed to change password');
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+
+      if (error.response) {
+        const errorMessage = error.response.data?.message ||
+          error.response.data?.error ||
+          'Failed to change password';
+        toast.error(errorMessage);
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   return (
@@ -116,21 +211,19 @@ const DriverProfile = () => {
       <div className="mb-6 flex gap-2 border-b border-gray-200">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
-            activeTab === 'profile'
-              ? 'border-b-2 border-teal-600 text-teal-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'profile'
+            ? 'border-b-2 border-teal-600 text-teal-600'
+            : 'text-gray-600 hover:text-gray-900'
+            }`}
         >
           Profile Information
         </button>
         <button
           onClick={() => setActiveTab('security')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
-            activeTab === 'security'
-              ? 'border-b-2 border-teal-600 text-teal-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'security'
+            ? 'border-b-2 border-teal-600 text-teal-600'
+            : 'text-gray-600 hover:text-gray-900'
+            }`}
         >
           Security
         </button>
@@ -161,7 +254,7 @@ const DriverProfile = () => {
             <div className="grid gap-6 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Full Name <span className="text-red-600">*</span>
+                  Full Name
                 </label>
                 <div className="relative">
                   <User className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -170,14 +263,13 @@ const DriverProfile = () => {
                     value={profileData.name}
                     onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                     className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                    required
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Email Address <span className="text-red-600">*</span>
+                  Email Address
                 </label>
                 <div className="relative">
                   <Mail className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -186,14 +278,13 @@ const DriverProfile = () => {
                     value={profileData.email}
                     onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                     className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                    required
                   />
                 </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Phone Number <span className="text-red-600">*</span>
+                  Phone Number
                 </label>
                 <div className="relative">
                   <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -202,7 +293,6 @@ const DriverProfile = () => {
                     value={profileData.phone}
                     onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                     className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                    required
                   />
                 </div>
               </div>
@@ -235,7 +325,7 @@ const DriverProfile = () => {
 
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Address <span className="text-red-600">*</span>
+                  Address
                 </label>
                 <div className="relative">
                   <MapPin className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
@@ -244,7 +334,6 @@ const DriverProfile = () => {
                     onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
                     rows={3}
                     className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                    required
                   />
                 </div>
               </div>
@@ -253,10 +342,20 @@ const DriverProfile = () => {
             <div className="mt-6 flex justify-end">
               <button
                 type="submit"
-                className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                disabled={loading}
+                className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Save className="h-4 w-4" />
-                Save Changes
+                {loading ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Save Changes
+                  </>
+                )}
               </button>
             </div>
           </form>
@@ -378,10 +477,20 @@ const DriverProfile = () => {
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                disabled={passwordLoading}
+                className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Lock className="h-4 w-4" />
-                Update Password
+                {passwordLoading ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    <span>Updating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-4 w-4" />
+                    Update Password
+                  </>
+                )}
               </button>
             </div>
           </form>

@@ -26,6 +26,7 @@ const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
 
   // Profile form state
@@ -138,7 +139,7 @@ const Profile = () => {
   };
 
   // Change password
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -151,12 +152,40 @@ const Profile = () => {
       return;
     }
 
-    toast.success('Password changed successfully!');
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
+    setPasswordLoading(true);
+
+    try {
+      const response = await axiosInstance.post('/api/auth/change-password', {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+
+      if (response.data && response.data.success) {
+        toast.success('Password changed successfully!');
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        });
+      } else {
+        toast.error(response.data?.message || 'Failed to change password');
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+
+      if (error.response) {
+        const errorMessage = error.response.data?.message ||
+          error.response.data?.error ||
+          'Failed to change password';
+        toast.error(errorMessage);
+      } else if (error.request) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   return (
@@ -228,8 +257,8 @@ const Profile = () => {
           <button
             onClick={() => setActiveTab('profile')}
             className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${activeTab === 'profile'
-                ? 'border-b-2 border-teal-600 text-teal-600'
-                : 'text-gray-600 hover:text-gray-900'
+              ? 'border-b-2 border-teal-600 text-teal-600'
+              : 'text-gray-600 hover:text-gray-900'
               }`}
           >
             <User className="mx-auto mb-1 h-5 w-5" />
@@ -238,8 +267,8 @@ const Profile = () => {
           <button
             onClick={() => setActiveTab('security')}
             className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${activeTab === 'security'
-                ? 'border-b-2 border-teal-600 text-teal-600'
-                : 'text-gray-600 hover:text-gray-900'
+              ? 'border-b-2 border-teal-600 text-teal-600'
+              : 'text-gray-600 hover:text-gray-900'
               }`}
           >
             <Lock className="mx-auto mb-1 h-5 w-5" />
@@ -521,10 +550,20 @@ const Profile = () => {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                  disabled={passwordLoading}
+                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Lock className="h-5 w-5" />
-                  Change Password
+                  {passwordLoading ? (
+                    <>
+                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      <span>Changing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-5 w-5" />
+                      Change Password
+                    </>
+                  )}
                 </button>
               </div>
             </form>
