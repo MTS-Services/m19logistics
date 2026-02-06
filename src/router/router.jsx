@@ -13,7 +13,7 @@ import JobsView from '../pages/public/public_jobs/JobsView';
 // Auth pages
 import LoginView from '../pages/auth/LoginView';
 
-// Dashboard pages
+// Dashboard pages - Admin
 import AdminDashboard from '../pages/dashboards/admin/AdminDashboard';
 import AdminDashboardHome from '../pages/dashboards/admin/AdminDashboardHome';
 import BookingsBoard from '../pages/dashboards/admin/BookingsBoard';
@@ -23,9 +23,29 @@ import InvoicesManagement from '../pages/dashboards/admin/InvoicesManagement';
 import PricingManagement from '../pages/dashboards/admin/PricingManagement';
 import AnalyticsDashboard from '../pages/dashboards/admin/AnalyticsDashboard';
 import SettingsManagement from '../pages/dashboards/admin/SettingsManagement';
+
+// Dashboard pages - Customer
 import CustomerDashboard from '../pages/dashboards/customer/CustomerDashboard';
+import CustomerDashboardHome from '../pages/dashboards/customer/CustomerDashboardHome';
+import NewDelivery from '../pages/dashboards/customer/NewDelivery';
+import DeliveryHistory from '../pages/dashboards/customer/DeliveryHistory';
+import CustomerInvoices from '../pages/dashboards/customer/Invoices';
+import CustomerProfile from '../pages/dashboards/customer/Profile';
+
+// Dashboard pages - Driver
 import DriverDashboardLayout from '../pages/dashboards/driver/DriverDashboardLayout';
+import DriverDashboardHome from '../pages/dashboards/driver/DriverDashboardHome';
+import AssignedDeliveries from '../pages/dashboards/driver/AssignedDeliveries';
+import CompletedDeliveries from '../pages/dashboards/driver/CompletedDeliveries';
+import DriverProfile from '../pages/dashboards/driver/DriverProfile';
+
+// Dashboard pages - Area Manager
 import AreaManagerDashboardLayout from '../pages/dashboards/area-manager/AreaManagerDashboardLayout';
+import AreaManagerDashboardHome from '../pages/dashboards/area-manager/AreaManagerDashboardHome';
+import StoreDeliveries from '../pages/dashboards/area-manager/StoreDeliveries';
+import StoreInvoices from '../pages/dashboards/area-manager/StoreInvoices';
+import StoreAnalytics from '../pages/dashboards/area-manager/StoreAnalytics';
+import AreaManagerProfile from '../pages/dashboards/area-manager/AreaManagerProfile';
 
 // Error pages
 import NotFound from '../pages/error/NotFound';
@@ -65,33 +85,52 @@ const router = createBrowserRouter(
 
       {/* Customer Routes */}
       <Route
-        path="/customer/*"
+        path="/customer"
         element={
           <ProtectedRoute allowedRoles={['customer']}>
             <CustomerDashboard />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<CustomerDashboardHome />} />
+        <Route path="new-delivery" element={<NewDelivery />} />
+        <Route path="deliveries" element={<DeliveryHistory />} />
+        <Route path="invoices" element={<CustomerInvoices />} />
+        <Route path="profile" element={<CustomerProfile />} />
+      </Route>
 
       {/* Driver Routes */}
       <Route
-        path="/driver/*"
+        path="/driver"
         element={
           <ProtectedRoute allowedRoles={['driver']}>
             <DriverDashboardLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<DriverDashboardHome />} />
+        <Route path="dashboard" element={<DriverDashboardHome />} />
+        <Route path="assigned" element={<AssignedDeliveries />} />
+        <Route path="completed" element={<CompletedDeliveries />} />
+        <Route path="profile" element={<DriverProfile />} />
+      </Route>
 
       {/* Area Manager Routes */}
       <Route
-        path="/area-manager/*"
+        path="/area-manager"
         element={
           <ProtectedRoute allowedRoles={['area_manager']}>
             <AreaManagerDashboardLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<AreaManagerDashboardHome />} />
+        <Route path="dashboard" element={<AreaManagerDashboardHome />} />
+        <Route path="deliveries" element={<StoreDeliveries />} />
+        <Route path="invoices" element={<StoreInvoices />} />
+        <Route path="analytics" element={<StoreAnalytics />} />
+        <Route path="profile" element={<AreaManagerProfile />} />
+      </Route>
 
       {/* Error Routes */}
       <Route path="/unauthorized" element={<UnauthorizedView />} />

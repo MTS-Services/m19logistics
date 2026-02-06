@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import CustomerDashboardHome from './CustomerDashboardHome';
-import NewDelivery from './NewDelivery';
-import DeliveryHistory from './DeliveryHistory';
-import Invoices from './Invoices';
-import Profile from './Profile';
 import {
   LayoutDashboard,
   FileText,
@@ -210,13 +205,7 @@ const CustomerDashboard = () => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6">
-          <Routes>
-            <Route index element={<CustomerDashboardHome />} />
-            <Route path="new-delivery" element={<NewDelivery />} />
-            <Route path="deliveries" element={<DeliveryHistory />} />
-            <Route path="invoices" element={<Invoices />} />
-            <Route path="profile" element={<Profile />} />
-          </Routes>
+          <Outlet />
         </main>
       </div>
     </div>

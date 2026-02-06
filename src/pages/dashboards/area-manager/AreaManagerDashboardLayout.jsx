@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import AreaManagerDashboardHome from './AreaManagerDashboardHome';
-import StoreDeliveries from './StoreDeliveries';
-import StoreInvoices from './StoreInvoices';
-import StoreAnalytics from './StoreAnalytics';
-import AreaManagerProfile from './AreaManagerProfile';
 import {
   LayoutDashboard,
   Package,
@@ -212,14 +207,7 @@ const AreaManagerDashboardLayout = () => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6">
-          <Routes>
-            <Route index element={<AreaManagerDashboardHome />} />
-            <Route path="dashboard" element={<AreaManagerDashboardHome />} />
-            <Route path="deliveries" element={<StoreDeliveries />} />
-            <Route path="invoices" element={<StoreInvoices />} />
-            <Route path="analytics" element={<StoreAnalytics />} />
-            <Route path="profile" element={<AreaManagerProfile />} />
-          </Routes>
+          <Outlet />
         </main>
       </div>
     </div>
