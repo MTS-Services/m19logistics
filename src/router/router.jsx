@@ -8,6 +8,7 @@ import HomeView from '../pages/public/public_Home/HomeView';
 import AboutView from '../pages/public/public_about/AboutView';
 import ContactView from '../pages/public/public_contact/ContactView';
 import EnquiriesView from '../pages/public/public_enquiries/EnquiriesView';
+import JobsView from '../pages/public/public_jobs/JobsView';
 
 // Auth pages
 import LoginView from '../pages/auth/LoginView';
@@ -39,6 +40,7 @@ const router = createBrowserRouter(
         <Route path="about" element={<AboutView />} />
         <Route path="contact" element={<ContactView />} />
         <Route path="enquiries" element={<EnquiriesView />} />
+        <Route path="jobs" element={<JobsView />} />
         <Route path="login" element={<LoginView />} />
       </Route>
 

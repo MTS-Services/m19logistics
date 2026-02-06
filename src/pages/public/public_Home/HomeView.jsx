@@ -126,6 +126,12 @@ const HomeView = () => {
               >
                 Contact Us
               </Link>
+              <Link
+                to="/jobs"
+                className="inline-flex items-center justify-center rounded-lg border-2 border-white/40 bg-transparent px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/10"
+              >
+                Jobs
+              </Link>
             </div>
           </div>
         </div>

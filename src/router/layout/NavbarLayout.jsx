@@ -23,6 +23,7 @@ const NavbarLayout = () => {
     { name: 'About Us', href: '/about', icon: Info },
     { name: 'Enquiries', href: '/enquiries', icon: HelpCircle },
     { name: 'Contact', href: '/contact', icon: Mail },
+    { name: 'Jobs', href: '/jobs', icon: Truck },
   ];
 
   const isActive = (path) => location.pathname === path;
