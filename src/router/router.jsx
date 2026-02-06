@@ -60,6 +60,7 @@ import ManagerProfile from '../pages/dashboards/manager/ManagerProfile';
 import NotFound from '../pages/error/NotFound';
 import UnauthorizedView from '../pages/error/UnauthorizedView';
 
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
