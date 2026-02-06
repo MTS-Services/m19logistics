@@ -201,7 +201,7 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
   );
 };
 
-const BookingsBoard = () => {
+const ManagerBookingsBoard = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -616,7 +616,7 @@ const BookingsBoard = () => {
                     : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                 }`}
               >
-                All Roles
+                All
               </button>
               <button
                 onClick={() => handleFilterChange('received')}
@@ -1335,4 +1335,4 @@ const BookingsBoard = () => {
   );
 };
 
-export default BookingsBoard;
+export default ManagerBookingsBoard;

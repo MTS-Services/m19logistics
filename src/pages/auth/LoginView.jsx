@@ -18,6 +18,7 @@ const LoginView = () => {
   const demoCredentials = {
     customer: { email: 'topps022@toppstiles.co.uk', password: 'Password022' },
     driver: { email: 'wwwbk@yahoo.co.uk', password: 'M1901' },
+    manager: { email: 'manager@m19logistics.com', password: 'manager123' },
     area_manager: { email: 'rob.myers@toppstiles.com', password: 'Topps01' },
     admin: { email: 'admin@m19logistics.com', password: 'admin123' },
   };
@@ -44,7 +45,7 @@ const LoginView = () => {
       textColor: 'text-orange-600',
     },
     {
-      id: 'area_manager',
+      id: 'manager',
       label: 'Manager',
       icon: Users,
       color: 'orange',
@@ -53,6 +54,16 @@ const LoginView = () => {
       borderColor: 'border-orange-600',
       textColor: 'text-orange-600',
     },
+    // {
+    //   id: 'area_manager',
+    //   label: 'Area Mgr',
+    //   icon: Users,
+    //   color: 'blue',
+    //   bgColor: 'bg-blue-600',
+    //   hoverColor: 'hover:bg-blue-700',
+    //   borderColor: 'border-blue-600',
+    //   textColor: 'text-blue-600',
+    // },
     {
       id: 'admin',
       label: 'Admin',
@@ -85,15 +96,24 @@ const LoginView = () => {
           buttonColor: 'bg-orange-600 hover:bg-orange-700',
           message: 'Driver portal access requires an active driver ID',
         };
-      case 'area_manager':
+      case 'manager':
         return {
-          title: 'Area Manager Login',
+          title: 'Manager Login',
           label: 'Email Address',
           placeholder: 'Enter your email',
           buttonText: 'Login as Manager',
           buttonColor: 'bg-orange-600 hover:bg-orange-700',
-          message: 'Area Manager portal for regional oversight',
+          message: 'Operations Manager portal with restricted admin access',
         };
+      // case 'area_manager':
+      //   return {
+      //     title: 'Area Manager Login',
+      //     label: 'Email Address',
+      //     placeholder: 'Enter your email',
+      //     buttonText: 'Login as Area Manager',
+      //     buttonColor: 'bg-blue-600 hover:bg-blue-700',
+      //     message: 'Area Manager portal for regional oversight',
+      //   };
       case 'admin':
         return {
           title: 'Admin Login',
@@ -133,7 +153,7 @@ const LoginView = () => {
         login(user);
         toast.success(`Welcome back, ${user.name}!`);
 
-        // Redirect based on role
+        // Redirect based on role - directly to dashboard
         switch (user.role) {
           case 'admin':
             navigate('/admin/dashboard');
@@ -144,9 +164,12 @@ const LoginView = () => {
           case 'customer':
             navigate('/customer');
             break;
-          case 'area_manager':
-            navigate('/area-manager/dashboard');
+          case 'manager':
+            navigate('/manager/dashboard');
             break;
+          // case 'area_manager':
+          //   navigate('/area-manager/dashboard');
+          //   break;
           default:
             navigate('/');
         }
@@ -211,22 +234,26 @@ const LoginView = () => {
               className={`mb-6 rounded-lg ${
                 selectedRole === 'driver'
                   ? 'border border-orange-200 bg-orange-50'
-                  : selectedRole === 'area_manager'
+                  : selectedRole === 'manager'
                     ? 'border border-orange-200 bg-orange-50'
-                    : selectedRole === 'admin'
-                      ? 'border border-gray-300 bg-gray-100'
-                      : 'border border-teal-200 bg-teal-50'
+                    : selectedRole === 'area_manager'
+                      ? 'border border-blue-200 bg-blue-50'
+                      : selectedRole === 'admin'
+                        ? 'border border-gray-300 bg-gray-100'
+                        : 'border border-teal-200 bg-teal-50'
               } p-4`}
             >
               <p
                 className={`text-sm ${
                   selectedRole === 'driver'
                     ? 'text-orange-800'
-                    : selectedRole === 'area_manager'
+                    : selectedRole === 'manager'
                       ? 'text-orange-800'
-                      : selectedRole === 'admin'
-                        ? 'text-gray-800'
-                        : 'text-teal-800'
+                      : selectedRole === 'area_manager'
+                        ? 'text-blue-800'
+                        : selectedRole === 'admin'
+                          ? 'text-gray-800'
+                          : 'text-teal-800'
                 }`}
               >
                 {roleInfo.message}

@@ -47,6 +47,14 @@ import StoreInvoices from '../pages/dashboards/area-manager/StoreInvoices';
 import StoreAnalytics from '../pages/dashboards/area-manager/StoreAnalytics';
 import AreaManagerProfile from '../pages/dashboards/area-manager/AreaManagerProfile';
 
+// Dashboard pages - Manager
+import ManagerDashboard from '../pages/dashboards/manager/ManagerDashboard';
+import ManagerDashboardHome from '../pages/dashboards/manager/ManagerDashboardHome';
+import ManagerBookingsBoard from '../pages/dashboards/manager/ManagerBookingsBoard';
+import ManagerDriverManagement from '../pages/dashboards/manager/ManagerDriverManagement';
+import ManagerInvoicesManagement from '../pages/dashboards/manager/ManagerInvoicesManagement';
+import ManagerAnalyticsDashboard from '../pages/dashboards/manager/ManagerAnalyticsDashboard';
+
 // Error pages
 import NotFound from '../pages/error/NotFound';
 import UnauthorizedView from '../pages/error/UnauthorizedView';
@@ -130,6 +138,25 @@ const router = createBrowserRouter(
         <Route path="invoices" element={<StoreInvoices />} />
         <Route path="analytics" element={<StoreAnalytics />} />
         <Route path="profile" element={<AreaManagerProfile />} />
+      </Route>
+
+      {/* Manager Routes */}
+      <Route
+        path="/manager"
+        element={
+          <ProtectedRoute allowedRoles={['manager']}>
+            <ManagerDashboard />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="dashboard" element={<ManagerDashboardHome />} />
+        <Route path="bookings" element={<ManagerBookingsBoard />} />
+        <Route path="drivers" element={<ManagerDriverManagement />} />
+        <Route path="store-deliveries" element={<StoreDeliveries />} />
+        <Route path="store-invoices" element={<StoreInvoices />} />
+        <Route path="store-analytics" element={<StoreAnalytics />} />
+        <Route path="invoices" element={<ManagerInvoicesManagement />} />
+        <Route path="analytics" element={<ManagerAnalyticsDashboard />} />
       </Route>
 
       {/* Error Routes */}
