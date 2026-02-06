@@ -65,8 +65,11 @@ const ContactView = () => {
                       07971 415430
                     </a>
                     <br />
-                    <a href="tel:01978439739" className="text-teal-600 hover:text-teal-700">
-                      01978 439739
+                    <a
+                      href="https://wa.me/447577574676"
+                      className="text-teal-600 hover:text-teal-700"
+                    >
+                      WhatsApp 07577 574676
                     </a>
                   </div>
                 </div>
@@ -80,12 +83,6 @@ const ContactView = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900">Email</h3>
                     <div className="space-y-1">
-                      <a
-                        href="mailto:m19logistics@gmail.com"
-                        className="block text-blue-600 hover:text-blue-700"
-                      >
-                        m19logistics@gmail.com
-                      </a>
                       <a
                         href="mailto:enquiries@m19logistics.com"
                         className="block text-blue-600 hover:text-blue-700"

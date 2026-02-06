@@ -95,7 +95,7 @@ const HomeView = () => {
       <div className="relative flex min-h-screen w-full items-center overflow-hidden bg-slate-900 pt-20">
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('/images/hero-bg.jpg')] bg-cover bg-center opacity-70"></div>
+          <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-cover bg-center opacity-70"></div>
           <div className="absolute inset-0 bg-linear-to-t from-slate-900 via-slate-900/80 to-slate-900/40"></div>
         </div>
 
@@ -262,11 +262,11 @@ const HomeView = () => {
                 <span>07971 415430</span>
               </a>
               <a
-                href="tel:01978439739"
+                href="https://wa.me/447577574676"
                 className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 sm:w-auto"
               >
                 <Phone className="h-5 w-5" />
-                <span>01978 439739</span>
+                <span>WhatsApp 07577 574676</span>
               </a>
               <a
                 href="mailto:enquiries@m19logistics.com"

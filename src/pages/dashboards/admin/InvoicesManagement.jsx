@@ -306,8 +306,10 @@ const InvoicesManagement = () => {
     doc.setFontSize(9);
     doc.setTextColor(255, 255, 255);
     doc.text('SPO', 25, yPosition + 7);
-    doc.text('Date', 60, yPosition + 7);
-    doc.text('Address', 90, yPosition + 7);
+    doc.text('Date', 55, yPosition + 7);
+    doc.text('Address', 85, yPosition + 7);
+    doc.text('Unit Price', pageWidth - 85, yPosition + 7, { align: 'right' });
+    doc.text('VAT', pageWidth - 55, yPosition + 7, { align: 'right' });
     doc.text('Amount', pageWidth - 25, yPosition + 7, { align: 'right' });
 
     yPosition += 10;
@@ -316,18 +318,31 @@ const InvoicesManagement = () => {
     doc.setTextColor(0, 0, 0);
     selectedInvoice.deliveries.forEach((delivery, index) => {
       const rowColor = index % 2 === 0 ? [249, 250, 251] : [255, 255, 255];
+      const deliverySubtotal = delivery.basePrice + (delivery.distanceSurcharge || 0);
+      const extraChargesTotal =
+        delivery.extraCharges?.reduce((sum, charge) => sum + charge.amount, 0) || 0;
+      const lineTotal = deliverySubtotal + extraChargesTotal;
+      const lineVat = lineTotal * 0.2;
+      const lineAmount = lineTotal + lineVat;
+
       doc.setFillColor(rowColor[0], rowColor[1], rowColor[2]);
       doc.rect(20, yPosition, pageWidth - 40, 12, 'F');
 
       doc.setFontSize(8);
       doc.setTextColor(0, 0, 0);
       doc.text(delivery.spo, 25, yPosition + 8);
-      doc.text(new Date(delivery.date).toLocaleDateString('en-GB'), 60, yPosition + 8);
+      doc.text(new Date(delivery.date).toLocaleDateString('en-GB'), 55, yPosition + 8);
 
-      const addressLines = doc.splitTextToSize(delivery.address, 80);
-      doc.text(addressLines[0], 90, yPosition + 8);
+      const addressLines = doc.splitTextToSize(delivery.address, 50);
+      doc.text(addressLines[0], 85, yPosition + 8);
 
-      doc.text(`£${delivery.basePrice.toFixed(2)}`, pageWidth - 25, yPosition + 8, {
+      doc.text(`£${lineTotal.toFixed(2)}`, pageWidth - 85, yPosition + 8, {
+        align: 'right',
+      });
+      doc.text(`£${lineVat.toFixed(2)}`, pageWidth - 55, yPosition + 8, {
+        align: 'right',
+      });
+      doc.text(`£${lineAmount.toFixed(2)}`, pageWidth - 25, yPosition + 8, {
         align: 'right',
       });
 
@@ -340,8 +355,8 @@ const InvoicesManagement = () => {
 
         doc.setFontSize(7);
         doc.setTextColor(102, 102, 102);
-        doc.text('Distance Surcharge', 90, yPosition + 5);
-        doc.text(`£${delivery.distanceSurcharge.toFixed(2)}`, pageWidth - 25, yPosition + 5, {
+        doc.text('  + Distance Surcharge', 85, yPosition + 5);
+        doc.text(`£${delivery.distanceSurcharge.toFixed(2)}`, pageWidth - 85, yPosition + 5, {
           align: 'right',
         });
         yPosition += 8;
@@ -354,8 +369,8 @@ const InvoicesManagement = () => {
 
         doc.setFontSize(7);
         doc.setTextColor(102, 102, 102);
-        doc.text(charge.description, 90, yPosition + 5);
-        doc.text(`£${charge.amount.toFixed(2)}`, pageWidth - 25, yPosition + 5, { align: 'right' });
+        doc.text(`  + ${charge.description}`, 85, yPosition + 5);
+        doc.text(`£${charge.amount.toFixed(2)}`, pageWidth - 85, yPosition + 5, { align: 'right' });
         yPosition += 8;
       });
     });
@@ -575,8 +590,9 @@ const InvoicesManagement = () => {
                 <p className="mt-2 text-sm text-gray-600">84 Acton Hall Walks</p>
                 <p className="text-sm text-gray-600">Wrexham</p>
                 <p className="text-sm text-gray-600">LL12 7YJ</p>
-                <p className="mt-2 text-sm text-gray-600">Tel: 07971415430 / 01978439739</p>
-                <p className="text-sm text-gray-600">Email: m19logistics@gmail.com</p>
+                <p className="mt-2 text-sm text-gray-600">
+                  Tel: 07971415430 / WhatsApp 07577574676
+                </p>
                 <p className="mt-2 text-sm font-medium text-gray-700">VAT Number: 447 5918 54</p>
               </div>
 

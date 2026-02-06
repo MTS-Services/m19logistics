@@ -290,8 +290,7 @@ const Invoices = () => {
     const invoiceData = [
       ['M19 Logistics Limited'],
       ['84 Acton Hall Walks, Wrexham, LL12 7YJ'],
-      ['Tel: 07971415430 / 01978439739'],
-      ['Email: m19logistics@gmail.com'],
+      ['Tel: 07971415430 / WhatsApp 07577574676'],
       ['VAT Number: 447 5918 54'],
       [''],
       ['Invoice Number', invoice.invoiceNumber],
@@ -301,13 +300,12 @@ const Invoices = () => {
       ...(invoice.paidDate ? [['Paid Date', invoice.paidDate]] : []),
       [''],
       ['Delivery Items'],
-      ['SPO Number', 'Date', 'Address', 'Base Price', 'Distance Surcharge', 'VAT', 'Total'],
+      ['SPO Number', 'Date', 'Address', 'Unit Price', 'VAT (20%)', 'Amount'],
       ...invoice.deliveries.map((d) => [
         d.spoNumber,
         d.date,
         d.address,
         `£${d.basePrice.toFixed(2)}`,
-        `£${d.distanceSurcharge.toFixed(2)}`,
         `£${d.vat.toFixed(2)}`,
         `£${d.total.toFixed(2)}`,
       ]),
@@ -647,8 +645,7 @@ const Invoices = () => {
                   <h4 className="text-lg font-bold text-gray-900">M19 Logistics Limited</h4>
                   <p className="text-sm text-gray-600">84 Acton Hall Walks</p>
                   <p className="text-sm text-gray-600">Wrexham, LL12 7YJ</p>
-                  <p className="text-sm text-gray-600">Tel: 07971415430 / 01978439739</p>
-                  <p className="text-sm text-gray-600">Email: m19logistics@gmail.com</p>
+                  <p className="text-sm text-gray-600">Tel: 07971415430 / WhatsApp 07577574676</p>
                   <p className="text-sm text-gray-600">VAT Number: 447 5918 54</p>
                 </div>
                 <div className="border-t border-gray-300 pt-4">
@@ -682,6 +679,12 @@ const Invoices = () => {
                           Address
                         </th>
                         <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                          Unit Price
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                          VAT
+                        </th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
                           Amount
                         </th>
                       </tr>
@@ -696,6 +699,12 @@ const Invoices = () => {
                             {delivery.date}
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600">{delivery.address}</td>
+                          <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                            £{delivery.basePrice.toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                            £{delivery.vat.toFixed(2)}
+                          </td>
                           <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
                             £{delivery.total.toFixed(2)}
                           </td>

@@ -275,7 +275,7 @@ M19 Logistics Limited
 Wrexham
 LL12 7YJ
 Tel.: 07971415430 / 01978439739
-Email: m19logistics@gmail.com
+
 VAT Number: 447 5918 54
 ```
 
@@ -405,7 +405,7 @@ Rob Myers and future area managers see:
 > Thank you for choosing M19 Logistics—where your deliveries matter as much to us as they do to you.
 
 **Company Logo**: Extract from invoice template  
-**Contact**: Tel: 07971415430 / 01978439739 | Email: m19logistics@gmail.com  
+**Contact**: Tel: 07971415430 / WhatsApp 07577574676  
 **Exclude**: Company address (per requirements)
 
 ### Contact Page
@@ -536,7 +536,7 @@ Account Number: 72696370
 ## 📞 Contact Information
 
 **Primary Contact**: Ben Admin  
-**Phone**: 07971415430 / 01978439739  
+**Phone**: 07971415430 / WhatsApp 07577574676  
 **Email**: ben@m19logistics.com  
 **General Enquiries**: enquiries@m19logistics.com  
 **Delivery Enquiries**: deliveries@m19logistics.com  
