@@ -7,6 +7,7 @@ import {
   Truck,
   FileText,
   BarChart3,
+  User,
   LogOut,
   Menu,
   X,
@@ -53,6 +54,10 @@ const ManagerDashboard = () => {
         { name: 'Invoices', href: '/manager/invoices', icon: FileText },
         { name: 'Analytics', href: '/manager/analytics', icon: BarChart3 },
       ],
+    },
+    {
+      title: 'Account',
+      items: [{ name: 'Profile', href: '/manager/profile', icon: User }],
     },
   ];
 

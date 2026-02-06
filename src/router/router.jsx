@@ -54,6 +54,7 @@ import ManagerBookingsBoard from '../pages/dashboards/manager/ManagerBookingsBoa
 import ManagerDriverManagement from '../pages/dashboards/manager/ManagerDriverManagement';
 import ManagerInvoicesManagement from '../pages/dashboards/manager/ManagerInvoicesManagement';
 import ManagerAnalyticsDashboard from '../pages/dashboards/manager/ManagerAnalyticsDashboard';
+import ManagerProfile from '../pages/dashboards/manager/ManagerProfile';
 
 // Error pages
 import NotFound from '../pages/error/NotFound';
@@ -157,6 +158,7 @@ const router = createBrowserRouter(
         <Route path="store-analytics" element={<StoreAnalytics />} />
         <Route path="invoices" element={<ManagerInvoicesManagement />} />
         <Route path="analytics" element={<ManagerAnalyticsDashboard />} />
+        <Route path="profile" element={<ManagerProfile />} />
       </Route>
 
       {/* Error Routes */}

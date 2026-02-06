@@ -125,7 +125,7 @@ export const demoUsers = [
     username: 'manager',
     password: 'manager123',
     email: 'manager@m19logistics.com',
-    name: 'Operations Manager',
+    name: 'Area Manager',
     role: 'manager',
     phone: '07971415431',
     mustChangePassword: false,

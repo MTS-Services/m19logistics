@@ -103,7 +103,7 @@ const LoginView = () => {
           placeholder: 'Enter your email',
           buttonText: 'Login as Manager',
           buttonColor: 'bg-orange-600 hover:bg-orange-700',
-          message: 'Operations Manager portal with restricted admin access',
+          message: 'Area Manager portal with restricted admin access',
         };
       // case 'area_manager':
       //   return {
