@@ -14,6 +14,9 @@ const DriverProfile = () => {
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = React.useRef(null);
 
   const [profileData, setProfileData] = useState({
     name: user?.fullName || '',
@@ -47,12 +50,8 @@ const DriverProfile = () => {
         setFetchingProfile(true);
         const response = await axiosInstance.get('/api/auth/me');
 
-        console.log('Profile API Response:', response.data);
-
         if (response.data && response.data.success && response.data.data) {
           const userData = response.data.data;
-          console.log('User Data:', userData);
-          console.log('Driver Profile:', userData.driverProfile);
 
           const fetched = {
             name: userData.fullName || '',
@@ -65,6 +64,11 @@ const DriverProfile = () => {
 
           setProfileData(fetched);
           setOriginalProfile(fetched);
+
+          // Set existing profile picture if available
+          if (userData.profilePicture) {
+            setImagePreview(userData.profilePicture);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch profile:', error);
@@ -82,19 +86,49 @@ const DriverProfile = () => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, {
-        fullName: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-        address: profileData.address,
-        driverLicenseNumber: profileData.licenseNumber,
-        vehicleRegistration: profileData.vehicleReg,
-      });
+      let response;
+
+      // If image is selected, send as FormData
+      if (profileImage) {
+        const formData = new FormData();
+        formData.append('fullName', profileData.name);
+        formData.append('username', profileData.name);
+        formData.append('email', profileData.email);
+        formData.append('phone', profileData.phone);
+        formData.append('address', profileData.address);
+        formData.append('driverLicenseNumber', profileData.licenseNumber);
+        formData.append('vehicleRegistration', profileData.vehicleReg);
+        formData.append('profilePicture', profileImage);
+
+        response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      } else {
+        // Send as JSON if no image
+        response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, {
+          fullName: profileData.name,
+          username: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          address: profileData.address,
+          driverLicenseNumber: profileData.licenseNumber,
+          vehicleRegistration: profileData.vehicleReg,
+        });
+      }
 
       if (response.data && response.data.success) {
         toast.success(response.data.message || 'Profile updated successfully!');
+        
         // Update original profile snapshot so Save button disables until further edits
         setOriginalProfile({ ...profileData });
+        setProfileImage(null);
+        
+        // Update image preview with the new profile picture URL from server
+        if (response.data.data?.user?.profilePicture) {
+          setImagePreview(response.data.data.user.profilePicture);
+        }
       } else {
         toast.error(response.data?.message || 'Failed to update profile');
       }
@@ -138,7 +172,7 @@ const DriverProfile = () => {
       });
 
       if (response.data && response.data.success) {
-        toast.success('Password changed successfully!');
+        toast.success(response.data.message || 'Password changed successfully!');
         setPasswordData({
           currentPassword: '',
           newPassword: '',
@@ -165,10 +199,40 @@ const DriverProfile = () => {
     }
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    setProfileImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   // Compute dirty flag (always call hook to keep hooks order stable)
   const isDirty = useMemo(
-    () => JSON.stringify(profileData) !== JSON.stringify(originalProfile),
-    [profileData, originalProfile]
+    () => JSON.stringify(profileData) !== JSON.stringify(originalProfile) || profileImage !== null,
+    [profileData, originalProfile, profileImage]
   );
 
   // Show loading state while fetching profile
@@ -274,12 +338,25 @@ const DriverProfile = () => {
           <form onSubmit={handleProfileUpdate}>
             <div className="mb-6 flex items-center gap-6">
               <div className="relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white">
-                  {profileData.name ? profileData.name.charAt(0).toUpperCase() : 'D'}
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    profileData.name ? profileData.name.charAt(0).toUpperCase() : 'D'
+                  )}
                 </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
                 <button
                   type="button"
+                  onClick={triggerFileInput}
                   className="absolute right-0 bottom-0 rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-50"
+                  title="Change profile picture"
                 >
                   <Camera className="h-4 w-4 text-gray-600" />
                 </button>
@@ -287,6 +364,11 @@ const DriverProfile = () => {
               <div>
                 <h3 className="text-lg font-bold text-gray-900">{profileData.name}</h3>
                 <p className="text-sm text-gray-600">Driver</p>
+                {profileImage && (
+                  <p className="mt-2 text-xs text-teal-600 font-medium">
+                    Image selected. Click "Save Changes" to upload.
+                  </p>
+                )}
               </div>
             </div>
 
