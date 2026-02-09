@@ -118,6 +118,19 @@ export const demoUsers = [
     mustChangePassword: true,
     profilePhoto: null,
   },
+
+  // Manager (Operations Manager - restricted Admin access)
+  {
+    id: 'manager001',
+    username: 'manager',
+    password: 'manager123',
+    email: 'manager@m19logistics.com',
+    name: 'Area Manager',
+    role: 'manager',
+    phone: '07971415431',
+    mustChangePassword: false,
+    profilePhoto: null,
+  },
 ];
 
 // Pricing tiers

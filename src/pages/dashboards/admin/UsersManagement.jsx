@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Users,
   UserPlus,
@@ -33,6 +33,24 @@ const UsersManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showActionDropdown, setShowActionDropdown] = useState(null);
   const itemsPerPage = 5;
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowActionDropdown(null);
+      }
+    };
+
+    if (showActionDropdown !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showActionDropdown]);
 
   // Pre-loaded users based on requirements
   const [users, setUsers] = useState([
@@ -608,7 +626,7 @@ const UsersManagement = () => {
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="relative">
+                            <div className="relative" ref={dropdownRef}>
                               <button
                                 onClick={() =>
                                   setShowActionDropdown(
@@ -713,7 +731,7 @@ const UsersManagement = () => {
 
                       {/* Card Actions */}
                       <div className="mt-3 border-t border-gray-100 pt-3">
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                           <button
                             onClick={() =>
                               setShowActionDropdown(showActionDropdown === user.id ? null : user.id)

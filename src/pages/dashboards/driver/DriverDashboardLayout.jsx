@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import DriverDashboardHome from './DriverDashboardHome';
-import AssignedDeliveries from './AssignedDeliveries';
-import CompletedDeliveries from './CompletedDeliveries';
-import DriverProfile from './DriverProfile';
 import {
   LayoutDashboard,
   Package,
@@ -208,13 +204,7 @@ const DriverDashboardLayout = () => {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6">
-          <Routes>
-            <Route index element={<DriverDashboardHome />} />
-            <Route path="dashboard" element={<DriverDashboardHome />} />
-            <Route path="assigned" element={<AssignedDeliveries />} />
-            <Route path="completed" element={<CompletedDeliveries />} />
-            <Route path="profile" element={<DriverProfile />} />
-          </Routes>
+          <Outlet />
         </main>
       </div>
     </div>

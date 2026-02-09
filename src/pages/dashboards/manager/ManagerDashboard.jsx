@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
   LayoutDashboard,
+  Package,
+  Truck,
   FileText,
+  BarChart3,
   User,
   LogOut,
-  PlusCircle,
   Menu,
   X,
   ChevronRight,
-  History,
-  Home,
   ChevronDown,
 } from 'lucide-react';
 
-const CustomerDashboard = () => {
+const ManagerDashboard = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
@@ -27,24 +27,37 @@ const CustomerDashboard = () => {
     navigate('/');
   };
 
+  // MODIFIED NAVIGATION - Excluded: Users, Pricing, Settings
   const navigationSections = [
     {
       title: 'Main',
-      items: [{ name: 'Dashboard', href: '/customer', icon: LayoutDashboard }],
+      items: [{ name: 'Dashboard', href: '/manager/dashboard', icon: LayoutDashboard }],
     },
     {
       title: 'Operations',
       items: [
-        { name: 'New Delivery', href: '/customer/new-delivery', icon: PlusCircle },
-        { name: 'Delivery History', href: '/customer/deliveries', icon: History },
+        { name: 'Bookings', href: '/manager/bookings', icon: Package },
+        { name: 'Drivers', href: '/manager/drivers', icon: Truck },
+      ],
+    },
+    {
+      title: 'Store Management',
+      items: [
+        { name: 'Store Deliveries', href: '/manager/store-deliveries', icon: Package },
+        { name: 'Store Invoices', href: '/manager/store-invoices', icon: FileText },
+        { name: 'Store Analytics', href: '/manager/store-analytics', icon: BarChart3 },
+      ],
+    },
+    {
+      title: 'Finance',
+      items: [
+        { name: 'Invoices', href: '/manager/invoices', icon: FileText },
+        { name: 'Analytics', href: '/manager/analytics', icon: BarChart3 },
       ],
     },
     {
       title: 'Account',
-      items: [
-        { name: 'Invoices', href: '/customer/invoices', icon: FileText },
-        { name: 'Profile', href: '/customer/profile', icon: User },
-      ],
+      items: [{ name: 'Profile', href: '/manager/profile', icon: User }],
     },
   ];
 
@@ -62,14 +75,15 @@ const CustomerDashboard = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-3/4 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-gradient-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex h-full flex-col">
-          <div className="flex h-28 items-center justify-center px-6">
+          {/* Header */}
+          <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
             <Link to="/" className="transition-opacity hover:opacity-80">
-              <img src="/images/logo.png" alt="M19 Logistics" className="h-22 w-auto" />
+              <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -102,7 +116,7 @@ const CustomerDashboard = () => {
                         onClick={() => setSidebarOpen(false)}
                         className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
                           active
-                            ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
+                            ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                         }`}
                       >
@@ -168,11 +182,11 @@ const CustomerDashboard = () => {
               className="flex items-center space-x-3 rounded-lg px-4 py-2 transition-colors hover:bg-gray-100"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
-                {user?.name?.charAt(0) || 'C'}
+                {user?.name?.charAt(0) || 'M'}
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-                <p className="text-xs text-gray-500">Customer</p>
+                <p className="text-xs text-gray-500">Manager</p>
               </div>
               <ChevronDown
                 className={`h-4 w-4 text-gray-500 transition-transform ${
@@ -188,15 +202,14 @@ const CustomerDashboard = () => {
                   className="fixed inset-0 z-10"
                   onClick={() => setUserDropdownOpen(false)}
                 ></div>
-                <div className="absolute top-full right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
-                  <Link
-                    to="/"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center space-x-2 rounded-t-lg px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                <div className="absolute top-full right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-lg">
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
                   >
-                    <Home className="h-4 w-4" />
-                    <span>Homepage</span>
-                  </Link>
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </button>
                 </div>
               </>
             )}
@@ -204,7 +217,7 @@ const CustomerDashboard = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6">
+        <main className="flex-1 overflow-y-auto bg-gray-100">
           <Outlet />
         </main>
       </div>
@@ -212,4 +225,4 @@ const CustomerDashboard = () => {
   );
 };
 
-export default CustomerDashboard;
+export default ManagerDashboard;

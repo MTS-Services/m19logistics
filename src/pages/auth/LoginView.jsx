@@ -1,80 +1,160 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { demoUsers } from '../../data/demoUsers';
 import { toast } from 'react-toastify';
-import { Eye, EyeOff, Truck } from 'lucide-react';
-import axiosInstance from '../../services/axiosInstance';
-import { ENDPOINT } from '../../services/httpEndpoint';
-import { setToken } from '../../utils/storage';
+import { Eye, EyeOff, Truck, Shield, User, Users } from 'lucide-react';
 
 const LoginView = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('customer');
+  const [email, setEmail] = useState('topps022@toppstiles.co.uk');
+  const [password, setPassword] = useState('Password022');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Demo credentials for each role
+  const demoCredentials = {
+    customer: { email: 'topps022@toppstiles.co.uk', password: 'Password022' },
+    driver: { email: 'wwwbk@yahoo.co.uk', password: 'M1901' },
+    manager: { email: 'manager@m19logistics.com', password: 'manager123' },
+    area_manager: { email: 'rob.myers@toppstiles.com', password: 'Topps01' },
+    admin: { email: 'admin@m19logistics.com', password: 'admin123' },
+  };
+
+  const roles = [
+    {
+      id: 'customer',
+      label: 'Customer',
+      icon: User,
+      color: 'teal',
+      bgColor: 'bg-teal-600',
+      hoverColor: 'hover:bg-teal-700',
+      borderColor: 'border-teal-600',
+      textColor: 'text-teal-600',
+    },
+    {
+      id: 'driver',
+      label: 'Driver',
+      icon: Truck,
+      color: 'orange',
+      bgColor: 'bg-orange-600',
+      hoverColor: 'hover:bg-orange-700',
+      borderColor: 'border-orange-600',
+      textColor: 'text-orange-600',
+    },
+    {
+      id: 'manager',
+      label: 'Manager',
+      icon: Users,
+      color: 'orange',
+      bgColor: 'bg-orange-600',
+      hoverColor: 'hover:bg-orange-700',
+      borderColor: 'border-orange-600',
+      textColor: 'text-orange-600',
+    },
+    // {
+    //   id: 'area_manager',
+    //   label: 'Area Mgr',
+    //   icon: Users,
+    //   color: 'blue',
+    //   bgColor: 'bg-blue-600',
+    //   hoverColor: 'hover:bg-blue-700',
+    //   borderColor: 'border-blue-600',
+    //   textColor: 'text-blue-600',
+    // },
+    {
+      id: 'admin',
+      label: 'Admin',
+      icon: Shield,
+      color: 'gray',
+      bgColor: 'bg-gray-900',
+      hoverColor: 'hover:bg-gray-800',
+      borderColor: 'border-gray-900',
+      textColor: 'text-gray-900',
+    },
+  ];
+
+  const getRoleInfo = () => {
+    switch (selectedRole) {
+      case 'customer':
+        return {
+          title: 'Customer Login',
+          label: 'Email Address',
+          placeholder: 'Enter your email',
+          buttonText: 'Login as Customer',
+          buttonColor: 'bg-teal-600 hover:bg-teal-700',
+          message: null,
+        };
+      case 'driver':
+        return {
+          title: 'Driver Login',
+          label: 'Email Address',
+          placeholder: 'Enter your email',
+          buttonText: 'Login as Driver',
+          buttonColor: 'bg-orange-600 hover:bg-orange-700',
+          message: 'Driver portal access requires an active driver ID',
+        };
+      case 'manager':
+        return {
+          title: 'Manager Login',
+          label: 'Email Address',
+          placeholder: 'Enter your email',
+          buttonText: 'Login as Manager',
+          buttonColor: 'bg-orange-600 hover:bg-orange-700',
+          message: 'Area Manager portal with restricted admin access',
+        };
+      // case 'area_manager':
+      //   return {
+      //     title: 'Area Manager Login',
+      //     label: 'Email Address',
+      //     placeholder: 'Enter your email',
+      //     buttonText: 'Login as Area Manager',
+      //     buttonColor: 'bg-blue-600 hover:bg-blue-700',
+      //     message: 'Area Manager portal for regional oversight',
+      //   };
+      case 'admin':
+        return {
+          title: 'Admin Login',
+          label: 'Email Address',
+          placeholder: 'Enter your email',
+          buttonText: 'Login as Admin',
+          buttonColor: 'bg-gray-900 hover:bg-gray-800',
+          message: 'Secure area. All actions are logged',
+        };
+      default:
+        return {
+          title: 'Login',
+          label: 'Email Address',
+          placeholder: 'Enter your email',
+          buttonText: 'Sign In',
+          buttonColor: 'bg-teal-600 hover:bg-teal-700',
+          message: null,
+        };
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      toast.error('Please enter both email and password');
-      return;
-    }
-
     setLoading(true);
 
-    try {
-      // Call real API endpoint
-      const response = await axiosInstance.post(ENDPOINT.API.AUTH.LOGIN, {
-        email: email.trim(),
-        password: password,
-      });
+    // Simulate API call delay
+    setTimeout(() => {
+      // Find user by email/username AND matching role
+      const user = demoUsers.find(
+        (u) =>
+          (u.email === email || u.username === email) &&
+          u.password === password &&
+          u.role === selectedRole
+      );
 
-      // Check if login was successful
-      if (response.data && response.data.success && response.data.data && response.data.data.user) {
-        const userData = response.data.data.user;
-
-        // Save the authentication token - check multiple possible locations
-        const token = response.data.data.token ||
-          response.data.token ||
-          response.data.data.accessToken ||
-          response.data.accessToken;
-
-        if (token) {
-          setToken(token);
-        }
-
-        // Map API role to frontend role format (case-insensitive)
-        let userRole = userData.role ? userData.role.toLowerCase() : '';
-
-        // Map MANAGER role to area_manager for frontend routing
-        if (userRole === 'manager') {
-          userRole = 'area_manager';
-        }
-
-        // Transform API response to match the app's user structure
-        const user = {
-          id: userData.id,
-          name: userData.fullName || userData.name || 'User',
-          email: userData.email,
-          username: userData.username || userData.email,
-          role: userRole,
-          phone: userData.phone || '',
-          profilePicture: userData.profilePicture || null,
-          isActive: userData.isActive !== undefined ? userData.isActive : true,
-          customerProfile: userData.customerProfile || null,
-          driverProfile: userData.driverProfile || null,
-          managerProfile: userData.managerProfile || null,
-        };
-
-        // Store user data
+      if (user) {
         login(user);
         toast.success(`Welcome back, ${user.name}!`);
 
-        // Redirect based on role
-        switch (userRole) {
+        // Redirect based on role - directly to dashboard
+        switch (user.role) {
           case 'admin':
             navigate('/admin/dashboard');
             break;
@@ -84,68 +164,116 @@ const LoginView = () => {
           case 'customer':
             navigate('/customer');
             break;
-          case 'area_manager':
-          case 'area manager':
           case 'manager':
-            navigate('/area-manager/dashboard');
+            navigate('/manager/dashboard');
             break;
+          // case 'area_manager':
+          //   navigate('/area-manager/dashboard');
+          //   break;
           default:
             navigate('/');
         }
       } else {
-        toast.error(response.data?.message || 'Login failed. Please try again.');
+        toast.error('Invalid credentials or incorrect role selected');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-
-      if (error.response) {
-        // Server responded with error status
-        const errorMessage = error.response.data?.message ||
-          error.response.data?.error ||
-          'Invalid email or password';
-        toast.error(errorMessage);
-      } else if (error.request) {
-        // Request made but no response received
-        toast.error('Network error. Please check your connection.');
-      } else {
-        // Error in request setup
-        toast.error('An error occurred. Please try again.');
-      }
-    } finally {
       setLoading(false);
-    }
+    }, 500);
   };
+
+  const roleInfo = getRoleInfo();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 px-4 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-2xl">
         {/* Logo and Title */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-teal-600 to-teal-500">
             <Truck className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">M19 Logistics</h1>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
+          <p className="mt-2 text-gray-600">Select your role and sign in to your account</p>
+        </div>
+
+        {/* Role Selection Tabs */}
+        <div className="mb-6 rounded-lg bg-gray-100 p-2">
+          <div className="grid grid-cols-4 gap-2">
+            {roles.map((role) => {
+              const Icon = role.icon;
+              const isActive = selectedRole === role.id;
+              return (
+                <button
+                  key={role.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedRole(role.id);
+                    // Auto-fill demo credentials when role is selected
+                    setEmail(demoCredentials[role.id].email);
+                    setPassword(demoCredentials[role.id].password);
+                  }}
+                  className={`flex flex-col items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-all ${
+                    isActive
+                      ? `${role.bgColor} text-white shadow-md`
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{role.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Login Form */}
         <div className="rounded-lg bg-white p-8 shadow-xl">
-          <h2 className="mb-6 text-2xl font-bold text-gray-900">Login</h2>
+          <h2 className="mb-6 text-2xl font-bold text-gray-900">{roleInfo.title}</h2>
+
+          {/* Role-specific message */}
+          {roleInfo.message && (
+            <div
+              className={`mb-6 rounded-lg ${
+                selectedRole === 'driver'
+                  ? 'border border-orange-200 bg-orange-50'
+                  : selectedRole === 'manager'
+                    ? 'border border-orange-200 bg-orange-50'
+                    : selectedRole === 'area_manager'
+                      ? 'border border-blue-200 bg-blue-50'
+                      : selectedRole === 'admin'
+                        ? 'border border-gray-300 bg-gray-100'
+                        : 'border border-teal-200 bg-teal-50'
+              } p-4`}
+            >
+              <p
+                className={`text-sm ${
+                  selectedRole === 'driver'
+                    ? 'text-orange-800'
+                    : selectedRole === 'manager'
+                      ? 'text-orange-800'
+                      : selectedRole === 'area_manager'
+                        ? 'text-blue-800'
+                        : selectedRole === 'admin'
+                          ? 'text-gray-800'
+                          : 'text-teal-800'
+                }`}
+              >
+                {roleInfo.message}
+              </p>
+            </div>
+          )}
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
+                {roleInfo.label}
               </label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-teal-500 focus:outline-none"
-                placeholder="Enter your email"
+                placeholder={roleInfo.placeholder}
                 required
-                autoComplete="email"
               />
             </div>
 
@@ -162,7 +290,6 @@ const LoginView = () => {
                   className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-teal-500 focus:ring-teal-500 focus:outline-none"
                   placeholder="Enter your password"
                   required
-                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -181,12 +308,12 @@ const LoginView = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex w-full items-center justify-center rounded-md bg-teal-600 px-4 py-3 text-white shadow-md transition-all hover:bg-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`flex w-full items-center justify-center rounded-md px-4 py-3 text-white shadow-md transition-all ${roleInfo.buttonColor} focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:opacity-50`}
             >
               {loading ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
               ) : (
-                <span className="font-medium">Sign In</span>
+                <span className="font-medium">{roleInfo.buttonText}</span>
               )}
             </button>
           </form>

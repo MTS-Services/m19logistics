@@ -330,7 +330,7 @@ const AnalyticsModal = ({ driver, onClose }) => (
   </div>
 );
 
-const DriverManagement = () => {
+const ManagerDriverManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -1117,4 +1117,4 @@ const DriverManagement = () => {
   );
 };
 
-export default DriverManagement;
+export default ManagerDriverManagement;
