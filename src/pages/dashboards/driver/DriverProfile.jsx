@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { User, Mail, Phone, MapPin, Camera, Lock, Save, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
@@ -16,12 +16,22 @@ const DriverProfile = () => {
   const [fetchingProfile, setFetchingProfile] = useState(true);
 
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
+    name: user?.fullName || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    address: user?.address || '',
-    licenseNumber: '',
-    vehicleReg: '',
+    address: user?.driverProfile?.address || '',
+    licenseNumber: user?.driverProfile?.driverLicenseNumber || '',
+    vehicleReg: user?.driverProfile?.vehicleRegistration || '',
+  });
+
+  // Keep a copy of the original fetched profile to detect edits
+  const [originalProfile, setOriginalProfile] = useState({
+    name: user?.fullName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    address: user?.driverProfile?.address || '',
+    licenseNumber: user?.driverProfile?.driverLicenseNumber || '',
+    vehicleReg: user?.driverProfile?.vehicleRegistration || '',
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -37,19 +47,28 @@ const DriverProfile = () => {
         setFetchingProfile(true);
         const response = await axiosInstance.get('/api/auth/me');
 
-        if (response.data && response.data.success && response.data.data && response.data.data.user) {
-          const userData = response.data.data.user;
-          setProfileData({
+        console.log('Profile API Response:', response.data);
+
+        if (response.data && response.data.success && response.data.data) {
+          const userData = response.data.data;
+          console.log('User Data:', userData);
+          console.log('Driver Profile:', userData.driverProfile);
+
+          const fetched = {
             name: userData.fullName || '',
             email: userData.email || '',
             phone: userData.phone || '',
             address: userData.driverProfile?.address || '',
-            licenseNumber: userData.driverProfile?.licenseNumber || '',
+            licenseNumber: userData.driverProfile?.driverLicenseNumber || '',
             vehicleReg: userData.driverProfile?.vehicleRegistration || '',
-          });
+          };
+
+          setProfileData(fetched);
+          setOriginalProfile(fetched);
         }
       } catch (error) {
         console.error('Failed to fetch profile:', error);
+        toast.error('Failed to load profile data');
       } finally {
         setFetchingProfile(false);
       }
@@ -68,12 +87,14 @@ const DriverProfile = () => {
         email: profileData.email,
         phone: profileData.phone,
         address: profileData.address,
-        licenseNumber: profileData.licenseNumber,
+        driverLicenseNumber: profileData.licenseNumber,
         vehicleRegistration: profileData.vehicleReg,
       });
 
       if (response.data && response.data.success) {
-        toast.success('Profile updated successfully!');
+        toast.success(response.data.message || 'Profile updated successfully!');
+        // Update original profile snapshot so Save button disables until further edits
+        setOriginalProfile({ ...profileData });
       } else {
         toast.error(response.data?.message || 'Failed to update profile');
       }
@@ -144,6 +165,24 @@ const DriverProfile = () => {
     }
   };
 
+  // Compute dirty flag (always call hook to keep hooks order stable)
+  const isDirty = useMemo(
+    () => JSON.stringify(profileData) !== JSON.stringify(originalProfile),
+    [profileData, originalProfile]
+  );
+
+  // Show loading state while fetching profile
+  if (fetchingProfile) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-teal-600"></div>
+          <p className="mt-4 text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       <div className="space-y-6">
@@ -177,7 +216,7 @@ const DriverProfile = () => {
             </div>
             <div>
               <p className="text-xs text-gray-600">Email</p>
-              <p className="text-sm font-semibold text-gray-900">{profileData.email}</p>
+              <p className="text-sm font-semibold text-gray-900">{profileData.email }</p>
             </div>
           </div>
         </div>
@@ -189,7 +228,7 @@ const DriverProfile = () => {
             </div>
             <div>
               <p className="text-xs text-gray-600">Phone</p>
-              <p className="text-sm font-semibold text-gray-900">{profileData.phone}</p>
+              <p className="text-sm font-semibold text-gray-900">{profileData.phone }</p>
             </div>
           </div>
         </div>
@@ -201,7 +240,7 @@ const DriverProfile = () => {
             </div>
             <div>
               <p className="text-xs text-gray-600">Vehicle</p>
-              <p className="text-sm font-semibold text-gray-900">{profileData.vehicleReg}</p>
+              <p className="text-sm font-semibold text-gray-900">{profileData.vehicleReg }</p>
             </div>
           </div>
         </div>
@@ -236,7 +275,7 @@ const DriverProfile = () => {
             <div className="mb-6 flex items-center gap-6">
               <div className="relative">
                 <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white">
-                  {profileData.name.charAt(0)}
+                  {profileData.name ? profileData.name.charAt(0).toUpperCase() : 'D'}
                 </div>
                 <button
                   type="button"
@@ -342,7 +381,7 @@ const DriverProfile = () => {
             <div className="mt-6 flex justify-end">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !isDirty}
                 className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (

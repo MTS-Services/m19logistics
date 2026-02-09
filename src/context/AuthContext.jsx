@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { setToken, setUser as saveUser, getToken, getUser, removeToken, removeUser } from '../utils/storage';
 
 const AuthContext = createContext(null);
 
@@ -15,28 +16,32 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user data on mount
-    const storedUser = localStorage.getItem('m19_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Check for stored user data and token on mount
+    const storedToken = getToken();
+    const storedUser = getUser();
+
+    if (storedToken && storedUser) {
+      setUser(storedUser);
     }
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, token) => {
     setUser(userData);
-    localStorage.setItem('m19_user', JSON.stringify(userData));
+    saveUser(userData);
+    setToken(token);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('m19_user');
+    removeUser();
+    removeToken();
   };
 
   const updateUser = (updates) => {
     const updatedUser = { ...user, ...updates };
     setUser(updatedUser);
-    localStorage.setItem('m19_user', JSON.stringify(updatedUser));
+    saveUser(updatedUser);
   };
 
   const value = {
@@ -46,10 +51,11 @@ export const AuthProvider = ({ children }) => {
     updateUser,
     loading,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isDriver: user?.role === 'driver',
-    isCustomer: user?.role === 'customer',
-    isAreaManager: user?.role === 'area_manager',
+    isAdmin: user?.role?.toLowerCase() === 'admin',
+    isDriver: user?.role?.toLowerCase() === 'driver',
+    isCustomer: user?.role?.toLowerCase() === 'customer',
+    isManager: user?.role?.toLowerCase() === 'manager',
+    isAreaManager: user?.role?.toLowerCase() === 'area_manager',
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

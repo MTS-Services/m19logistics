@@ -46,13 +46,17 @@ const Profile = () => {
     confirmPassword: '',
   });
 
-  // Account info
-  const accountInfo = {
-    pricingTier: 'Tier B',
-    ratePerDelivery: '£45.00',
-    accountStatus: 'Active',
-    memberSince: '2019',
-  };
+  // Account info from API
+  const [accountInfo, setAccountInfo] = useState({
+    pricingTier: '',
+    ratePerDelivery: '',
+    accountStatus: '',
+    memberSince: '',
+    basePrice: '',
+    vatRate: '',
+    maxDistance: '',
+    weightUnit: '',
+  });
 
   // Fetch profile data from API
   useEffect(() => {
@@ -61,14 +65,29 @@ const Profile = () => {
         setFetchingProfile(true);
         const response = await axiosInstance.get(ENDPOINT.API.AUTH.GET_PROFILE);
 
-        if (response.data && response.data.success && response.data.data && response.data.data.user) {
-          const userData = response.data.data.user;
+        if (response.data && response.data.success && response.data.data) {
+          const userData = response.data.data;
           setProfileData({
             fullName: userData.fullName || '',
             email: userData.email || '',
             phone: userData.phone || '',
             depotAddress: userData.customerProfile?.depotAddress || '',
             loginId: userData.username || '',
+          });
+
+          // Set account info from API
+          const pricingTier = userData.customerProfile?.pricingTier;
+          const createdAt = userData.createdAt ? new Date(userData.createdAt).getFullYear() : '';
+
+          setAccountInfo({
+            pricingTier: pricingTier?.name || 'N/A',
+            ratePerDelivery: pricingTier?.basePrice ? `£${pricingTier.basePrice}` : 'N/A',
+            accountStatus: userData.isActive ? 'Active' : 'Inactive',
+            memberSince: createdAt || 'N/A',
+            basePrice: pricingTier?.basePrice || '0',
+            vatRate: pricingTier?.vatRate || '0',
+            maxDistance: pricingTier?.maxDistance || '0',
+            weightUnit: pricingTier?.weightUnit || '800',
           });
         }
       } catch (error) {
@@ -582,12 +601,12 @@ const Profile = () => {
             <p className="text-sm text-gray-600">Your Pricing Tier</p>
             <p className="mt-1 text-lg font-bold text-gray-900">{accountInfo.pricingTier}</p>
             <p className="mt-1 text-sm text-gray-600">
-              Base rate: {accountInfo.ratePerDelivery} per 800kg (up to 45 miles)
+              Base rate: {accountInfo.ratePerDelivery} per {accountInfo.weightUnit}kg (up to {accountInfo.maxDistance} miles)
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-600">VAT Rate</p>
-            <p className="mt-1 text-lg font-bold text-gray-900">20%</p>
+            <p className="mt-1 text-lg font-bold text-gray-900">{accountInfo.vatRate}%</p>
             <p className="mt-1 text-sm text-gray-600">VAT is added to all deliveries</p>
           </div>
         </div>
