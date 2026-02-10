@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Package,
   Clock,
@@ -18,6 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { getDeliveryStats } from '../../../services/deliveryService';
 
 const DeliveryHistory = () => {
   const [filterStatus, setFilterStatus] = useState('all');
@@ -25,6 +27,13 @@ const DeliveryHistory = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    allocated: 0,
+    completed: 0,
+    cancelled: 0,
+  });
   const itemsPerPage = 5;
 
   // Sample delivery history data
@@ -163,14 +172,55 @@ const DeliveryHistory = () => {
     },
   ];
 
-  // Calculate statistics
-  const stats = {
+  // Calculate local statistics (fallback while API loads/fails)
+  const localStats = {
     total: deliveries.length,
     pending: deliveries.filter((d) => d.status === 'Received').length,
     allocated: deliveries.filter((d) => d.status === 'Allocated').length,
     completed: deliveries.filter((d) => d.status === 'Delivered').length,
     cancelled: deliveries.filter((d) => d.status === 'Cancelled').length,
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadStats = async () => {
+      // show something immediately, then replace with real API numbers
+      setStats(localStats);
+      try {
+        const response = await getDeliveryStats();
+        const data = response?.data;
+
+        if (!isMounted) return;
+
+        if (response?.success && data) {
+          setStats({
+            total: Number(data.total ?? 0),
+            pending: Number(data.pending ?? 0),
+            allocated: Number(data.allocated ?? 0),
+            completed: Number(data.completed ?? 0),
+            cancelled: Number(data.cancelled ?? 0),
+          });
+          return;
+        }
+
+        // Unexpected shape
+        setStats(localStats);
+      } catch {
+        if (!isMounted) return;
+        setStats(localStats);
+        toast.error('Failed to load delivery stats');
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      isMounted = false;
+    };
+    // localStats depends on the local mock deliveries; keep it stable unless that array changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Filter deliveries
   const filteredDeliveries = deliveries.filter((delivery) => {

@@ -18,3 +18,9 @@ export const getDeliveryById = async (id) => {
   const response = await axiosInstance.get(ENDPOINT.API.DELIVERY.GET_BY_ID(id));
   return response.data;
 };
+
+// Get delivery dashboard stats
+export const getDeliveryStats = async () => {
+  const response = await axiosInstance.get(ENDPOINT.API.DELIVERY.STATS);
+  return response.data;
+};
