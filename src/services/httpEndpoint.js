@@ -19,5 +19,10 @@ export const ENDPOINT = {
       PROFILE: '/api/auth/profile',
       GET_PROFILE: '/api/auth/me',
     },
+    DELIVERY: {
+      CREATE: '/api/deliveries',
+      GET_ALL: '/api/deliveries',
+      GET_BY_ID: (id) => `/api/deliveries/${id}`,
+    },
   },
 };

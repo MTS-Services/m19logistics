@@ -16,10 +16,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
+import { createDeliveryRequest } from '../../../services/deliveryService';
 
 const NewDelivery = () => {
   const { user } = useAuth();
   const [showPreview, setShowPreview] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     spoNumber: '',
     date: '',
@@ -95,47 +97,69 @@ const NewDelivery = () => {
   };
 
   // Confirm submission
-  const confirmSubmission = () => {
-    // Prepare API payload matching the expected format
-    const payload = {
-      spoNumber: formData.spoNumber,
-      deliveryDate: formData.date,
-      timeSlot: formData.timeSlot,
-      weight: parseInt(formData.weight),
-      deliveryAddress: formData.address,
-      customerName: formData.customerName,
-      customerPhone: formData.phone,
-      requestedBy: formData.requestedBy,
-      specialInstructions: formData.instructions,
-    };
+  const confirmSubmission = async () => {
+    setIsSubmitting(true);
 
-    // Here you would normally make an API call
-    console.log('Submitting delivery request:', payload);
+    try {
+      // Prepare API payload matching the expected format
+      const payload = {
+        spoNumber: formData.spoNumber,
+        deliveryDate: formData.date,
+        timeSlot: formData.timeSlot,
+        weight: parseInt(formData.weight),
+        deliveryAddress: formData.address,
+        customerName: formData.customerName,
+        customerPhone: formData.phone,
+        requestedBy: formData.requestedBy,
+        specialInstructions: formData.instructions,
+      };
 
-    toast.success('Delivery request submitted successfully!');
+      // Make API call to create delivery request
+      const response = await createDeliveryRequest(payload);
+      console.log('Delivery request created:', response);
 
-    // Show same-day warning if applicable
-    if (formData.timeSlot === 'SAME_DAY' || isSameDayDelivery()) {
-      setTimeout(() => {
-        toast.warning(
-          'Same-day delivery cannot be guaranteed. Please call 07971415430 to confirm availability'
+      toast.success('Delivery request submitted successfully!');
+
+      // Show same-day warning if applicable
+      if (formData.timeSlot === 'SAME_DAY' || isSameDayDelivery()) {
+        setTimeout(() => {
+          toast.warning(
+            'Same-day delivery cannot be guaranteed. Please call 07971415430 to confirm availability'
+          );
+        }, 1000);
+      }
+
+      // Reset form
+      setFormData({
+        spoNumber: '',
+        date: '',
+        timeSlot: 'AM',
+        weight: '',
+        address: '',
+        customerName: '',
+        phone: '',
+        requestedBy: user?.name || '',
+        instructions: '',
+      });
+      setShowPreview(false);
+    } catch (error) {
+      console.error('Error submitting delivery request:', error);
+
+      // Handle different error types
+      if (error.response?.status === 400) {
+        toast.error(
+          error.response.data?.message || 'Invalid request data. Please check your input.'
         );
-      }, 1000);
+      } else if (error.response?.status === 401) {
+        toast.error('You are not authorized to perform this action. Please login again.');
+      } else if (error.response?.status === 500) {
+        toast.error('Server error. Please try again later or contact support.');
+      } else {
+        toast.error('Failed to submit delivery request. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Reset form
-    setFormData({
-      spoNumber: '',
-      date: '',
-      timeSlot: 'AM',
-      weight: '',
-      address: '',
-      customerName: '',
-      phone: '',
-      requestedBy: user?.name || '',
-      instructions: '',
-    });
-    setShowPreview(false);
   };
 
   // Calculate estimated cost
@@ -426,7 +450,7 @@ const NewDelivery = () => {
           </button>
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 sm:w-auto"
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 sm:w-auto"
           >
             <Send className="h-5 w-5" />
             Submit Request
@@ -519,16 +543,33 @@ const NewDelivery = () => {
             <div className="flex flex-col items-center justify-center gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:justify-end">
               <button
                 onClick={() => setShowPreview(false)}
-                className="w-full rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50 sm:w-auto"
+                disabled={isSubmitting}
+                className={`w-full rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all sm:w-auto ${
+                  isSubmitting ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
+                }`}
               >
                 Cancel
               </button>
               <button
                 onClick={confirmSubmission}
-                className="flex w-full items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 sm:w-auto"
+                disabled={isSubmitting}
+                className={`flex w-full items-center justify-center gap-2 rounded-md px-6 py-2 text-white shadow-md transition-all sm:w-auto ${
+                  isSubmitting
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-linear-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
+                }`}
               >
-                <CheckCircle className="h-5 w-5" />
-                Confirm & Submit
+                {isSubmitting ? (
+                  <>
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-5 w-5" />
+                    Confirm & Submit
+                  </>
+                )}
               </button>
             </div>
           </div>
