@@ -147,9 +147,18 @@ const NewDelivery = () => {
 
       // Handle different error types
       if (error.response?.status === 400) {
-        toast.error(
-          error.response.data?.message || 'Invalid request data. Please check your input.'
-        );
+        const errorMessage =
+          error.response.data?.message || 'Invalid request data. Please check your input.';
+
+        // Check if it's a slot availability issue
+        if (errorMessage.includes('No slot availability configured')) {
+          toast.error(
+            `${errorMessage} Please try selecting a different date or time slot, or contact support at 07971415430.`,
+            { autoClose: 10000 }
+          );
+        } else {
+          toast.error(errorMessage);
+        }
       } else if (error.response?.status === 401) {
         toast.error('You are not authorized to perform this action. Please login again.');
       } else if (error.response?.status === 500) {
@@ -211,6 +220,24 @@ const NewDelivery = () => {
               <li>• Additional charges apply for deliveries beyond 45 miles</li>
               <li>• Estimated cost is calculated based on weight</li>
             </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Slot Availability Notice */}
+      <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 shrink-0 text-amber-600" />
+          <div className="text-sm text-amber-900">
+            <p className="font-semibold">Delivery Slot Availability</p>
+            <p className="mt-1">
+              Time slots are subject to availability and admin configuration. If you encounter any
+              issues with slot availability, please contact support at{' '}
+              <a href="tel:07971415430" className="font-semibold underline">
+                07971 415430
+              </a>{' '}
+              for assistance.
+            </p>
           </div>
         </div>
       </div>
@@ -303,6 +330,10 @@ const NewDelivery = () => {
                 <option value="PM">Afternoon (PM)</option>
                 <option value="SAME_DAY">Same Day</option>
               </select>
+              <p className="mt-1 text-xs text-gray-500">
+                ⚠️ Time slots are subject to availability. If unavailable, try a different slot or
+                contact support.
+              </p>
             </div>
           </div>
         </div>
