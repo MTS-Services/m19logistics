@@ -19,7 +19,67 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { getDeliveryStats } from '../../../services/deliveryService';
+import { getAllDeliveries, getDeliveryStats } from '../../../services/deliveryService';
+
+const formatDateOnly = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value).split('T')[0] || String(value);
+  return date.toISOString().slice(0, 10);
+};
+
+const formatDateTime = (value) => {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  const iso = date.toISOString();
+  return `${iso.slice(0, 10)} ${iso.slice(11, 16)}`;
+};
+
+const normalizeStatus = (value) => {
+  const status = String(value ?? '').toUpperCase();
+  switch (status) {
+    case 'RECEIVED':
+      return 'Received';
+    case 'ALLOCATED':
+      return 'Allocated';
+    case 'DELIVERED':
+      return 'Delivered';
+    case 'CANCELLED':
+      return 'Cancelled';
+    default:
+      return value ? String(value) : '';
+  }
+};
+
+const mapApiDeliveryToUi = (item) => {
+  const estimatedCost = Number.parseFloat(item?.totalPrice ?? item?.subtotal ?? 0);
+  const weight = Number.parseFloat(item?.weight ?? 0);
+  const distance = Number.parseFloat(item?.distanceFromDepot ?? 0);
+
+  return {
+    id: item?.id,
+    spoNumber: item?.spoNumber ?? '',
+    date: formatDateOnly(item?.deliveryDate),
+    timeSlot: item?.timeSlot ?? '',
+    weight: Number.isFinite(weight) ? weight : 0,
+    address: item?.deliveryAddress ?? '',
+    customerName: item?.customerName ?? '',
+    phone: item?.customerPhone ?? '',
+    requestedBy: item?.requestedBy ?? '',
+    instructions: item?.specialInstructions ?? '',
+    status: normalizeStatus(item?.status),
+    distance: Number.isFinite(distance) ? distance : 0,
+    estimatedCost: Number.isFinite(estimatedCost) ? estimatedCost : 0,
+    createdAt: formatDateTime(item?.createdAt) ?? '',
+    driver: item?.driver?.fullName ?? null,
+    deliveredAt: formatDateTime(item?.deliveredAt),
+    receivedBy: item?.receivedBy ?? null,
+    driverNotes: item?.driverNotes ?? null,
+    cancelledAt: formatDateTime(item?.cancelledAt),
+    cancelReason: item?.cancellationReason ?? null,
+  };
+};
 
 const DeliveryHistory = () => {
   const [filterStatus, setFilterStatus] = useState('all');
@@ -34,159 +94,13 @@ const DeliveryHistory = () => {
     completed: 0,
     cancelled: 0,
   });
+  const [deliveries, setDeliveries] = useState([]);
   const itemsPerPage = 5;
-
-  // Sample delivery history data
-  const deliveries = [
-    {
-      id: 1,
-      spoNumber: 'SPO013349',
-      date: '2026-01-20',
-      timeSlot: 'AM',
-      weight: 800,
-      address: '4 Bumpers Lane, Chester, CH1 4LY',
-      customerName: 'John Smith',
-      phone: '07123456789',
-      requestedBy: 'Sarah Williams',
-      instructions: 'Please call before arrival',
-      status: 'Received',
-      distance: 25,
-      estimatedCost: 45.0,
-      createdAt: '2026-01-15 10:30',
-      driver: null,
-    },
-    {
-      id: 2,
-      spoNumber: 'SPO013348',
-      date: '2026-01-18',
-      timeSlot: 'PM',
-      weight: 1600,
-      address: 'Unit 4, Lyme Court, Newcastle, ST5 3TF',
-      customerName: 'Emma Johnson',
-      phone: '07987654321',
-      requestedBy: 'Michael Brown',
-      instructions: 'Deliver to rear entrance',
-      status: 'Allocated',
-      distance: 38,
-      estimatedCost: 100.0,
-      createdAt: '2026-01-14 14:20',
-      driver: 'BK',
-    },
-    {
-      id: 3,
-      spoNumber: 'SPO013347',
-      date: '2026-01-16',
-      timeSlot: 'AM',
-      weight: 800,
-      address: '152 Vale Road, Rhyl, LL18 2PD',
-      customerName: 'David Wilson',
-      phone: '07456789123',
-      requestedBy: 'Lisa Anderson',
-      instructions: 'Leave with reception',
-      status: 'Delivered',
-      distance: 42,
-      estimatedCost: 45.0,
-      createdAt: '2026-01-10 09:15',
-      driver: 'BK',
-      deliveredAt: '2026-01-16 11:30',
-      receivedBy: 'Jane Roberts',
-      driverNotes: 'Delivered successfully to reception desk',
-    },
-    {
-      id: 4,
-      spoNumber: 'SPO013346',
-      date: '2026-01-15',
-      timeSlot: 'PM',
-      weight: 800,
-      address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-      customerName: 'Robert Taylor',
-      phone: '07321654987',
-      requestedBy: 'Jennifer Clark',
-      instructions: 'Fragile items',
-      status: 'Cancelled',
-      distance: 35,
-      estimatedCost: 45.0,
-      createdAt: '2026-01-13 16:45',
-      cancelledAt: '2026-01-14 10:00',
-      cancelReason: 'Customer requested postponement',
-    },
-    {
-      id: 5,
-      spoNumber: 'SPO013345',
-      date: '2026-01-12',
-      timeSlot: 'AM',
-      weight: 1600,
-      address: 'Unit 1, Nantwich Trade Park, CW5 6HL',
-      customerName: 'Sophie Martinez',
-      phone: '07789456123',
-      requestedBy: 'Tom Harris',
-      instructions: 'Contact before arrival',
-      status: 'Delivered',
-      distance: 30,
-      estimatedCost: 90.0,
-      createdAt: '2026-01-08 11:20',
-      driver: 'BK',
-      deliveredAt: '2026-01-12 10:15',
-      receivedBy: 'Mark Johnson',
-      driverNotes: 'Delivered on time',
-    },
-    {
-      id: 6,
-      spoNumber: 'SPO013345',
-      date: '2026-01-12',
-      timeSlot: 'AM',
-      weight: 1600,
-      address: 'Unit 1, Nantwich Trade Park, CW5 6HL',
-      customerName: 'Sophie Martinez',
-      phone: '07789456123',
-      requestedBy: 'Tom Harris',
-      instructions: 'Contact before arrival',
-      status: 'Delivered',
-      distance: 30,
-      estimatedCost: 90.0,
-      createdAt: '2026-01-08 11:20',
-      driver: 'BK',
-      deliveredAt: '2026-01-12 10:15',
-      receivedBy: 'Mark Johnson',
-      driverNotes: 'Delivered on time',
-    },
-    {
-      id: 7,
-      spoNumber: 'SPO013345',
-      date: '2026-01-12',
-      timeSlot: 'AM',
-      weight: 1600,
-      address: 'Unit 1, Nantwich Trade Park, CW5 6HL',
-      customerName: 'Sophie Martinez',
-      phone: '07789456123',
-      requestedBy: 'Tom Harris',
-      instructions: 'Contact before arrival',
-      status: 'Delivered',
-      distance: 30,
-      estimatedCost: 90.0,
-      createdAt: '2026-01-08 11:20',
-      driver: 'BK',
-      deliveredAt: '2026-01-12 10:15',
-      receivedBy: 'Mark Johnson',
-      driverNotes: 'Delivered on time',
-    },
-  ];
-
-  // Calculate local statistics (fallback while API loads/fails)
-  const localStats = {
-    total: deliveries.length,
-    pending: deliveries.filter((d) => d.status === 'Received').length,
-    allocated: deliveries.filter((d) => d.status === 'Allocated').length,
-    completed: deliveries.filter((d) => d.status === 'Delivered').length,
-    cancelled: deliveries.filter((d) => d.status === 'Cancelled').length,
-  };
 
   useEffect(() => {
     let isMounted = true;
 
     const loadStats = async () => {
-      // show something immediately, then replace with real API numbers
-      setStats(localStats);
       try {
         const response = await getDeliveryStats();
         const data = response?.data;
@@ -203,12 +117,8 @@ const DeliveryHistory = () => {
           });
           return;
         }
-
-        // Unexpected shape
-        setStats(localStats);
       } catch {
         if (!isMounted) return;
-        setStats(localStats);
         toast.error('Failed to load delivery stats');
       }
     };
@@ -218,21 +128,51 @@ const DeliveryHistory = () => {
     return () => {
       isMounted = false;
     };
-    // localStats depends on the local mock deliveries; keep it stable unless that array changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Filter deliveries
-  const filteredDeliveries = deliveries.filter((delivery) => {
-    const matchesStatus =
-      filterStatus === 'all' || delivery.status.toLowerCase() === filterStatus.toLowerCase();
-    const matchesSearch =
-      searchQuery === '' ||
-      delivery.spoNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      delivery.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      delivery.address.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  useEffect(() => {
+    let isMounted = true;
+
+    const statusMap = {
+      received: 'RECEIVED',
+      allocated: 'ALLOCATED',
+      delivered: 'DELIVERED',
+    };
+
+    const trimmedSearch = searchQuery.trim();
+    const debounceMs = trimmedSearch ? 350 : 0;
+
+    const timer = setTimeout(async () => {
+      const params = {};
+
+      if (filterStatus !== 'all') {
+        params.status = statusMap[filterStatus] ?? String(filterStatus).toUpperCase();
+      }
+      if (trimmedSearch) {
+        params.search = trimmedSearch;
+      }
+
+      try {
+        const response = await getAllDeliveries(params);
+        const list = Array.isArray(response?.data) ? response.data : [];
+
+        if (!isMounted) return;
+        setDeliveries(list.map(mapApiDeliveryToUi));
+      } catch {
+        if (!isMounted) return;
+        setDeliveries([]);
+        toast.error('Failed to load deliveries');
+      }
+    }, debounceMs);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [filterStatus, searchQuery]);
+
+  // Deliveries list is fetched using server-side filters (status/search)
+  const filteredDeliveries = deliveries;
 
   // Pagination logic
   const totalPages = Math.ceil(filteredDeliveries.length / itemsPerPage);

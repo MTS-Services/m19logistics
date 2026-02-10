@@ -8,8 +8,8 @@ export const createDeliveryRequest = async (deliveryData) => {
 };
 
 // Get all delivery requests
-export const getAllDeliveries = async () => {
-  const response = await axiosInstance.get(ENDPOINT.API.DELIVERY.GET_ALL);
+export const getAllDeliveries = async (params = {}) => {
+  const response = await axiosInstance.get(ENDPOINT.API.DELIVERY.GET_ALL, { params });
   return response.data;
 };
 
