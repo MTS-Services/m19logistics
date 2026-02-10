@@ -96,17 +96,26 @@ const NewDelivery = () => {
 
   // Confirm submission
   const confirmSubmission = () => {
-    // Calculate estimated cost (simple calculation)
-    const weightBlocks = Math.ceil(formData.weight / 800);
-    const estimatedCost = weightBlocks * 45; // Tier B pricing
+    // Prepare API payload matching the expected format
+    const payload = {
+      spoNumber: formData.spoNumber,
+      deliveryDate: formData.date,
+      timeSlot: formData.timeSlot,
+      weight: parseInt(formData.weight),
+      deliveryAddress: formData.address,
+      customerName: formData.customerName,
+      customerPhone: formData.phone,
+      requestedBy: formData.requestedBy,
+      specialInstructions: formData.instructions,
+    };
 
     // Here you would normally make an API call
-    console.log('Submitting delivery request:', formData);
+    console.log('Submitting delivery request:', payload);
 
     toast.success('Delivery request submitted successfully!');
 
     // Show same-day warning if applicable
-    if (isSameDayDelivery()) {
+    if (formData.timeSlot === 'SAME_DAY' || isSameDayDelivery()) {
       setTimeout(() => {
         toast.warning(
           'Same-day delivery cannot be guaranteed. Please call 07971415430 to confirm availability'
@@ -264,17 +273,12 @@ const NewDelivery = () => {
                 name="timeSlot"
                 value={formData.timeSlot}
                 onChange={handleChange}
-                disabled={isSameDayDelivery()}
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500"
+                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
               >
                 <option value="AM">Morning (AM)</option>
                 <option value="PM">Afternoon (PM)</option>
+                <option value="SAME_DAY">Same Day</option>
               </select>
-              {isSameDayDelivery() && (
-                <p className="mt-1 text-sm text-orange-600">
-                  Time slot not available for same-day delivery
-                </p>
-              )}
             </div>
           </div>
         </div>
@@ -464,7 +468,11 @@ const NewDelivery = () => {
                   <div>
                     <p className="text-sm text-gray-600">Time Slot</p>
                     <p className="font-semibold text-gray-900">
-                      {isSameDayDelivery() ? 'Not Specified' : formData.timeSlot}
+                      {formData.timeSlot === 'AM'
+                        ? 'Morning (AM)'
+                        : formData.timeSlot === 'PM'
+                          ? 'Afternoon (PM)'
+                          : 'Same Day'}
                     </p>
                   </div>
                 </div>
