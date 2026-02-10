@@ -19,7 +19,11 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { getAllDeliveries, getDeliveryStats } from '../../../services/deliveryService';
+import {
+  getAllDeliveries,
+  getDeliveryById,
+  getDeliveryStats,
+} from '../../../services/deliveryService';
 
 const formatDateOnly = (value) => {
   if (!value) return '';
@@ -58,7 +62,7 @@ const mapApiDeliveryToUi = (item) => {
   const distance = Number.parseFloat(item?.distanceFromDepot ?? 0);
 
   return {
-    id: item?.id,
+    id: item?.id ?? item?.deliveryId ?? item?._id,
     spoNumber: item?.spoNumber ?? '',
     date: formatDateOnly(item?.deliveryDate),
     timeSlot: item?.timeSlot ?? '',
@@ -86,6 +90,7 @@ const DeliveryHistory = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [isViewLoading, setIsViewLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [stats, setStats] = useState({
     total: 0,
@@ -231,9 +236,26 @@ const DeliveryHistory = () => {
   };
 
   // Handle view delivery
-  const handleViewDelivery = (delivery) => {
+  const handleViewDelivery = async (delivery) => {
     setSelectedDelivery(delivery);
     setShowViewModal(true);
+
+    const deliveryId = delivery?.id;
+    if (!deliveryId) {
+      toast.error('Missing delivery id');
+      return;
+    }
+
+    setIsViewLoading(true);
+    try {
+      const response = await getDeliveryById(deliveryId);
+      const apiDelivery = response?.data ?? response;
+      setSelectedDelivery(mapApiDeliveryToUi(apiDelivery));
+    } catch {
+      toast.error('Failed to load delivery details');
+    } finally {
+      setIsViewLoading(false);
+    }
   };
 
   // Export to Excel
@@ -719,7 +741,10 @@ const DeliveryHistory = () => {
             {/* Modal Header */}
             <div className="border-b border-gray-200 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold text-gray-900">Delivery Details</h3>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Delivery Details</h3>
+                  {isViewLoading && <p className="mt-1 text-sm text-gray-500">Loading…</p>}
+                </div>
                 <button
                   onClick={() => setShowViewModal(false)}
                   className="text-gray-400 transition-colors hover:text-gray-600"
