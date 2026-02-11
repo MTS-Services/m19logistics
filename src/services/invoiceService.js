@@ -12,3 +12,11 @@ export const getInvoiceById = async (id) => {
   const response = await axiosInstance.get(ENDPOINT.API.INVOICE.GET_BY_ID(id));
   return response.data;
 };
+
+// Export invoice as PDF
+export const exportInvoicePDF = async (id) => {
+  const response = await axiosInstance.get(ENDPOINT.API.INVOICE.EXPORT_PDF(id), {
+    responseType: 'blob', // Important for file download
+  });
+  return response;
+};

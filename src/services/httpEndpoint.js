@@ -28,6 +28,7 @@ export const ENDPOINT = {
     INVOICE: {
       GET_ALL: '/api/invoices',
       GET_BY_ID: (id) => `/api/invoices/${id}`,
+      EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
     },
   },
 };

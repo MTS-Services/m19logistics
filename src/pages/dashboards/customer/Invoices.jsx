@@ -19,7 +19,7 @@ import {
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
 import Loading from '../../../components/Loading';
-import { getAllInvoices, getInvoiceById } from '../../../services/invoiceService';
+import { getAllInvoices, getInvoiceById, exportInvoicePDF } from '../../../services/invoiceService';
 
 const Invoices = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,6 +34,7 @@ const Invoices = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loadingInvoiceDetails, setLoadingInvoiceDetails] = useState(false);
+  const [downloadingPDF, setDownloadingPDF] = useState({});
 
   // Date range for filtering (default to current month)
   const [startDate] = useState(() => {
@@ -286,72 +287,42 @@ const Invoices = () => {
     }
   };
 
-  // Handle download Excel
-  const handleDownloadExcel = (invoice) => {
-    // Prepare invoice data for Excel
-    const invoiceData = [
-      ['M19 Logistics Limited'],
-      ['84 Acton Hall Walks, Wrexham, LL12 7YJ'],
-      ['Tel: 07971415430 / WhatsApp 07577574676'],
-      ['VAT Number: 447 5918 54'],
-      [''],
-      ['Invoice Number', invoice.invoiceNumber],
-      ['Date', invoice.date],
-      ['Week Ending', invoice.weekEnding],
-      ['Status', invoice.status],
-      ...(invoice.paidDate ? [['Paid Date', invoice.paidDate]] : []),
-      [''],
-      ['Delivery Items'],
-      ['SPO Number', 'Date', 'Address', 'Unit Price', 'VAT (20%)', 'Amount'],
-      ...invoice.deliveries.map((d) => [
-        d.spoNumber,
-        d.date,
-        d.address,
-        `£${d.basePrice.toFixed(2)}`,
-        `£${d.vat.toFixed(2)}`,
-        `£${d.total.toFixed(2)}`,
-      ]),
-      [''],
-    ];
+  // Handle download Excel/PDF
+  const handleDownloadExcel = async (invoice) => {
+    try {
+      // Set loading state for this specific invoice
+      setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: true }));
 
-    if (invoice.additionalCharges.length > 0) {
-      invoiceData.push(['Additional Charges']);
-      invoiceData.push(['Description', 'Amount']);
-      invoice.additionalCharges.forEach((charge) => {
-        invoiceData.push([charge.description, `£${charge.amount.toFixed(2)}`]);
-      });
-      invoiceData.push(['']);
+      toast.info('Preparing invoice PDF...');
+
+      // Call API to export PDF
+      const response = await exportInvoicePDF(invoice.id);
+
+      // Create blob from response
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice_${invoice.invoiceNumber}_${invoice.date}.pdf`);
+
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success(`Invoice ${invoice.invoiceNumber} downloaded successfully!`);
+    } catch (err) {
+      console.error('Error downloading invoice PDF:', err);
+      toast.error('Failed to download invoice. Please try again.');
+    } finally {
+      // Remove loading state
+      setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: false }));
     }
-
-    invoiceData.push(
-      ['Subtotal', `£${invoice.subtotal.toFixed(2)}`],
-      ['VAT (20%)', `£${invoice.totalVAT.toFixed(2)}`],
-      ['Total', `£${invoice.total.toFixed(2)}`]
-    );
-
-    // Convert to CSV
-    const csvContent = invoiceData
-      .map((row) =>
-        row
-          .map((cell) => {
-            const value = cell || '';
-            const escaped = String(value).replace(/"/g, '""');
-            return `"${escaped}"`;
-          })
-          .join(',')
-      )
-      .join('\n');
-
-    // Download
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `Invoice_${invoice.invoiceNumber}_${invoice.date}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   // Handle email invoice
@@ -616,10 +587,24 @@ const Invoices = () => {
                           </button>
                           <button
                             onClick={() => handleDownloadExcel(invoice)}
-                            className="flex items-center gap-1 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-3 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                            disabled={downloadingPDF[invoice.id]}
+                            className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-white shadow-md transition-all ${
+                              downloadingPDF[invoice.id]
+                                ? 'cursor-not-allowed bg-gray-400'
+                                : 'bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
+                            }`}
                           >
-                            <Download className="h-4 w-4" />
-                            Excel
+                            {downloadingPDF[invoice.id] ? (
+                              <>
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                Downloading...
+                              </>
+                            ) : (
+                              <>
+                                <Download className="h-4 w-4" />
+                                Excel
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -863,10 +848,24 @@ const Invoices = () => {
                 </button>
                 <button
                   onClick={() => handleDownloadExcel(selectedInvoice)}
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                  disabled={downloadingPDF[selectedInvoice.id]}
+                  className={`flex items-center gap-2 rounded-md px-4 py-2 text-white shadow-md transition-all ${
+                    downloadingPDF[selectedInvoice.id]
+                      ? 'cursor-not-allowed bg-gray-400'
+                      : 'bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
+                  }`}
                 >
-                  <Download className="h-4 w-4" />
-                  Download Excel
+                  {downloadingPDF[selectedInvoice.id] ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4" />
+                      Download Excel
+                    </>
+                  )}
                 </button>
               </div>
             </div>
