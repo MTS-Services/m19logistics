@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   FileText,
   Download,
@@ -46,6 +46,64 @@ const Invoices = () => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split('T')[0];
   });
 
+  // Helper function to calculate days from invoice date
+  const getDaysFromInvoice = (dateString) => {
+    const invoiceDate = new Date(dateString);
+    return Math.floor((new Date() - invoiceDate) / (1000 * 60 * 60 * 24));
+  };
+
+  // Helper function to map invoice data (optimized)
+  const mapInvoiceData = (invoice) => {
+    const invoiceDate = new Date(invoice.invoiceDate).toISOString().split('T')[0];
+    const isPaid = invoice.isPaid;
+    const daysOld = getDaysFromInvoice(invoiceDate);
+
+    // Determine status
+    let status = 'Pending';
+    if (isPaid) {
+      status = 'Paid';
+    } else if (daysOld > 30) {
+      status = 'Overdue';
+    } else if (invoice.status === 'Draft') {
+      status = 'Pending';
+    } else {
+      status = invoice.status;
+    }
+
+    return {
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      date: invoiceDate,
+      weekEnding: new Date(invoice.weekEndDate).toISOString().split('T')[0],
+      status,
+      deliveries:
+        invoice.items
+          ?.filter((item) => !item.isAdditional)
+          .map((item) => ({
+            spoNumber: item.delivery?.spoNumber || item.spoNumber || 'N/A',
+            date: item.delivery?.deliveryDate
+              ? new Date(item.delivery.deliveryDate).toISOString().split('T')[0]
+              : '',
+            address: item.delivery?.deliveryAddress || item.description || '',
+            basePrice: Number(item.unitCost || 0),
+            distanceSurcharge: 0,
+            vat: Number(item.vatAmount || 0),
+            total: Number(item.total || 0),
+          })) || [],
+      additionalCharges:
+        invoice.items
+          ?.filter((item) => item.isAdditional)
+          .map((item) => ({
+            description: item.description,
+            amount: Number(item.total || 0),
+          })) || [],
+      subtotal: Number(invoice.subtotal || 0),
+      totalVAT: Number(invoice.vatTotal || 0),
+      total: Number(invoice.grandTotal || 0),
+      paidDate: invoice.paidAt ? new Date(invoice.paidAt).toISOString().split('T')[0] : null,
+    };
+  };
+
   // Fetch invoices from API
   useEffect(() => {
     fetchInvoices();
@@ -72,61 +130,16 @@ const Invoices = () => {
       const response = await getAllInvoices(params);
 
       if (response.success && response.data) {
-        // Map API response to component structure
-        const mappedInvoices = response.data.map((invoice) => ({
-          id: invoice.id,
-          invoiceNumber: invoice.invoiceNumber,
-          date: new Date(invoice.invoiceDate).toISOString().split('T')[0],
-          weekEnding: new Date(invoice.weekEndDate).toISOString().split('T')[0],
-          status: invoice.isPaid ? 'Paid' : invoice.status === 'Draft' ? 'Pending' : invoice.status,
-          deliveries:
-            invoice.items?.map((item) => ({
-              spoNumber: item.delivery?.spoNumber || item.spoNumber || 'N/A',
-              date: item.delivery?.deliveryDate
-                ? new Date(item.delivery.deliveryDate).toISOString().split('T')[0]
-                : '',
-              address: item.delivery?.deliveryAddress || item.description || '',
-              basePrice: parseFloat(item.unitCost || 0),
-              distanceSurcharge: 0,
-              vat: parseFloat(item.vatAmount || 0),
-              total: parseFloat(item.total || 0),
-            })) || [],
-          additionalCharges:
-            invoice.items
-              ?.filter((item) => item.isAdditional)
-              .map((item) => ({
-                description: item.description,
-                amount: parseFloat(item.total || 0),
-              })) || [],
-          subtotal: parseFloat(invoice.subtotal || 0),
-          totalVAT: parseFloat(invoice.vatTotal || 0),
-          total: parseFloat(invoice.grandTotal || 0),
-          paidDate: invoice.paidAt ? new Date(invoice.paidAt).toISOString().split('T')[0] : null,
-        }));
+        // Map and filter invoices efficiently
+        const mappedInvoices = response.data.map(mapInvoiceData);
 
-        // Apply status filtering for pending/overdue
-        let filteredData = mappedInvoices;
-        if (filterStatus === 'overdue') {
-          // Filter for overdue invoices (unpaid and past due date)
-          filteredData = mappedInvoices
-            .filter((inv) => {
-              if (inv.status === 'Paid') return false;
-              const invoiceDate = new Date(inv.date);
-              const daysAgo = Math.floor((new Date() - invoiceDate) / (1000 * 60 * 60 * 24));
-              return daysAgo > 30; // Consider overdue if older than 30 days
-            })
-            .map((inv) => ({ ...inv, status: 'Overdue' }));
-        } else if (filterStatus === 'pending') {
-          // Filter for pending invoices (unpaid but not overdue)
-          filteredData = mappedInvoices
-            .filter((inv) => {
-              if (inv.status === 'Paid') return false;
-              const invoiceDate = new Date(inv.date);
-              const daysAgo = Math.floor((new Date() - invoiceDate) / (1000 * 60 * 60 * 24));
-              return daysAgo <= 30;
-            })
-            .map((inv) => ({ ...inv, status: 'Pending' }));
-        }
+        // Filter by status if needed
+        const filteredData =
+          filterStatus === 'all'
+            ? mappedInvoices
+            : mappedInvoices.filter(
+                (inv) => inv.status.toLowerCase() === filterStatus.toLowerCase()
+              );
 
         setInvoices(filteredData);
       }
@@ -140,45 +153,52 @@ const Invoices = () => {
     }
   };
 
-  // Calculate statistics from all invoices (fetch all for stats)
-  const stats = {
-    total: invoices.length,
-    paid: invoices.filter((i) => i.status === 'Paid').length,
-    pending: invoices.filter((i) => i.status === 'Pending').length,
-    overdue: invoices.filter((i) => i.status === 'Overdue').length,
-    totalAmount: invoices.reduce((sum, inv) => sum + (inv.total || 0), 0),
-    paidAmount: invoices
-      .filter((i) => i.status === 'Paid')
-      .reduce((sum, inv) => sum + (inv.total || 0), 0),
-    unpaidAmount: invoices
-      .filter((i) => i.status !== 'Paid')
-      .reduce((sum, inv) => sum + (inv.total || 0), 0),
-  };
+  // Calculate statistics from all invoices (memoized for performance)
+  const stats = useMemo(() => {
+    return {
+      total: invoices.length,
+      paid: invoices.filter((i) => i.status === 'Paid').length,
+      pending: invoices.filter((i) => i.status === 'Pending').length,
+      overdue: invoices.filter((i) => i.status === 'Overdue').length,
+      totalAmount: invoices.reduce((sum, inv) => sum + (inv.total || 0), 0),
+      paidAmount: invoices
+        .filter((i) => i.status === 'Paid')
+        .reduce((sum, inv) => sum + (inv.total || 0), 0),
+      unpaidAmount: invoices
+        .filter((i) => i.status !== 'Paid')
+        .reduce((sum, inv) => sum + (inv.total || 0), 0),
+    };
+  }, [invoices]);
 
-  // Filter invoices
-  const filteredInvoices = invoices.filter((invoice) => {
-    const matchesStatus =
-      filterStatus === 'all' || invoice.status.toLowerCase() === filterStatus.toLowerCase();
+  // Filter invoices (memoized for performance)
+  const filteredInvoices = useMemo(() => {
+    return invoices.filter((invoice) => {
+      const matchesStatus =
+        filterStatus === 'all' || invoice.status.toLowerCase() === filterStatus.toLowerCase();
 
-    // Clean search query by removing "Invoice #", "Invoice#", or "#" prefix
-    const cleanedSearch = searchQuery
-      .toLowerCase()
-      .replace(/^invoice\s*#\s*/i, '')
-      .replace(/^#\s*/i, '')
-      .trim();
+      // Clean search query by removing "Invoice #", "Invoice#", or "#" prefix
+      const cleanedSearch = searchQuery
+        .toLowerCase()
+        .replace(/^invoice\s*#\s*/i, '')
+        .replace(/^#\s*/i, '')
+        .trim();
 
-    const matchesSearch =
-      searchQuery === '' ||
-      invoice.invoiceNumber.toLowerCase().includes(cleanedSearch) ||
-      invoice.deliveries.some((d) => d.spoNumber.toLowerCase().includes(cleanedSearch));
-    return matchesStatus && matchesSearch;
-  });
+      const matchesSearch =
+        searchQuery === '' ||
+        invoice.invoiceNumber.toLowerCase().includes(cleanedSearch) ||
+        invoice.deliveries.some((d) => d.spoNumber.toLowerCase().includes(cleanedSearch));
+      return matchesStatus && matchesSearch;
+    });
+  }, [invoices, filterStatus, searchQuery]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedInvoices = filteredInvoices.slice(startIndex, endIndex);
+  // Pagination logic (memoized for performance)
+  const { totalPages, paginatedInvoices } = useMemo(() => {
+    const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedInvoices = filteredInvoices.slice(startIndex, endIndex);
+    return { totalPages, paginatedInvoices };
+  }, [filteredInvoices, currentPage, itemsPerPage]);
 
   // Handle page change
   const handlePageChange = (page) => {
@@ -457,7 +477,7 @@ const Invoices = () => {
                   onClick={() => handleFilterChange('all')}
                   className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                     filterStatus === 'all'
-                      ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                      ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                       : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -467,7 +487,7 @@ const Invoices = () => {
                   onClick={() => handleFilterChange('paid')}
                   className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                     filterStatus === 'paid'
-                      ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                      ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                       : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -477,7 +497,7 @@ const Invoices = () => {
                   onClick={() => handleFilterChange('pending')}
                   className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                     filterStatus === 'pending'
-                      ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                      ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                       : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -487,7 +507,7 @@ const Invoices = () => {
                   onClick={() => handleFilterChange('overdue')}
                   className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
                     filterStatus === 'overdue'
-                      ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                      ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                       : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -591,7 +611,7 @@ const Invoices = () => {
                             className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-white shadow-md transition-all ${
                               downloadingPDF[invoice.id]
                                 ? 'cursor-not-allowed bg-gray-400'
-                                : 'bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
+                                : 'bg-linear-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
                             }`}
                           >
                             {downloadingPDF[invoice.id] ? (
@@ -852,7 +872,7 @@ const Invoices = () => {
                   className={`flex items-center gap-2 rounded-md px-4 py-2 text-white shadow-md transition-all ${
                     downloadingPDF[selectedInvoice.id]
                       ? 'cursor-not-allowed bg-gray-400'
-                      : 'bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
+                      : 'bg-linear-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
                   }`}
                 >
                   {downloadingPDF[selectedInvoice.id] ? (
