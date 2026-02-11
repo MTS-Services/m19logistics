@@ -25,5 +25,9 @@ export const ENDPOINT = {
       GET_BY_ID: (id) => `/api/deliveries/${id}`,
       STATS: '/api/deliveries/stats',
     },
+    INVOICE: {
+      GET_ALL: '/api/invoices',
+      GET_BY_ID: (id) => `/api/invoices/${id}`,
+    },
   },
 };
