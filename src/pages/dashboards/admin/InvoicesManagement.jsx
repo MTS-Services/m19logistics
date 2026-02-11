@@ -730,7 +730,7 @@ const InvoicesManagement = () => {
             </button>
             <button
               onClick={() => handleEmailInvoice(invoice)}
-              className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+              className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
             >
               <Mail className="h-4 w-4" />
               <span>Email Invoice</span>
@@ -909,7 +909,7 @@ const InvoicesManagement = () => {
               </button>
               <button
                 type="submit"
-                className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
               >
                 <Save className="h-4 w-4" />
                 <span>Save Changes</span>
@@ -937,7 +937,7 @@ const InvoicesManagement = () => {
             </div>
             <button
               onClick={() => setShowGenerateModal(true)}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
             >
               <Plus className="h-5 w-5" />
               <span>Generate Invoice</span>
@@ -1452,7 +1452,7 @@ const InvoicesManagement = () => {
                         toast.error('Please fill in all required fields');
                       }
                     }}
-                    className="inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
+                    className="inline-flex items-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Generate Invoice</span>
