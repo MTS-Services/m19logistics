@@ -221,7 +221,7 @@ const AdminDashboardHome = () => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="rounded-lg border-l-4 border-red-500 bg-red-50 p-3 sm:rounded-xl sm:p-4">
             <div className="flex items-start">
-              <AlertCircle className="mr-2 h-5 w-5 flex-shrink-0 text-red-600 sm:mr-3" />
+              <AlertCircle className="mr-2 h-5 w-5 shrink-0 text-red-600 sm:mr-3" />
               <div className="min-w-0 flex-1">
                 <h4 className="text-sm font-semibold text-red-900 sm:text-base">Action Required</h4>
                 <p className="mt-1 text-xs text-red-700 sm:text-sm">
@@ -233,7 +233,7 @@ const AdminDashboardHome = () => {
 
           <div className="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-3 sm:rounded-xl sm:p-4">
             <div className="flex items-start">
-              <CheckCircle className="mr-2 h-5 w-5 flex-shrink-0 text-blue-600 sm:mr-3" />
+              <CheckCircle className="mr-2 h-5 w-5 shrink-0 text-blue-600 sm:mr-3" />
               <div className="min-w-0 flex-1">
                 <h4 className="text-sm font-semibold text-blue-900 sm:text-base">System Status</h4>
                 <p className="mt-1 text-xs text-blue-700 sm:text-sm">
