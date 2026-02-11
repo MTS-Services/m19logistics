@@ -19,7 +19,7 @@ import {
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
 import Loading from '../../../components/Loading';
-import { getAllInvoices } from '../../../services/invoiceService';
+import { getAllInvoices, getInvoiceById } from '../../../services/invoiceService';
 
 const Invoices = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,6 +33,7 @@ const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [loadingInvoiceDetails, setLoadingInvoiceDetails] = useState(false);
 
   // Date range for filtering (default to current month)
   const [startDate] = useState(() => {
@@ -226,9 +227,63 @@ const Invoices = () => {
   };
 
   // Handle view invoice
-  const handleViewInvoice = (invoice) => {
-    setSelectedInvoice(invoice);
-    setShowViewModal(true);
+  const handleViewInvoice = async (invoice) => {
+    try {
+      setLoadingInvoiceDetails(true);
+      setShowViewModal(true);
+      setSelectedInvoice(invoice); // Set initial data
+
+      // Fetch full invoice details from API
+      const response = await getInvoiceById(invoice.id);
+
+      if (response.success && response.data) {
+        // Map API response to component structure
+        const fullInvoice = {
+          id: response.data.id,
+          invoiceNumber: response.data.invoiceNumber,
+          date: new Date(response.data.invoiceDate).toISOString().split('T')[0],
+          weekEnding: new Date(response.data.weekEndDate).toISOString().split('T')[0],
+          status: response.data.isPaid
+            ? 'Paid'
+            : response.data.status === 'Draft'
+              ? 'Pending'
+              : response.data.status,
+          deliveries:
+            response.data.items?.map((item) => ({
+              spoNumber: item.delivery?.spoNumber || item.spoNumber || 'N/A',
+              date: item.delivery?.deliveryDate
+                ? new Date(item.delivery.deliveryDate).toISOString().split('T')[0]
+                : '',
+              address: item.delivery?.deliveryAddress || item.description || '',
+              basePrice: parseFloat(item.unitCost || 0),
+              distanceSurcharge: 0,
+              vat: parseFloat(item.vatAmount || 0),
+              total: parseFloat(item.total || 0),
+            })) || [],
+          additionalCharges:
+            response.data.items
+              ?.filter((item) => item.isAdditional)
+              .map((item) => ({
+                description: item.description,
+                amount: parseFloat(item.total || 0),
+              })) || [],
+          subtotal: parseFloat(response.data.subtotal || 0),
+          totalVAT: parseFloat(response.data.vatTotal || 0),
+          total: parseFloat(response.data.grandTotal || 0),
+          paidDate: response.data.paidAt
+            ? new Date(response.data.paidAt).toISOString().split('T')[0]
+            : null,
+        };
+
+        setSelectedInvoice(fullInvoice);
+      }
+    } catch (err) {
+      console.error('Error fetching invoice details:', err);
+      toast.error('Failed to load invoice details. Showing cached data.');
+      // Keep the initial invoice data if API fails
+    } finally {
+      setLoadingInvoiceDetails(false);
+    }
   };
 
   // Handle download Excel
@@ -620,140 +675,174 @@ const Invoices = () => {
 
               {/* Modal Content */}
               <div className="max-h-[70vh] overflow-y-auto p-6">
-                {/* Invoice Header */}
-                <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  <div className="mb-4">
-                    <h4 className="text-lg font-bold text-gray-900">M19 Logistics Limited</h4>
-                    <p className="text-sm text-gray-600">84 Acton Hall Walks</p>
-                    <p className="text-sm text-gray-600">Wrexham, LL12 7YJ</p>
-                    <p className="text-sm text-gray-600">Tel: 07971415430 / WhatsApp 07577574676</p>
-                    <p className="text-sm text-gray-600">VAT Number: 447 5918 54</p>
-                  </div>
-                  <div className="border-t border-gray-300 pt-4">
-                    <div className="grid gap-2 md:grid-cols-2">
-                      <div>
-                        <p className="text-sm text-gray-600">Invoice Date</p>
-                        <p className="font-semibold text-gray-900">{selectedInvoice.date}</p>
+                {/* Loading State for Invoice Details */}
+                {loadingInvoiceDetails ? (
+                  <div className="flex flex-col items-center justify-center py-16">
+                    <div className="relative mb-6">
+                      {/* Spinning ring */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="h-16 w-16 animate-spin rounded-full border-4 border-transparent border-t-teal-500 border-r-teal-400"></div>
                       </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Week Ending</p>
-                        <p className="font-semibold text-gray-900">{selectedInvoice.weekEnding}</p>
+                      {/* Logo */}
+                      <div className="relative flex items-center justify-center">
+                        <div className="flex h-16 w-16 items-center justify-center">
+                          <img
+                            src="/images/logo.png"
+                            alt="M19 Logistics"
+                            className="h-12 w-12 animate-pulse object-contain drop-shadow-lg"
+                          />
+                        </div>
                       </div>
                     </div>
+                    <p className="text-base font-semibold text-gray-700">
+                      Loading invoice details...
+                    </p>
+                    <p className="mt-2 text-sm text-gray-500">Please wait</p>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* Invoice Header */}
+                    <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="mb-4">
+                        <h4 className="text-lg font-bold text-gray-900">M19 Logistics Limited</h4>
+                        <p className="text-sm text-gray-600">84 Acton Hall Walks</p>
+                        <p className="text-sm text-gray-600">Wrexham, LL12 7YJ</p>
+                        <p className="text-sm text-gray-600">
+                          Tel: 07971415430 / WhatsApp 07577574676
+                        </p>
+                        <p className="text-sm text-gray-600">VAT Number: 447 5918 54</p>
+                      </div>
+                      <div className="border-t border-gray-300 pt-4">
+                        <div className="grid gap-2 md:grid-cols-2">
+                          <div>
+                            <p className="text-sm text-gray-600">Invoice Date</p>
+                            <p className="font-semibold text-gray-900">{selectedInvoice.date}</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-600">Week Ending</p>
+                            <p className="font-semibold text-gray-900">
+                              {selectedInvoice.weekEnding}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Delivery Line Items */}
-                <div className="mb-6">
-                  <h4 className="mb-3 font-bold text-gray-900">Delivery Items</h4>
-                  <div className="overflow-x-auto rounded-lg border border-gray-200">
-                    <table className="w-full">
-                      <thead className="border-b border-gray-200 bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                            SPO Number
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                            Date
-                          </th>
-                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                            Address
-                          </th>
-                          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                            Unit Price
-                          </th>
-                          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                            VAT
-                          </th>
-                          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                            Amount
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white">
-                        {selectedInvoice.deliveries.map((delivery, index) => (
-                          <tr key={index}>
-                            <td className="px-4 py-3 text-sm font-medium whitespace-nowrap text-gray-900">
-                              {delivery.spoNumber}
-                            </td>
-                            <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600">
-                              {delivery.date}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-600">{delivery.address}</td>
-                            <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
-                              £{delivery.basePrice.toFixed(2)}
-                            </td>
-                            <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
-                              £{delivery.vat.toFixed(2)}
-                            </td>
-                            <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
-                              £{delivery.total.toFixed(2)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Additional Charges */}
-                {selectedInvoice.additionalCharges.length > 0 && (
-                  <div className="mb-6">
-                    <h4 className="mb-3 font-bold text-gray-900">Additional Charges</h4>
-                    <div className="overflow-x-auto rounded-lg border border-gray-200">
-                      <table className="w-full">
-                        <thead className="border-b border-gray-200 bg-gray-50">
-                          <tr>
-                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                              Description
-                            </th>
-                            <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                              Amount
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white">
-                          {selectedInvoice.additionalCharges.map((charge, index) => (
-                            <tr key={index}>
-                              <td className="px-4 py-3 text-sm text-gray-900">
-                                {charge.description}
-                              </td>
-                              <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
-                                £{charge.amount.toFixed(2)}
-                              </td>
+                    {/* Delivery Line Items */}
+                    <div className="mb-6">
+                      <h4 className="mb-3 font-bold text-gray-900">Delivery Items</h4>
+                      <div className="overflow-x-auto rounded-lg border border-gray-200">
+                        <table className="w-full">
+                          <thead className="border-b border-gray-200 bg-gray-50">
+                            <tr>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                SPO Number
+                              </th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                Date
+                              </th>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                Address
+                              </th>
+                              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                                Unit Price
+                              </th>
+                              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                                VAT
+                              </th>
+                              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                                Amount
+                              </th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {/* Invoice Summary */}
-                <div className="rounded-lg border-2 border-teal-200 bg-teal-50 p-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">Subtotal:</span>
-                      <span className="font-semibold text-gray-900">
-                        £{selectedInvoice.subtotal.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-700">VAT (20%):</span>
-                      <span className="font-semibold text-gray-900">
-                        £{selectedInvoice.totalVAT.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="border-t-2 border-teal-300 pt-2">
-                      <div className="flex justify-between">
-                        <span className="text-lg font-bold text-gray-900">Total:</span>
-                        <span className="text-2xl font-bold text-teal-600">
-                          £{selectedInvoice.total.toFixed(2)}
-                        </span>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200 bg-white">
+                            {selectedInvoice.deliveries.map((delivery, index) => (
+                              <tr key={index}>
+                                <td className="px-4 py-3 text-sm font-medium whitespace-nowrap text-gray-900">
+                                  {delivery.spoNumber}
+                                </td>
+                                <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600">
+                                  {delivery.date}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-600">
+                                  {delivery.address}
+                                </td>
+                                <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                                  £{delivery.basePrice.toFixed(2)}
+                                </td>
+                                <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                                  £{delivery.vat.toFixed(2)}
+                                </td>
+                                <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
+                                  £{delivery.total.toFixed(2)}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  </div>
-                </div>
+
+                    {/* Additional Charges */}
+                    {selectedInvoice.additionalCharges.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="mb-3 font-bold text-gray-900">Additional Charges</h4>
+                        <div className="overflow-x-auto rounded-lg border border-gray-200">
+                          <table className="w-full">
+                            <thead className="border-b border-gray-200 bg-gray-50">
+                              <tr>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                                  Description
+                                </th>
+                                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                                  Amount
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 bg-white">
+                              {selectedInvoice.additionalCharges.map((charge, index) => (
+                                <tr key={index}>
+                                  <td className="px-4 py-3 text-sm text-gray-900">
+                                    {charge.description}
+                                  </td>
+                                  <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
+                                    £{charge.amount.toFixed(2)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Invoice Summary */}
+                    <div className="rounded-lg border-2 border-teal-200 bg-teal-50 p-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-700">Subtotal:</span>
+                          <span className="font-semibold text-gray-900">
+                            £{selectedInvoice.subtotal.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-700">VAT (20%):</span>
+                          <span className="font-semibold text-gray-900">
+                            £{selectedInvoice.totalVAT.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="border-t-2 border-teal-300 pt-2">
+                          <div className="flex justify-between">
+                            <span className="text-lg font-bold text-gray-900">Total:</span>
+                            <span className="text-2xl font-bold text-teal-600">
+                              £{selectedInvoice.total.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Modal Footer */}
