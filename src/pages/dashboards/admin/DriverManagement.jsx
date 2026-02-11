@@ -490,7 +490,7 @@ const DriverManagement = () => {
             </div>
             <button
               onClick={handleAddDriver}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
             >
               <UserPlus className="h-5 w-5" />
               <span>Add Driver</span>
@@ -636,7 +636,7 @@ const DriverManagement = () => {
                                   className="h-10 w-10 rounded-full border-2 border-teal-100 object-cover"
                                 />
                               ) : (
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-teal-100 bg-gradient-to-br from-teal-500 to-teal-600 text-sm font-bold text-white">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-teal-100 bg-linear-to-br from-teal-500 to-teal-600 text-sm font-bold text-white">
                                   {driver.name.charAt(0)}
                                 </div>
                               )}
@@ -795,7 +795,7 @@ const DriverManagement = () => {
                               className="h-12 w-12 rounded-full border-2 border-teal-100 object-cover"
                             />
                           ) : (
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-teal-100 bg-gradient-to-br from-teal-500 to-teal-600 text-lg font-bold text-white">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-teal-100 bg-linear-to-br from-teal-500 to-teal-600 text-lg font-bold text-white">
                               {driver.name.charAt(0)}
                             </div>
                           )}
