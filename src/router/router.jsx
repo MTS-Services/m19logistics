@@ -16,13 +16,14 @@ import LoginView from '../pages/auth/LoginView';
 // Dashboard pages - Admin
 import AdminDashboard from '../pages/dashboards/admin/AdminDashboard';
 import AdminDashboardHome from '../pages/dashboards/admin/AdminDashboardHome';
-import BookingsBoard from '../pages/dashboards/admin/BookingsBoard';
-import UsersManagement from '../pages/dashboards/admin/UsersManagement';
-import DriverManagement from '../pages/dashboards/admin/DriverManagement';
-import InvoicesManagement from '../pages/dashboards/admin/InvoicesManagement';
+import BookingsBoard from '../pages/dashboards/admin/bookings/BookingsBoard';
+import UsersManagement from '../pages/dashboards/admin/userManagement/UsersManagement';
+import DriverManagement from '../pages/dashboards/admin/driverManagement/DriverManagement';
+import InvoicesManagement from '../pages/dashboards/admin/invoiceManagement/InvoicesManagement';
 import PricingManagement from '../pages/dashboards/admin/PricingManagement';
 import AnalyticsDashboard from '../pages/dashboards/admin/AnalyticsDashboard';
 import SettingsManagement from '../pages/dashboards/admin/SettingsManagement';
+import SlotsManagement from '../pages/dashboards/admin/SlotsManagement';
 
 // Dashboard pages - Customer
 import CustomerDashboard from '../pages/dashboards/customer/CustomerDashboard';
@@ -83,10 +84,12 @@ const router = createBrowserRouter(
           </ProtectedRoute>
         }
       >
+        <Route index element={<AdminDashboardHome />} />
         <Route path="dashboard" element={<AdminDashboardHome />} />
         <Route path="bookings" element={<BookingsBoard />} />
         <Route path="users" element={<UsersManagement />} />
         <Route path="drivers" element={<DriverManagement />} />
+        <Route path="slots" element={<SlotsManagement />} />
         <Route path="invoices" element={<InvoicesManagement />} />
         <Route path="pricing" element={<PricingManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
@@ -151,6 +154,7 @@ const router = createBrowserRouter(
           </ProtectedRoute>
         }
       >
+        <Route index element={<ManagerDashboardHome />} />
         <Route path="dashboard" element={<ManagerDashboardHome />} />
         <Route path="bookings" element={<ManagerBookingsBoard />} />
         <Route path="drivers" element={<ManagerDriverManagement />} />

@@ -4,7 +4,7 @@ export const ENDPOINT = {
     HOME: '/',
     LOGIN: '/login',
     REGISTER: '/register',
-    PRODUCTS: '/api/products?limit=5',
+    PRODUCTS: '/api/products',
   },
   PRIVATE: {
     DASHBOARD: '/dashboard',
@@ -26,8 +26,8 @@ export const ENDPOINT = {
       STATS: '/api/deliveries/stats',
     },
     INVOICE: {
-      GET_ALL: '/api/invoices',
-      GET_BY_ID: (id) => `/api/invoices/${id}`,
+      GET_ALL: '/api/admin/invoices',
+      GET_BY_ID: (id) => `/api/admin/invoices/${id}`,
       EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
     },
   },

@@ -7,7 +7,7 @@ const NavbarLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, isAdmin, isManager, isDriver, isAreaManager } = useAuth();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -35,11 +35,10 @@ const NavbarLayout = () => {
 
   return (
     <nav
-      className={`fixed top-0 right-0 left-0 z-20 border-b transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 right-0 left-0 z-20 border-b transition-all duration-300 ${isScrolled
           ? 'border-gray-400/5 bg-white/40 shadow-lg backdrop-blur-md'
           : 'border-gray-200 bg-white shadow-sm'
-      }`}
+        }`}
     >
       <div className="container mx-auto px-4">
         <div className="mr-4 ml-4 flex h-24 items-center justify-between">
@@ -55,13 +54,12 @@ const NavbarLayout = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${
-                    isActive(item.href)
+                  className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${isActive(item.href)
                       ? ' text-[#31A2A2]'
                       : isScrolled
                         ? 'text-gray-800 hover:text-[#31A2A2]'
                         : 'text-gray-500 hover:text-[#31A2A2]'
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </Link>
@@ -73,21 +71,20 @@ const NavbarLayout = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to={
-                    user.role === 'admin'
+                    isAdmin
                       ? '/admin/dashboard'
-                      : user.role === 'manager'
+                      : isManager
                         ? '/manager/dashboard'
-                        : user.role === 'driver'
+                        : isDriver
                           ? '/driver/dashboard'
-                          : user.role === 'area_manager'
+                          : isAreaManager
                             ? '/area-manager/dashboard'
                             : '/customer'
                   }
-                  className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${
-                    isScrolled
+                  className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${isScrolled
                       ? 'text-gray-800 hover:text-[#31A2A2]'
                       : 'text-gray-500 hover:text-[#31A2A2]'
-                  }`}
+                    }`}
                 >
                   <span>Dashboard</span>
                 </Link>
@@ -123,9 +120,8 @@ const NavbarLayout = () => {
 
         {/* Mobile Navigation */}
         <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${
-            isOpen ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
-          }`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${isOpen ? 'max-h-125 opacity-100' : 'max-h-0 opacity-0'
+            }`}
         >
           <div className="space-y-1 pt-2 pb-4">
             {navigation.map((item, index) => {
@@ -135,11 +131,10 @@ const NavbarLayout = () => {
                   key={item.name}
                   to={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`group flex items-center space-x-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ${
-                    isActive(item.href)
+                  className={`group flex items-center space-x-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ${isActive(item.href)
                       ? 'bg-teal-50 text-teal-600 shadow-sm'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-teal-600'
-                  }`}
+                    }`}
                   style={{
                     animation: isOpen ? `slideIn 0.3s ease-out ${index * 0.05}s forwards` : 'none',
                     opacity: isOpen ? 1 : 0,
@@ -147,11 +142,10 @@ const NavbarLayout = () => {
                   }}
                 >
                   <Icon
-                    className={`h-5 w-5 transition-colors ${
-                      isActive(item.href)
+                    className={`h-5 w-5 transition-colors ${isActive(item.href)
                         ? 'text-teal-600'
                         : 'text-gray-400 group-hover:text-teal-500'
-                    }`}
+                      }`}
                   />
                   <span>{item.name}</span>
                 </Link>
@@ -166,13 +160,13 @@ const NavbarLayout = () => {
               <div className="space-y-1">
                 <Link
                   to={
-                    user.role === 'admin'
+                    isAdmin
                       ? '/admin/dashboard'
-                      : user.role === 'manager'
+                      : isManager
                         ? '/manager/dashboard'
-                        : user.role === 'driver'
+                        : isDriver
                           ? '/driver/dashboard'
-                          : user.role === 'area_manager'
+                          : isAreaManager
                             ? '/area-manager/dashboard'
                             : '/customer'
                   }
