@@ -15,7 +15,7 @@ import {
   Check,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { getDriverDeliveries } from '../../../services/driverService';
+import { getDriverDeliveries, respondToDelivery } from '../../../services/driverService';
 
 const AssignedDeliveries = () => {
   const [deliveries, setDeliveries] = useState([]);
@@ -89,9 +89,17 @@ const AssignedDeliveries = () => {
   }, []);
 
   // Handle Accept Delivery
-  const handleAccept = (delivery) => {
-    setDeliveries(deliveries.map((d) => (d.id === delivery.id ? { ...d, status: 'Accepted' } : d)));
-    toast.success(`Delivery ${delivery.spoNumber} accepted`);
+  const handleAccept = async (delivery) => {
+    try {
+      const response = await respondToDelivery(delivery.id, 'accept');
+      if (response && response.success) {
+        setDeliveries(deliveries.map((d) => (d.id === delivery.id ? { ...d, status: 'Accepted' } : d)));
+        toast.success(`Delivery ${delivery.spoNumber} accepted`);
+      }
+    } catch (error) {
+      console.error('Error accepting delivery:', error);
+      toast.error('Failed to accept delivery');
+    }
   };
 
   // Handle Decline Delivery
@@ -100,16 +108,24 @@ const AssignedDeliveries = () => {
     setShowDeclineModal(true);
   };
 
-  const confirmDecline = () => {
+  const confirmDecline = async () => {
     if (!declineReason.trim()) {
       toast.error('Please provide a reason for declining');
       return;
     }
-    setDeliveries(deliveries.filter((d) => d.id !== selectedDelivery.id));
-    toast.success(`Delivery ${selectedDelivery.spoNumber} declined`);
-    setShowDeclineModal(false);
-    setDeclineReason('');
-    setSelectedDelivery(null);
+    try {
+      const response = await respondToDelivery(selectedDelivery.id, 'reject', declineReason);
+      if (response && response.success) {
+        setDeliveries(deliveries.filter((d) => d.id !== selectedDelivery.id));
+        toast.success(`Delivery ${selectedDelivery.spoNumber} declined`);
+        setShowDeclineModal(false);
+        setDeclineReason('');
+        setSelectedDelivery(null);
+      }
+    } catch (error) {
+      console.error('Error declining delivery:', error);
+      toast.error('Failed to decline delivery');
+    }
   };
 
   // Handle Complete Delivery
