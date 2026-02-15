@@ -366,7 +366,7 @@ const AreaManagerDashboardHome = () => {
                   {/* Stats and Actions Container */}
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-4">
                     {/* Stats */}
-                    <div className="flex flex-col gap-2 lg:w-[220px]">
+                    <div className="flex flex-col gap-2 lg:w-55">
                       <div className="flex items-center justify-between rounded-md bg-blue-50 px-4 py-2.5">
                         <span className="text-sm font-medium text-blue-900">Deliveries</span>
                         <span className="text-base font-bold text-blue-600">
@@ -382,7 +382,7 @@ const AreaManagerDashboardHome = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-start lg:w-[140px]">
+                    <div className="flex items-start lg:w-35">
                       <button
                         onClick={() => openModal(store)}
                         className="flex w-full items-center justify-center gap-2 rounded-md border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"

@@ -97,7 +97,7 @@ const DriverDashboard = () => {
         </div>
       </div>
 
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-2 sm:p-6">
         <Routes>
           <Route index element={<DashboardHome />} />
         </Routes>

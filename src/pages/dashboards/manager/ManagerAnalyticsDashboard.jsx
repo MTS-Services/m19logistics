@@ -953,14 +953,14 @@ const ManagerAnalyticsDashboard = () => {
           <div className="flex gap-2">
             <button
               onClick={() => handleExport('csv')}
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:shadow-lg"
             >
               <Download className="h-4 w-4" />
               Export CSV
             </button>
             <button
               onClick={() => handleExport('pdf')}
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:shadow-lg"
             >
               <FileText className="h-4 w-4" />
               Export PDF
@@ -1134,7 +1134,7 @@ const ManagerAnalyticsDashboard = () => {
             onClick={() => setSelectedMetric('overview')}
             className={`rounded-lg px-4 py-2 font-medium transition-all ${
               selectedMetric === 'overview'
-                ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -1144,7 +1144,7 @@ const ManagerAnalyticsDashboard = () => {
             onClick={() => setSelectedMetric('stores')}
             className={`rounded-lg px-4 py-2 font-medium transition-all ${
               selectedMetric === 'stores'
-                ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -1154,7 +1154,7 @@ const ManagerAnalyticsDashboard = () => {
             onClick={() => setSelectedMetric('drivers')}
             className={`rounded-lg px-4 py-2 font-medium transition-all ${
               selectedMetric === 'drivers'
-                ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -1164,7 +1164,7 @@ const ManagerAnalyticsDashboard = () => {
             onClick={() => setSelectedMetric('trends')}
             className={`rounded-lg px-4 py-2 font-medium transition-all ${
               selectedMetric === 'trends'
-                ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -1357,7 +1357,7 @@ const ManagerAnalyticsDashboard = () => {
                   <div className="flex flex-1 items-center gap-4">
                     <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
                       <div
-                        className="flex h-8 items-center justify-end rounded-full bg-gradient-to-r from-teal-600 to-teal-500 pr-3 transition-all"
+                        className="flex h-8 items-center justify-end rounded-full bg-linear-to-r from-teal-600 to-teal-500 pr-3 transition-all"
                         style={{
                           width: `${(day.deliveries / getMaxValue(weeklyData, 'deliveries')) * 100}%`,
                         }}
@@ -1442,9 +1442,9 @@ const ManagerAnalyticsDashboard = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-2 max-w-[100px] flex-1 rounded-full bg-gray-200">
+                        <div className="h-2 max-w-25 flex-1 rounded-full bg-gray-200">
                           <div
-                            className="h-2 rounded-full bg-gradient-to-r from-teal-600 to-teal-500"
+                            className="h-2 rounded-full bg-linear-to-r from-teal-600 to-teal-500"
                             style={{ width: `${store.share * 5}%` }}
                           />
                         </div>
@@ -1499,7 +1499,7 @@ const ManagerAnalyticsDashboard = () => {
             >
               <div className="mb-6 flex items-start justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white shadow-md">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white shadow-md">
                     {driver.name}
                   </div>
                   <div>
@@ -1599,7 +1599,7 @@ const ManagerAnalyticsDashboard = () => {
                   <div className="flex flex-1 items-center gap-4">
                     <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
                       <div
-                        className="flex h-8 items-center justify-end rounded-full bg-gradient-to-r from-teal-600 to-teal-500 pr-3 transition-all"
+                        className="flex h-8 items-center justify-end rounded-full bg-linear-to-r from-teal-600 to-teal-500 pr-3 transition-all"
                         style={{
                           width: `${(day.deliveries / getMaxValue(weeklyData, 'deliveries')) * 100}%`,
                         }}
@@ -1636,7 +1636,7 @@ const ManagerAnalyticsDashboard = () => {
                     <div className="flex flex-1 items-center gap-4">
                       <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
                         <div
-                          className="flex h-8 items-center justify-end rounded-full bg-gradient-to-r from-teal-600 to-teal-500 pr-3 transition-all"
+                          className="flex h-8 items-center justify-end rounded-full bg-linear-to-r from-teal-600 to-teal-500 pr-3 transition-all"
                           style={{
                             width: `${(month.revenue / getMaxValue(monthlyTrends, 'revenue')) * 100}%`,
                           }}
