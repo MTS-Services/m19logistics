@@ -25,3 +25,19 @@ export const getDriverDeliveries = async (status, startDate) => {
   });
   return response.data;
 };
+
+/**
+ * Respond to a delivery (accept or reject)
+ * @param {number} deliveryId - Delivery ID
+ * @param {string} action - 'accept' or 'reject'
+ * @param {string} reason - Rejection reason (required if action is 'reject')
+ * @returns {Promise} Promise with response data
+ */
+export const respondToDelivery = async (deliveryId, action, reason = null) => {
+  const body = { action };
+  if (action === 'reject' && reason) {
+    body.reason = reason;
+  }
+  const response = await axiosInstance.post(`/api/driver/deliveries/${deliveryId}/respond`, body);
+  return response.data;
+};
