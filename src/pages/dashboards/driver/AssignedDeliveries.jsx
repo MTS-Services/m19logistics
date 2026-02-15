@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Package,
   MapPin,
@@ -15,34 +15,11 @@ import {
   Check,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { getDriverDeliveries } from '../../../services/driverService';
 
 const AssignedDeliveries = () => {
-  const [deliveries, setDeliveries] = useState([
-    {
-      id: 1,
-      spoNumber: 'SPO013349',
-      customerName: 'Topps Chester',
-      customerPhone: '01244398888',
-      depotAddress: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-      deliveryAddress: '4 Bumpers Lane, Sealand Ind Est, Chester, CH1 4LY',
-      date: '2026-01-16',
-      timeSlot: 'AM',
-      instructions: 'Please call before arrival',
-      status: 'Assigned',
-    },
-    {
-      id: 2,
-      spoNumber: 'SPO013350',
-      customerName: 'Topps Newcastle',
-      customerPhone: '01782717000',
-      depotAddress: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-      deliveryAddress: 'Unit 4, Lyme Court, Newcastle, ST5 3TF',
-      date: '2026-01-16',
-      timeSlot: 'PM',
-      instructions: 'Deliver to rear entrance',
-      status: 'Assigned',
-    },
-  ]);
+  const [deliveries, setDeliveries] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -60,6 +37,56 @@ const AssignedDeliveries = () => {
     receivedBy: '',
     driverNotes: '',
   });
+
+  // Fetch all ALLOCATED deliveries on component mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadAssignedDeliveries = async () => {
+      setLoading(true);
+      try {
+        const response = await getDriverDeliveries('ALLOCATED');
+        if (!isMounted) return;
+
+        if (response && response.success && response.data) {
+          // Normalize API fields to the UI shape
+          const normalized = response.data.map((d) => ({
+            id: d.id,
+            spoNumber: d.spoNumber,
+            customerName: d.customerName || (d.customer && d.customer.fullName) || '',
+            customerPhone: d.customerPhone || (d.customer && d.customer.phone) || '',
+            depotAddress:
+              (d.customer &&
+                d.customer.customerProfile &&
+                d.customer.customerProfile.depotAddress) ||
+              '',
+            deliveryAddress: d.deliveryAddress || '',
+            date: d.deliveryDate ? new Date(d.deliveryDate).toISOString().split('T')[0] : '',
+            timeSlot: d.timeSlot || '',
+            instructions: d.specialInstructions || '',
+            status: d.status === 'ALLOCATED' ? 'Assigned' : d.status,
+          }));
+
+          setDeliveries(normalized);
+        }
+      } catch (error) {
+        console.error('Error loading assigned deliveries:', error);
+        if (isMounted) {
+          toast.error('Failed to load assigned deliveries');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadAssignedDeliveries();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Handle Accept Delivery
   const handleAccept = (delivery) => {
@@ -186,7 +213,7 @@ const AssignedDeliveries = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+    <div className="p-2 sm:p-6">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
@@ -200,7 +227,12 @@ const AssignedDeliveries = () => {
 
         {/* Deliveries List */}
         <div className="space-y-4">
-          {deliveries.length === 0 ? (
+          {loading ? (
+            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
+              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-teal-600"></div>
+              <p className="mt-4 text-sm text-gray-600">Loading assigned deliveries...</p>
+            </div>
+          ) : deliveries.length === 0 ? (
             <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
               <Package className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-lg font-medium text-gray-900">No assigned deliveries</h3>

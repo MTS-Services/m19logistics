@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Package,
   CheckCircle,
@@ -12,59 +12,61 @@ import {
   PenTool,
   X,
 } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { getDriverDeliveries } from '../../../services/driverService';
 
 const CompletedDeliveries = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
 
-  const [completedDeliveries] = useState([
-    {
-      id: 1,
-      spoNumber: 'SPO013347',
-      customerName: 'Topps Southport',
-      customerPhone: '01704535858',
-      depotAddress: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-      deliveryAddress: '78 Meols Cop Retail Park, Southport, PR8 6JG',
-      date: '2026-01-15',
-      timeSlot: 'AM',
-      completedAt: '2026-01-15 10:45 AM',
-      receivedBy: 'John Smith',
-      driverNotes: 'Customer was very helpful',
-      photoUrl: 'https://via.placeholder.com/400x300?text=Delivery+Photo',
-      signatureUrl: 'data:image/png;base64,signature',
-    },
-    {
-      id: 2,
-      spoNumber: 'SPO013348',
-      customerName: 'Topps Colwyn Bay',
-      customerPhone: '01492535200',
-      depotAddress: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-      deliveryAddress: 'Unit 1, Abergele Rd, Colwyn Bay, LL29 7PS',
-      date: '2026-01-15',
-      timeSlot: 'PM',
-      completedAt: '2026-01-15 3:30 PM',
-      receivedBy: 'Sarah Johnson',
-      driverNotes: 'Delivered to rear entrance as requested',
-      photoUrl: 'https://via.placeholder.com/400x300?text=Delivery+Photo',
-      signatureUrl: 'data:image/png;base64,signature',
-    },
-    {
-      id: 3,
-      spoNumber: 'SPO013346',
-      customerName: 'Topps Rhyl',
-      customerPhone: '01745344255',
-      depotAddress: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-      deliveryAddress: '159 West Kinmel St, Rhyl, LL18 1NN',
-      date: '2026-01-14',
-      timeSlot: 'AM',
-      completedAt: '2026-01-14 11:15 AM',
-      receivedBy: 'Mike Wilson',
-      driverNotes: '',
-      photoUrl: 'https://via.placeholder.com/400x300?text=Delivery+Photo',
-      signatureUrl: 'data:image/png;base64,signature',
-    },
-  ]);
+  const [completedDeliveries, setCompletedDeliveries] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadCompleted = async () => {
+      setLoading(true);
+      try {
+        const res = await getDriverDeliveries('DELIVERED');
+        if (!isMounted) return;
+        if (res && res.success && res.data) {
+          const normalized = res.data.map((d) => ({
+            id: d.id,
+            spoNumber: d.spoNumber,
+            customerName: d.customerName || (d.customer && d.customer.fullName) || '',
+            customerPhone: d.customerPhone || (d.customer && d.customer.phone) || '',
+            depotAddress:
+              (d.customer && d.customer.customerProfile && d.customer.customerProfile.depotAddress) ||
+              '',
+            deliveryAddress: d.deliveryAddress || '',
+            date: d.deliveryDate ? new Date(d.deliveryDate).toISOString().split('T')[0] : '',
+            timeSlot: d.timeSlot || '',
+            completedAt: d.deliveredAt ? new Date(d.deliveredAt).toLocaleString() : d.updatedAt ? new Date(d.updatedAt).toLocaleString() : '',
+            receivedBy: d.receivedBy || '',
+            driverNotes: (d.driverFeedback && d.driverFeedback.notes) || d.specialInstructions || '',
+            photoUrl: d.photoUrl || '',
+            signatureUrl: d.signatureUrl || '',
+            status: d.status || '',
+          }));
+
+          setCompletedDeliveries(normalized);
+        }
+      } catch (error) {
+        console.error('Error loading completed deliveries:', error);
+        toast.error('Failed to load completed deliveries');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    loadCompleted();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredDeliveries = completedDeliveries.filter(
     (delivery) =>
@@ -79,7 +81,7 @@ const CompletedDeliveries = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+    <div className="p-2 sm:p-6">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
@@ -153,7 +155,7 @@ const CompletedDeliveries = () => {
                             <span>{delivery.customerPhone}</span>
                           </div>
                           <div className="flex items-start gap-2 text-sm text-gray-600">
-                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                             <span>{delivery.deliveryAddress}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -172,10 +174,10 @@ const CompletedDeliveries = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-[180px]">
+                  <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-45">
                     <button
                       onClick={() => handleViewDetails(delivery)}
-                      className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                      className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                     >
                       <FileText className="h-4 w-4" />
                       View Details
@@ -189,8 +191,8 @@ const CompletedDeliveries = () => {
 
         {/* Detail Modal */}
         {showDetailModal && selectedDelivery && (
-          <div className="bg-opacity-50 fixed inset-0 z-50 overflow-y-auto bg-black/70 p-4">
-            <div className="mx-auto my-8 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Delivery Details</h2>
                 <button
@@ -308,7 +310,7 @@ const CompletedDeliveries = () => {
               <div className="mt-6">
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="w-full rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                  className="w-full rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                 >
                   Close
                 </button>

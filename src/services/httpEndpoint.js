@@ -30,5 +30,12 @@ export const ENDPOINT = {
       GET_BY_ID: (id) => `/api/admin/invoices/${id}`,
       EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
     },
+    PRICING: {
+      GET_ALL: '/api/admin/pricing-tiers',
+      CREATE: '/api/admin/pricing-tiers',
+      GET_BY_ID: (id) => `/api/admin/pricing-tiers/${id}`,
+      UPDATE: (id) => `/api/admin/pricing-tiers/${id}`,
+      DELETE: (id) => `/api/admin/pricing-tiers/${id}`,
+    },
   },
 };

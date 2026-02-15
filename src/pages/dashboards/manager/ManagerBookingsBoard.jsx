@@ -37,7 +37,7 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
   });
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
       <div className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-xl">
         {/* Modal Header */}
         <div className="border-b border-gray-200 p-4 sm:p-6">
@@ -92,7 +92,7 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                   {/* Driver Info */}
                   <div className="flex items-start gap-3 sm:items-center">
                     {/* Avatar */}
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 text-lg font-bold text-white sm:h-14 sm:w-14">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-teal-500 to-teal-600 text-lg font-bold text-white sm:h-14 sm:w-14">
                       {driver.profilePhoto ? (
                         <img
                           src={driver.profilePhoto}
@@ -117,17 +117,17 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                       {/* Contact Info - Responsive Layout */}
                       <div className="mt-1 flex flex-col gap-1 text-sm text-gray-600 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
                         <div className="flex items-center gap-1">
-                          <Phone className="h-3.5 w-3.5 flex-shrink-0" />
+                          <Phone className="h-3.5 w-3.5 shrink-0" />
                           <span className="truncate">{driver.phone}</span>
                         </div>
                         <div className="hidden sm:block text-gray-300">•</div>
                         <div className="flex items-center gap-1">
-                          <Package className="h-3.5 w-3.5 flex-shrink-0" />
+                          <Package className="h-3.5 w-3.5 shrink-0" />
                           <span>{driver.currentDeliveries} active</span>
                         </div>
                         <div className="hidden sm:block text-gray-300">•</div>
                         <div className="flex items-center gap-1">
-                          <CheckCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                          <CheckCircle className="h-3.5 w-3.5 shrink-0" />
                           <span>{driver.totalDeliveries} completed</span>
                         </div>
                       </div>
@@ -171,7 +171,7 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                     {/* Assign Button */}
                     <button
                       onClick={() => onAssign(driver)}
-                      className="w-full rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
+                      className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
                     >
                       <span className="flex items-center justify-center gap-2">
                         <UserCheck className="h-4 w-4" />

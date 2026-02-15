@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Package,
   FileText,
@@ -28,6 +29,7 @@ const CustomerDashboardHome = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const navigate = useNavigate();
 
   // Sample delivery data
   const [deliveries, setDeliveries] = useState([
@@ -785,7 +787,7 @@ const CustomerDashboardHome = () => {
             </div>
 
             <button
-              onClick={() => setShowRequestModal(true)}
+              onClick={() => navigate('/customer/new-delivery')}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:text-base lg:w-auto lg:px-6"
             >
               <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -802,7 +804,7 @@ const CustomerDashboardHome = () => {
               <h3 className="mb-2 text-xl font-semibold text-gray-900">No deliveries found</h3>
               <p className="mb-6 text-gray-600">Get started by requesting your first delivery</p>
               <button
-                onClick={() => setShowRequestModal(true)}
+                onClick={() => navigate('/customer/new-delivery')}
                 className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
               >
                 <Plus className="h-5 w-5" />

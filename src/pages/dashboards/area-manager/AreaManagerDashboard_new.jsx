@@ -56,7 +56,7 @@ const AreaManagerDashboard = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-gradient-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -64,7 +64,7 @@ const AreaManagerDashboard = () => {
           {/* Header */}
           <div className="flex h-16 items-center justify-between border-b border-gray-700 px-6">
             <div className="flex items-center space-x-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-500 to-blue-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-teal-500 to-blue-600">
                 <Truck className="h-6 w-6 text-white" />
               </div>
               <span className="text-lg font-bold text-white">M19 Analytics</span>
@@ -118,7 +118,7 @@ const AreaManagerDashboard = () => {
                         onClick={() => setSidebarOpen(false)}
                         className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
                           active
-                            ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
+                            ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                         }`}
                       >

@@ -368,7 +368,7 @@ const Invoices = () => {
       </div>
 
       {/* Content Container with minimum height to prevent layout shift */}
-      <div className="min-h-[600px]">
+      <div className="min-h-150">
         {/* Loading State */}
         {loading && (
           <Loading

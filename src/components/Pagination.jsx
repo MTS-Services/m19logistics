@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, totalItems }) => {
+const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, totalItems, compact = false }) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
@@ -55,8 +55,12 @@ const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, total
 
   if (totalPages <= 1) return null;
 
+  const containerClass = compact
+    ? 'flex items-center justify-between gap-4 w-full px-4 py-3 sm:px-6'
+    : 'mt-6 flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:px-6';
+
   return (
-    <div className="mt-6 flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:px-6">
+    <div className={containerClass}>
       {/* Items count */}
       <div className="text-sm text-gray-600">
         Showing <span className="font-semibold text-gray-900">{startItem}</span> to{' '}
