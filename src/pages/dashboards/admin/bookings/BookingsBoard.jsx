@@ -538,7 +538,7 @@ const BookingsBoard = () => {
   console.log('Render - showViewModal:', showViewModal, 'selectedDelivery:', selectedDelivery);
 
   return (
-    <div className="p-2 sm:p-4 md:p-6 lg:p-4">
+    <div className="p-2 sm:p-6 ">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">

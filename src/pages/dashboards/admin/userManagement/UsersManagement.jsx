@@ -210,7 +210,7 @@ const UsersManagement = () => {
 
 
   return (
-    <div className="p-2 sm:p-6 md:p-8 lg:p-4 text-base">
+    <div className="p-2 sm:p-6  text-base">
       <div className="space-y-6">
         <div className="mb-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

@@ -39,7 +39,7 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onEdit, onDownload, onEmai
                     <div className="mt-2 space-y-1">
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                             <Building className="h-4 w-4 shrink-0" />
-                            <span className="break-words">{customer} {customerUsername && `(${customerUsername})`}</span>
+                            <span className="wrap-break-word">{customer} {customerUsername && `(${customerUsername})`}</span>
                         </div>
                         <div className="flex items-start space-x-2 text-xs sm:text-sm text-gray-500">
                             <Calendar className="h-4 w-4 shrink-0 mt-0.5" />

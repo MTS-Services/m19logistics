@@ -113,16 +113,16 @@ export default function InvoicesManagement() {
     const stats = calculateStats();
 
     return (
-        <div className="p-2 sm:p-6 md:p-8 lg:p-4 ">
+        <div className="p-2 sm:p-6 ">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Invoice Management</h1>
-                    <p className="text-sm text-gray-600">Generate, manage, and track customer invoices</p>
+                    <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Invoice Management</h1>
+                    <p className="mt-1 text-sm text-gray-600 sm:text-base">Generate, manage, and track customer invoices</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => toast.info('Generate flow not implemented')}
-                        className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow"
+                        className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow"
                     >
                         <Plus className="h-4 w-4" />
                         <span>Generate Invoice</span>
@@ -146,20 +146,20 @@ export default function InvoicesManagement() {
 
             {!loading && !error && (
                 <>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div className="rounded-lg bg-white p-4 shadow-sm">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-4 mb-6">
+                        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
                             <p className="text-xs text-gray-600">Total Revenue</p>
                             <p className="text-lg font-bold">£{stats.total.toFixed(2)}</p>
                         </div>
-                        <div className="rounded-lg bg-white p-4 shadow-sm">
+                        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
                             <p className="text-xs text-gray-600">Paid</p>
                             <p className="text-lg font-bold">£{stats.paid.toFixed(2)}</p>
                         </div>
-                        <div className="rounded-lg bg-white p-4 shadow-sm">
+                        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
                             <p className="text-xs text-gray-600">Outstanding</p>
                             <p className="text-lg font-bold">£{stats.outstanding.toFixed(2)}</p>
                         </div>
-                        <div className="rounded-lg bg-white p-4 shadow-sm">
+                        <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
                             <p className="text-xs text-gray-600">Overdue</p>
                             <p className="text-lg font-bold text-red-600">£{stats.overdue.toFixed(2)}</p>
                         </div>

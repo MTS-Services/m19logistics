@@ -4,15 +4,15 @@ import {
     Clock,
     Plus,
     Minus,
+    Settings,
+    Package,
+    TrendingUp,
+    Users,
     CheckCircle,
     AlertCircle,
     Loader2,
-    TrendingUp,
-    Users,
-    Package,
-    Settings,
 } from 'lucide-react';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../../services/axiosInstance';
 import Pagination from '../../../components/Pagination';
@@ -27,7 +27,7 @@ const SlotsManagement = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
+    const [itemsPerPage] = useState(5);
     const [showSetAvailabilityModal, setShowSetAvailabilityModal] = useState(false);
     const [showCapacityModal, setShowCapacityModal] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState(null);
@@ -178,6 +178,11 @@ const SlotsManagement = () => {
         validCurrentPage * itemsPerPage
     );
 
+    // Handle page change (only change page)
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
     const SlotCard = ({ slot }) => {
         const available = slot.maxCapacity - slot.booked;
         const utilization = ((slot.booked / slot.maxCapacity) * 100).toFixed(0);
@@ -269,7 +274,7 @@ const SlotsManagement = () => {
     };
 
     return (
-        <div className=" p-2 sm:p-4 ">
+        <div className="p-2 sm:p-6 ">
             <ToastContainer position="top-right" autoClose={3000} />
 
             <div className="space-y-4 sm:space-y-6">
@@ -467,6 +472,19 @@ const SlotsManagement = () => {
                                     );
                                 })}
                             </div>
+                            
+                            {/* Mobile Pagination */}
+                            {totalPages > 1 && (
+                                <div className="mt-4">
+                                    <Pagination
+                                        currentPage={validCurrentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={handlePageChange}
+                                        itemsPerPage={itemsPerPage}
+                                        totalItems={sortedSlots.length}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* Desktop Table View */}
@@ -624,23 +642,24 @@ const SlotsManagement = () => {
                                             </tbody>
                                         </table>
                                     </div>
+                                    
+                                    {/* Pagination inside table container */}
+                                    {totalPages > 1 && (
+                                        <div className="border-t border-gray-200 px-0 py-0">
+                                            <Pagination
+                                                currentPage={validCurrentPage}
+                                                totalPages={totalPages}
+                                                onPageChange={handlePageChange}
+                                                itemsPerPage={itemsPerPage}
+                                                totalItems={sortedSlots.length}
+                                                compact
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             )
                             }
                         </div>
-
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="mt-6">
-                                <Pagination
-                                    currentPage={validCurrentPage}
-                                    totalPages={totalPages}
-                                    onPageChange={setCurrentPage}
-                                    itemsPerPage={itemsPerPage}
-                                    totalItems={sortedSlots.length}
-                                />
-                            </div>
-                        )}
                     </>
                 )}
 

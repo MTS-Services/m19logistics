@@ -238,7 +238,7 @@ const PricingManagement = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
+    <div className="p-2 sm:p-6 ">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
@@ -306,7 +306,7 @@ const PricingManagement = () => {
               onClick={() => setViewMode('tiers')}
               className={`rounded-lg px-4 py-2 font-medium transition-all ${
                 viewMode === 'tiers'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -402,7 +402,7 @@ const PricingManagement = () => {
             >
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 text-lg font-bold text-white shadow-md">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-to-r from-teal-600 to-teal-500 text-lg font-bold text-white shadow-md">
                     {(tier?.tier || '').slice(-1)}
                   </div>
                   <div>
@@ -585,7 +585,7 @@ const PricingManagement = () => {
 
             <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
               <button onClick={() => { setShowTierModal(false); setEditingTier(null); }} className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100">Cancel</button>
-              <button onClick={handleSaveTier} className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg">
+              <button onClick={handleSaveTier} className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg">
                 <Save className="h-5 w-5" />
                 Save Tier
               </button>
@@ -667,7 +667,7 @@ const PricingManagement = () => {
 
             <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
               <button onClick={() => { setShowCustomModal(false); setEditingCustom(null); }} className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100">Cancel</button>
-              <button onClick={handleSaveCustom} className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg">
+              <button onClick={handleSaveCustom} className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg">
                 <Save className="h-5 w-5" />
                 Save Pricing
               </button>
