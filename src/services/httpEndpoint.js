@@ -37,5 +37,15 @@ export const ENDPOINT = {
       UPDATE: (id) => `/api/admin/pricing-tiers/${id}`,
       DELETE: (id) => `/api/admin/pricing-tiers/${id}`,
     },
+    ADMIN_INVOICE: {
+      GET_ALL: '/api/admin/invoices',
+      GET_BY_ID: (id) => `/api/admin/invoices/${id}`,
+      CREATE: '/api/admin/invoices',
+      UPDATE: (id) => `/api/admin/invoices/${id}`,
+      DELETE: (id) => `/api/admin/invoices/${id}`,
+      EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
+      SEND_EMAIL: (id) => `/api/admin/invoices/${id}/send`,
+      UPDATE_STATUS: (id) => `/api/admin/invoices/${id}/status`,
+    },
   },
 };
