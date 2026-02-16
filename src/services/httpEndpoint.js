@@ -5,6 +5,7 @@ export const ENDPOINT = {
     LOGIN: '/login',
     REGISTER: '/register',
     PRODUCTS: '/api/products',
+    CONTACT: '/api/public/contact',
   },
   PRIVATE: {
     DASHBOARD: '/dashboard',
@@ -46,6 +47,11 @@ export const ENDPOINT = {
       EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
       SEND_EMAIL: (id) => `/api/admin/invoices/${id}/send`,
       UPDATE_STATUS: (id) => `/api/admin/invoices/${id}/status`,
+    },
+    ADMIN_CONTACT: {
+      GET_ALL: '/api/admin/contacts',
+      DELETE: (id) => `/api/admin/contacts/${id}`,
+      MARK_READ: (id) => `/api/admin/contacts/${id}/mark-read`,
     },
   },
 };

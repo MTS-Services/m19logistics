@@ -1,6 +1,93 @@
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { submitContactForm } from '../../../services/contactService';
 
 const ContactView = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error for this field when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^[0-9+\s()-]{10,}$/.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await submitContactForm(formData);
+
+      if (response.success) {
+        toast.success(response.message || 'Thank you for contacting us! We will get back to you soon.');
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          message: '',
+        });
+        setErrors({});
+      } else {
+        toast.error(response.message || 'Failed to submit form. Please try again.');
+      }
+    } catch (error) {
+      console.error('Contact form submission error:', error);
+      toast.error(error.response?.data?.message || 'Failed to submit form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -129,48 +216,81 @@ const ContactView = () => {
             {/* Contact Form */}
             <div className="rounded-lg bg-gray-50 p-8 shadow-lg">
               <h2 className="mb-6 text-2xl font-bold text-gray-900">Send us a Message</h2>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Name</label>
                   <input
                     type="text"
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.name
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="Your name"
+                    disabled={isSubmitting}
                   />
+                  {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
                   <input
                     type="email"
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.email
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="your@email.com"
+                    disabled={isSubmitting}
                   />
+                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Phone</label>
                   <input
                     type="tel"
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.phone
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="Your phone number"
+                    disabled={isSubmitting}
                   />
+                  {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Message</label>
                   <textarea
                     rows="4"
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.message
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="How can we help you?"
+                    disabled={isSubmitting}
                   ></textarea>
+                  {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full rounded-md bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700"
+                  disabled={isSubmitting}
+                  className="w-full rounded-md bg-teal-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
             </div>

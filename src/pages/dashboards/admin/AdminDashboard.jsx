@@ -17,6 +17,7 @@ import {
   Home,
   ChevronDown,
   Calendar,
+  MessageSquare,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -42,6 +43,7 @@ const AdminDashboard = () => {
         { name: 'Bookings', href: '/admin/bookings', icon: Package },
         { name: 'Users', href: '/admin/users', icon: Users },
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
+        { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
         { name: 'Slots', href: '/admin/slots', icon: Calendar },
       ],
     },
@@ -111,8 +113,8 @@ const AdminDashboard = () => {
                         to={item.href}
                         onClick={() => setSidebarOpen(false)}
                         className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${active
-                            ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
-                            : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                          ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
+                          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                           }`}
                       >
                         {/* Active indicator bar */}

@@ -188,12 +188,12 @@ const DriverManagement = () => {
     try {
       setIsDeleting(true);
       const response = await axiosInstance.delete(`/api/admin/users/${selectedDriver.id}`);
-      toast.success(response.data.message || 'Driver deleted successfully');
+      toast.success(response.data.message );
       fetchDrivers();
       setShowDeleteModal(false);
       setSelectedDriver(null);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to delete driver');
+      toast.error(err.response?.data?.message);
     } finally {
       setIsDeleting(false);
     }
