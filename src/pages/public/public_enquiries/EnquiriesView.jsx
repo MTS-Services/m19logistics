@@ -1,6 +1,101 @@
+import { useState } from 'react';
 import { HelpCircle, Phone, Mail, MessageSquare } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { submitEnquiryForm } from '../../../services/contactService';
 
 const EnquiriesView = () => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    companyName: '',
+    email: '',
+    phoneNumber: '',
+    subject: '',
+    message: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error for this field when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    } else if (!/^[\d\s\-+()]+$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = 'Please enter a valid phone number';
+    }
+
+    if (!formData.subject.trim()) {
+      newErrors.subject = 'Subject is required';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await submitEnquiryForm(formData);
+
+      if (response.success) {
+        toast.success(response.message || 'Thank you for your enquiry. We will respond shortly.');
+        // Reset form
+        setFormData({
+          fullName: '',
+          companyName: '',
+          email: '',
+          phoneNumber: '',
+          subject: '',
+          message: '',
+        });
+        setErrors({});
+      } else {
+        toast.error(response.message || 'Failed to submit enquiry. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting enquiry:', error);
+      toast.error(error.response?.data?.message || 'Failed to submit enquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -61,7 +156,7 @@ const EnquiriesView = () => {
               </p>
             </div>
 
-            <form className="space-y-6 rounded-lg bg-gray-50 p-8 shadow-lg">
+            <form onSubmit={handleSubmit} className="space-y-6 rounded-lg bg-gray-50 p-8 shadow-lg">
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -69,10 +164,17 @@ const EnquiriesView = () => {
                   </label>
                   <input
                     type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleChange}
                     required
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.fullName
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="John Doe"
                   />
+                  {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
                 </div>
 
                 <div>
@@ -81,6 +183,9 @@ const EnquiriesView = () => {
                   </label>
                   <input
                     type="text"
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleChange}
                     className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                     placeholder="Your Company Ltd"
                   />
@@ -94,10 +199,17 @@ const EnquiriesView = () => {
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     required
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.email
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="john@example.com"
                   />
+                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -106,10 +218,17 @@ const EnquiriesView = () => {
                   </label>
                   <input
                     type="tel"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
                     required
-                    className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.phoneNumber
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                      }`}
                     placeholder="07971 415430"
                   />
+                  {errors.phoneNumber && <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>}
                 </div>
               </div>
 
@@ -119,10 +238,17 @@ const EnquiriesView = () => {
                 </label>
                 <input
                   type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
                   required
-                  className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                  className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.subject
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                    }`}
                   placeholder="What is your enquiry about?"
                 />
+                {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject}</p>}
               </div>
 
               <div>
@@ -130,18 +256,29 @@ const EnquiriesView = () => {
                   Message <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   required
                   rows="6"
-                  className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                  className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.message
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
+                    }`}
                   placeholder="Please provide details about your enquiry..."
                 ></textarea>
+                {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
               </div>
 
               <button
                 type="submit"
-                className="w-full rounded-md bg-teal-600 px-6 py-3 font-semibold text-white hover:bg-teal-700"
+                disabled={isSubmitting}
+                className={`w-full rounded-md px-6 py-3 font-semibold text-white transition-colors ${isSubmitting
+                    ? 'cursor-not-allowed bg-teal-400'
+                    : 'bg-teal-600 hover:bg-teal-700'
+                  }`}
               >
-                Submit Enquiry
+                {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
               </button>
             </form>
 

@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Calendar,
   MessageSquare,
+  HelpCircle,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -44,6 +45,7 @@ const AdminDashboard = () => {
         { name: 'Users', href: '/admin/users', icon: Users },
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
         { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
+        { name: 'Enquiries', href: '/admin/enquiries', icon: HelpCircle },
         { name: 'Slots', href: '/admin/slots', icon: Calendar },
       ],
     },

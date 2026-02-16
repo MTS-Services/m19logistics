@@ -6,6 +6,7 @@ export const ENDPOINT = {
     REGISTER: '/register',
     PRODUCTS: '/api/products',
     CONTACT: '/api/public/contact',
+    ENQUIRY: '/api/public/enquiry',
   },
   PRIVATE: {
     DASHBOARD: '/dashboard',
@@ -52,6 +53,11 @@ export const ENDPOINT = {
       GET_ALL: '/api/admin/contacts',
       DELETE: (id) => `/api/admin/contacts/${id}`,
       MARK_READ: (id) => `/api/admin/contacts/${id}/mark-read`,
+    },
+    ADMIN_ENQUIRY: {
+      GET_ALL: '/api/admin/enquiries',
+      DELETE: (id) => `/api/admin/enquiries/${id}`,
+      MARK_READ: (id) => `/api/admin/enquiries/${id}/mark-read`,
     },
   },
 };

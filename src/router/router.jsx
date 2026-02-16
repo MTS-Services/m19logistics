@@ -25,6 +25,7 @@ import AnalyticsDashboard from '../pages/dashboards/admin/AnalyticsDashboard';
 import SettingsManagement from '../pages/dashboards/admin/SettingsManagement';
 import SlotsManagement from '../pages/dashboards/admin/SlotsManagement';
 import ContactsManagement from '../pages/dashboards/admin/contactManagement/ContactsManagement';
+import EnquiriesManagement from '../pages/dashboards/admin/enquiryManagement/EnquiriesManagement';
 
 // Dashboard pages - Customer
 import CustomerDashboard from '../pages/dashboards/customer/CustomerDashboard';
@@ -91,6 +92,7 @@ const router = createBrowserRouter(
         <Route path="users" element={<UsersManagement />} />
         <Route path="drivers" element={<DriverManagement />} />
         <Route path="contacts" element={<ContactsManagement />} />
+        <Route path="enquiries" element={<EnquiriesManagement />} />
         <Route path="slots" element={<SlotsManagement />} />
         <Route path="invoices" element={<InvoicesManagement />} />
         <Route path="pricing" element={<PricingManagement />} />
