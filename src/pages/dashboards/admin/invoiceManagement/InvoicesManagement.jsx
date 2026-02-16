@@ -4,7 +4,13 @@ import { Loader2, Plus, Download, Mail } from 'lucide-react';
 import InvoiceCard from './components/InvoiceCard';
 import ViewInvoiceModal from './components/ViewInvoiceModal';
 import EditInvoiceModal from './components/EditInvoiceModal';
-import { getAllInvoices, getInvoiceById, exportInvoicePDF } from '../../../../services/invoiceService';
+import {
+    getAllAdminInvoices,
+    getAdminInvoiceById,
+    exportAdminInvoicePDF,
+    sendAdminInvoiceEmail,
+    updateAdminInvoiceStatus
+} from '../../../../services/invoiceService';
 
 const statusConfig = {
     draft: { label: 'Draft', color: 'bg-gray-100 text-gray-700', icon: () => null },
@@ -30,7 +36,7 @@ export default function InvoicesManagement() {
         setLoading(true);
         setError(null);
         try {
-            const data = await getAllInvoices();
+            const data = await getAllAdminInvoices();
             console.log('Raw API response:', data);
             console.log('Type:', typeof data, 'Is array?', Array.isArray(data));
 
@@ -57,7 +63,7 @@ export default function InvoicesManagement() {
     const handleViewInvoice = async (invoice) => {
         try {
             setLoading(true);
-            const full = await getInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
+            const full = await getAdminInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
             setSelectedInvoice(full);
             setShowViewModal(true);
         } catch (err) {
@@ -75,7 +81,7 @@ export default function InvoicesManagement() {
     const handleDownloadInvoice = async (invoice) => {
         try {
             const id = invoice.id || invoice._id || invoice.invoiceId;
-            const resp = await exportInvoicePDF(id);
+            const resp = await exportAdminInvoicePDF(id);
             const blob = new Blob([resp.data], { type: resp.data.type || 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -92,9 +98,15 @@ export default function InvoicesManagement() {
         }
     };
 
-    const handleEmailInvoice = (invoice) => {
-        // Placeholder: wiring for email endpoint can be added here
-        toast.info(`Email action for ${invoice.invoiceNumber || invoice.id}`);
+    const handleEmailInvoice = async (invoice) => {
+        try {
+            const id = invoice.id || invoice._id || invoice.invoiceId;
+            await sendAdminInvoiceEmail(id);
+            toast.success('Invoice email sent successfully');
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to send invoice email');
+        }
     };
 
     const handlePrintInvoice = (invoice) => {
