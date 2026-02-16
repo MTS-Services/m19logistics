@@ -26,9 +26,9 @@ export const ENDPOINT = {
       STATS: '/api/deliveries/stats',
     },
     INVOICE: {
-      GET_ALL: '/api/admin/invoices',
-      GET_BY_ID: (id) => `/api/admin/invoices/${id}`,
-      EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
+      GET_ALL: '/api/invoices',
+      GET_BY_ID: (id) => `/api/invoices/${id}`,
+      EXPORT_PDF: (id) => `/api/invoices/${id}/export/pdf`,
     },
     PRICING: {
       GET_ALL: '/api/admin/pricing-tiers',
