@@ -338,7 +338,7 @@ const DriverProfile = () => {
           <form onSubmit={handleProfileUpdate}>
             <div className="mb-6 flex items-center gap-6">
               <div className="relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
                   {imagePreview ? (
                     <img src={imagePreview} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
@@ -464,7 +464,7 @@ const DriverProfile = () => {
               <button
                 type="submit"
                 disabled={loading || !isDirty}
-                className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -599,7 +599,7 @@ const DriverProfile = () => {
               <button
                 type="submit"
                 disabled={passwordLoading}
-                className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {passwordLoading ? (
                   <>
