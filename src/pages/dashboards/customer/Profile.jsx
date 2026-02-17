@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   User,
   Mail,
@@ -13,11 +13,13 @@ import {
   Shield,
   Package,
   DollarSign,
+  Camera,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
+import { compressImage } from '../../../utils/imageCompression';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -28,6 +30,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Profile form state
   const [profileData, setProfileData] = useState({
@@ -75,6 +81,18 @@ const Profile = () => {
             loginId: userData.username || '',
           });
 
+          // Prefer any locally selected preview saved during this session
+          const storedPreview = sessionStorage.getItem('m19_profile_preview');
+          if (storedPreview) {
+            console.log('Using stored local preview from sessionStorage');
+            setImagePreview(storedPreview);
+            setImageLoadError(false);
+          } else if (userData.profilePicture) {
+            console.log('Profile Picture URL:', userData.profilePicture);
+            setImagePreview(userData.profilePicture);
+            setImageLoadError(false);
+          }
+
           // Set account info from API
           const pricingTier = userData.customerProfile?.pricingTier;
           const createdAt = userData.createdAt ? new Date(userData.createdAt).getFullYear() : '';
@@ -101,6 +119,23 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  // Helper to rewrite absolute image URLs to proxied paths in dev
+  const getImageSrc = (src) => {
+    if (!src) return null;
+    // Don't modify data URLs (local previews from FileReader)
+    if (src.startsWith('data:')) return src;
+    try {
+      const url = new URL(src);
+      // In dev, use the pathname so Vite dev server proxy ("/uploads") can intercept
+      if (import.meta.env && import.meta.env.DEV) {
+        return url.pathname;
+      }
+      return src;
+    } catch (e) {
+      return src;
+    }
+  };
+
   // Handle profile change
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -113,29 +148,108 @@ const Profile = () => {
     setPasswordData({ ...passwordData, [name]: value });
   };
 
+  const handleImageSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 10MB before compression)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size should be less than 10MB');
+      return;
+    }
+
+    try {
+      // Compress image before setting
+      const compressedFile = await compressImage(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.85,
+      });
+
+      setProfileImage(compressedFile);
+      setProfilePicture(compressedFile);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setImageLoadError(false);
+        try {
+          sessionStorage.setItem('m19_profile_preview', reader.result);
+        } catch (e) {
+          console.warn('Could not save preview to sessionStorage', e);
+        }
+      };
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error('Image compression error:', error);
+      toast.error('Failed to process image. Please try another image.');
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   // Save profile
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Create FormData for file upload support
-      const formData = new FormData();
-      formData.append('fullName', profileData.fullName);
-      if (profileData.email) formData.append('email', profileData.email);
-      if (profileData.phone) formData.append('phone', profileData.phone);
-      if (profileData.depotAddress) formData.append('depotAddress', profileData.depotAddress);
-      if (profilePicture) formData.append('profilePicture', profilePicture);
+      let response;
+      // preserve local preview (data URL) if user selected a new image
+      const localPreviewBefore = imagePreview && String(imagePreview).startsWith('data:') ? imagePreview : null;
 
-      const response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // If image is selected, send as FormData
+      if (profileImage) {
+        const formData = new FormData();
+        formData.append('fullName', profileData.fullName);
+        if (profileData.email) formData.append('email', profileData.email);
+        if (profileData.phone) formData.append('phone', profileData.phone);
+        if (profileData.depotAddress) formData.append('depotAddress', profileData.depotAddress);
+        formData.append('profilePicture', profileImage);
+
+        response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 30000, // 30 seconds for file upload
+        });
+      } else {
+        // Send as JSON if no image
+        response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, {
+          fullName: profileData.fullName,
+          email: profileData.email,
+          phone: profileData.phone,
+          depotAddress: profileData.depotAddress,
+        });
+      }
 
       if (response.data && response.data.success) {
         toast.success('Profile updated successfully!');
-        setProfilePicture(null); // Clear file input after success
+        // Keep the local preview (so user sees the uploaded image immediately)
+        if (localPreviewBefore) {
+          setImagePreview(localPreviewBefore);
+          setImageLoadError(false);
+        } else if (response.data.data?.user?.profilePicture) {
+          setImagePreview(response.data.data.user.profilePicture);
+          setImageLoadError(false);
+        }
+        // clear stored preview only if server returned a usable profilePicture
+        if (response.data.data?.user?.profilePicture) {
+          try { sessionStorage.removeItem('m19_profile_preview'); } catch (e) { }
+        }
+        setProfileImage(null);
+        setProfilePicture(null);
       } else {
         toast.error(response.data?.message || 'Failed to update profile');
       }
@@ -299,6 +413,58 @@ const Profile = () => {
         <div className="p-6">
           {activeTab === 'profile' && (
             <form onSubmit={handleSaveProfile} className="space-y-6">
+              {/* Profile Picture Section */}
+              <div className="mb-6 flex items-center gap-6">
+                <div className="relative">
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-2xl font-bold text-white overflow-hidden">
+                    {imagePreview && !imageLoadError ? (
+                      <img
+                        src={getImageSrc(imagePreview)}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          console.error('❌ Image failed to load (original):', imagePreview);
+                          console.error('❌ Image failed to load (used):', getImageSrc(imagePreview));
+                          setImageLoadError(true);
+                        }}
+                        onLoad={() => {
+                          console.log('✅ Image loaded successfully:', getImageSrc(imagePreview));
+                          setImageLoadError(false);
+                        }}
+                      />
+                    ) : (
+                      <span className="text-2xl font-bold">
+                        {profileData.fullName ? profileData.fullName.charAt(0).toUpperCase() : 'C'}
+                      </span>
+                    )}
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={triggerFileInput}
+                    className="absolute right-0 bottom-0 z-10 cursor-pointer rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-50"
+                    title="Change profile picture"
+                  >
+                    <Camera className="h-4 w-4 text-gray-600" />
+                  </button>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">{profileData.fullName}</h3>
+                  <p className="text-sm text-gray-600">Customer</p>
+                  {profileImage && (
+                    <p className="mt-1 text-xs text-teal-600 font-medium">
+                      Image selected. Click "Save Changes" to upload.
+                    </p>
+                  )}
+                </div>
+              </div>
+
               {/* Basic Information Section */}
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-6">
                 <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
@@ -338,21 +504,6 @@ const Profile = () => {
                       placeholder="Login ID"
                     />
                     <p className="mt-1 text-xs text-gray-500">Login ID cannot be changed</p>
-                  </div>
-
-                  {/* Profile Picture */}
-                  <div className="md:col-span-2">
-                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
-                      <User className="h-4 w-4 text-gray-400" />
-                      Profile Picture
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setProfilePicture(e.target.files[0])}
-                      className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">Upload a new profile picture (optional)</p>
                   </div>
                 </div>
               </div>
