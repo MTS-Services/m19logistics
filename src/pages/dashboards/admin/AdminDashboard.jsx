@@ -46,6 +46,7 @@ const AdminDashboard = () => {
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
         { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
         { name: 'Enquiries', href: '/admin/enquiries', icon: HelpCircle },
+        { name: 'Audit Logs', href: '/admin/audit-logs', icon: FileText },
         { name: 'Slots', href: '/admin/slots', icon: Calendar },
       ],
     },

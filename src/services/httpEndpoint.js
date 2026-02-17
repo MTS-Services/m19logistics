@@ -51,6 +51,10 @@ export const ENDPOINT = {
       SEND_EMAIL: (id) => `/api/admin/invoices/${id}/send`,
       UPDATE_STATUS: (id) => `/api/admin/invoices/${id}/status`,
     },
+    ADMIN_AUDIT: {
+      GET_ALL: '/api/admin/audit-logs',
+      GET_BY_ID: (id) => `/api/admin/audit-logs/${id}`,
+    },
     ADMIN_CONTACT: {
       GET_ALL: '/api/admin/contacts',
       DELETE: (id) => `/api/admin/contacts/${id}`,
