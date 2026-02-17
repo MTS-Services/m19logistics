@@ -14,6 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
+import { compressImage } from '../../../utils/imageCompression';
 
 const ManagerProfile = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -131,6 +132,7 @@ const ManagerProfile = () => {
 
         response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 30000, // 30 seconds for file upload
         });
       } else {
         // Send as JSON if no image
@@ -163,7 +165,7 @@ const ManagerProfile = () => {
     }
   };
 
-  const handleImageSelect = (e) => {
+  const handleImageSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -173,21 +175,38 @@ const ManagerProfile = () => {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
+    // Validate file size (max 10MB before compression)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size should be less than 10MB');
       return;
     }
 
-    setProfileImage(file);
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-      setImageLoadError(false);
-    };
-    reader.readAsDataURL(file);
+    try {
+      // Compress image before setting
+      const compressedFile = await compressImage(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.85,
+      });
+      
+      setProfileImage(compressedFile);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setImageLoadError(false);
+        try {
+          sessionStorage.setItem('m19_profile_preview', reader.result);
+        } catch (e) {
+          console.warn('Could not save preview to sessionStorage', e);
+        }
+      };
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error('Image compression error:', error);
+      toast.error('Failed to process image. Please try another image.');
+    }
   };
 
   const triggerFileInput = () => {

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
+import { compressImage } from '../../../utils/imageCompression';
 
 const DriverProfile = () => {
   const { user } = useAuth();
@@ -123,6 +124,7 @@ const DriverProfile = () => {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
+          timeout: 30000, // 30 seconds for file upload
         });
       } else {
         // Send as JSON if no image
