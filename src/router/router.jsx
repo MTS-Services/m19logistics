@@ -34,6 +34,7 @@ import NewDelivery from '../pages/dashboards/customer/NewDelivery';
 import DeliveryHistory from '../pages/dashboards/customer/DeliveryHistory';
 import CustomerInvoices from '../pages/dashboards/customer/Invoices';
 import CustomerProfile from '../pages/dashboards/customer/Profile';
+import AuditLogs from '../pages/dashboards/customer/auditLogs/AuditLogs';
 
 // Dashboard pages - Driver
 import DriverDashboardLayout from '../pages/dashboards/driver/DriverDashboardLayout';
@@ -113,6 +114,7 @@ const router = createBrowserRouter(
         <Route path="new-delivery" element={<NewDelivery />} />
         <Route path="deliveries" element={<DeliveryHistory />} />
         <Route path="invoices" element={<CustomerInvoices />} />
+        <Route path="audit-logs" element={<AuditLogs />} />
         <Route path="profile" element={<CustomerProfile />} />
       </Route>
 

@@ -13,6 +13,7 @@ import {
   History,
   Home,
   ChevronDown,
+  Shield,
 } from 'lucide-react';
 
 const CustomerDashboard = () => {
@@ -43,6 +44,7 @@ const CustomerDashboard = () => {
       title: 'Account',
       items: [
         { name: 'Invoices', href: '/customer/invoices', icon: FileText },
+        { name: 'Activity Logs', href: '/customer/audit-logs', icon: Shield },
         { name: 'Profile', href: '/customer/profile', icon: User },
       ],
     },
@@ -62,9 +64,8 @@ const CustomerDashboard = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-3/4 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-3/4 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="flex h-full flex-col">
           <div className="flex h-28 items-center justify-center px-6">
@@ -100,11 +101,10 @@ const CustomerDashboard = () => {
                         key={item.name}
                         to={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
-                          active
+                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${active
                             ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-                        }`}
+                          }`}
                       >
                         {/* Active indicator bar */}
                         {active && (
@@ -113,9 +113,8 @@ const CustomerDashboard = () => {
 
                         <div className="flex items-center space-x-3">
                           <div
-                            className={`rounded-lg p-1.5 transition-colors ${
-                              active ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700'
-                            }`}
+                            className={`rounded-lg p-1.5 transition-colors ${active ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700'
+                              }`}
                           >
                             <Icon
                               className={`h-5 w-5 ${active ? 'text-white' : 'text-gray-400 group-hover:text-teal-400'}`}
@@ -175,9 +174,8 @@ const CustomerDashboard = () => {
                 <p className="text-xs text-gray-500">Customer</p>
               </div>
               <ChevronDown
-                className={`h-4 w-4 text-gray-500 transition-transform ${
-                  userDropdownOpen ? 'rotate-180' : ''
-                }`}
+                className={`h-4 w-4 text-gray-500 transition-transform ${userDropdownOpen ? 'rotate-180' : ''
+                  }`}
               />
             </button>
 
