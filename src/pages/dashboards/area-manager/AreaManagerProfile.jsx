@@ -164,14 +164,14 @@ const AreaManagerProfile = () => {
           <div className="mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
-                Profile Settings
+                Profile Settings1
               </h1>
               <p className="mt-2 text-gray-600">Manage your account settings and preferences</p>
             </div>
           </div>
 
           {/* Account Summary Cards */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-teal-50 p-2">

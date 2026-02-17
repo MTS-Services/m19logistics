@@ -16,6 +16,7 @@ const DriverProfile = () => {
   const [fetchingProfile, setFetchingProfile] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
   const fileInputRef = React.useRef(null);
 
   const [profileData, setProfileData] = useState({
@@ -67,7 +68,9 @@ const DriverProfile = () => {
 
           // Set existing profile picture if available
           if (userData.profilePicture) {
+            console.log('Profile picture URL:', userData.profilePicture);
             setImagePreview(userData.profilePicture);
+            setImageLoadError(false);
           }
         }
       } catch (error) {
@@ -80,6 +83,22 @@ const DriverProfile = () => {
 
     fetchProfile();
   }, []);
+
+  // Helper to rewrite absolute image URLs to proxied paths in dev
+  const getImageSrc = (src) => {
+    if (!src) return null;
+    // Don't modify data URLs (local previews from FileReader)
+    if (src.startsWith('data:')) return src;
+    try {
+      const url = new URL(src);
+      if (import.meta.env && import.meta.env.DEV) {
+        return url.pathname;
+      }
+      return src;
+    } catch (e) {
+      return src;
+    }
+  };
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -120,14 +139,15 @@ const DriverProfile = () => {
 
       if (response.data && response.data.success) {
         toast.success(response.data.message || 'Profile updated successfully!');
-        
+
         // Update original profile snapshot so Save button disables until further edits
         setOriginalProfile({ ...profileData });
         setProfileImage(null);
-        
+
         // Update image preview with the new profile picture URL from server
         if (response.data.data?.user?.profilePicture) {
           setImagePreview(response.data.data.user.profilePicture);
+          setImageLoadError(false);
         }
       } else {
         toast.error(response.data?.message || 'Failed to update profile');
@@ -172,14 +192,14 @@ const DriverProfile = () => {
       });
 
       if (response.data && response.data.success) {
-        toast.success(response.data.message || 'Password changed successfully!');
+        toast.success(response.data.message);
         setPasswordData({
           currentPassword: '',
           newPassword: '',
           confirmPassword: '',
         });
       } else {
-        toast.error(response.data?.message || 'Failed to change password');
+        toast.error(response.data?.message);
       }
     } catch (error) {
       console.error('Password change error:', error);
@@ -216,11 +236,12 @@ const DriverProfile = () => {
     }
 
     setProfileImage(file);
-    
+
     // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreview(reader.result);
+      setImageLoadError(false);
     };
     reader.readAsDataURL(file);
   };
@@ -260,7 +281,7 @@ const DriverProfile = () => {
       </div>
 
       {/* Account Summary Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-teal-50 p-2">
@@ -280,7 +301,7 @@ const DriverProfile = () => {
             </div>
             <div>
               <p className="text-xs text-gray-600">Email</p>
-              <p className="text-sm font-semibold text-gray-900">{profileData.email }</p>
+              <p className="text-sm font-semibold text-gray-900">{profileData.email}</p>
             </div>
           </div>
         </div>
@@ -292,7 +313,7 @@ const DriverProfile = () => {
             </div>
             <div>
               <p className="text-xs text-gray-600">Phone</p>
-              <p className="text-sm font-semibold text-gray-900">{profileData.phone }</p>
+              <p className="text-sm font-semibold text-gray-900">{profileData.phone}</p>
             </div>
           </div>
         </div>
@@ -304,7 +325,7 @@ const DriverProfile = () => {
             </div>
             <div>
               <p className="text-xs text-gray-600">Vehicle</p>
-              <p className="text-sm font-semibold text-gray-900">{profileData.vehicleReg }</p>
+              <p className="text-sm font-semibold text-gray-900">{profileData.vehicleReg}</p>
             </div>
           </div>
         </div>
@@ -338,9 +359,22 @@ const DriverProfile = () => {
           <form onSubmit={handleProfileUpdate}>
             <div className="mb-6 flex items-center gap-6">
               <div className="relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
-                  {imagePreview ? (
-                    <img src={imagePreview} alt="Profile" className="h-full w-full object-cover" />
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
+                  {imagePreview && !imageLoadError ? (
+                    <img
+                      src={getImageSrc(imagePreview)}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        console.error('Image failed to load (original):', imagePreview, e);
+                        console.error('Image failed to load (used):', getImageSrc(imagePreview));
+                        setImageLoadError(true);
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', getImageSrc(imagePreview));
+                        setImageLoadError(false);
+                      }}
+                    />
                   ) : (
                     profileData.name ? profileData.name.charAt(0).toUpperCase() : 'D'
                   )}

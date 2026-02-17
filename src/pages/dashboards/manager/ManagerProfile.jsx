@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   User,
   Mail,
@@ -23,6 +23,10 @@ const ManagerProfile = () => {
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -41,12 +45,19 @@ const ManagerProfile = () => {
     confirmPassword: '',
   });
 
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log('Image Preview State:', imagePreview);
+    console.log(' Image Load Error:', imageLoadError);
+  }, [imagePreview, imageLoadError]);
+
   // Fetch profile data from API
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setFetchingProfile(true);
         const response = await axiosInstance.get(ENDPOINT.API.AUTH.GET_PROFILE);
+        console.log('📡 Full API Response:', response.data);
 
         if (response.data && response.data.success && response.data.data) {
           const userData = response.data.data;
@@ -64,6 +75,15 @@ const ManagerProfile = () => {
               : 'No stores assigned',
             accessScope: managerProfile?.accessScope || '',
           });
+
+          // Set existing profile picture if available
+          if (userData.profilePicture) {
+            console.log('Profile Picture URL:', userData.profilePicture);
+            setImagePreview(userData.profilePicture);
+            setImageLoadError(false);
+          } else {
+            console.log(' No profile picture found in API response');
+          }
         }
       } catch (error) {
         console.error('Failed to fetch profile:', error);
@@ -76,20 +96,61 @@ const ManagerProfile = () => {
     fetchProfile();
   }, []);
 
+  // Helper to rewrite absolute image URLs to proxied paths in dev
+  const getImageSrc = (src) => {
+    if (!src) return null;
+    // Don't modify data URLs (local previews from FileReader)
+    if (src.startsWith('data:')) return src;
+    try {
+      const url = new URL(src);
+      // In dev, use the pathname so Vite dev server proxy ("/uploads") can intercept
+      if (import.meta.env && import.meta.env.DEV) {
+        return url.pathname;
+      }
+      return src;
+    } catch (e) {
+      return src;
+    }
+  };
+
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, {
-        fullName: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-        officeAddress: profileData.address,
-      });
+      let response;
+
+      // If image is selected, send as FormData
+      if (profileImage) {
+        const formData = new FormData();
+        formData.append('fullName', profileData.name);
+        formData.append('email', profileData.email);
+        formData.append('phone', profileData.phone);
+        formData.append('officeAddress', profileData.address);
+        formData.append('profilePicture', profileImage);
+
+        response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      } else {
+        // Send as JSON if no image
+        response = await axiosInstance.patch(ENDPOINT.API.AUTH.PROFILE, {
+          fullName: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          officeAddress: profileData.address,
+        });
+      }
 
       if (response.data && response.data.success) {
         toast.success('Profile updated successfully');
+        setProfileImage(null);
+        
+        // Update image preview with the new profile picture URL from server
+        if (response.data.data?.user?.profilePicture) {
+          setImagePreview(response.data.data.user.profilePicture);
+          setImageLoadError(false);
+        }
       } else {
         toast.error(response.data?.message || 'Failed to update profile');
       }
@@ -99,6 +160,39 @@ const ManagerProfile = () => {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      return;
+    }
+
+    setProfileImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+      setImageLoadError(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -161,7 +255,7 @@ const ManagerProfile = () => {
           </div>
 
           {/* Account Summary Cards */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-teal-50 p-2">
@@ -242,12 +336,42 @@ const ManagerProfile = () => {
               <form onSubmit={handleProfileUpdate}>
                 <div className="mb-6 flex items-center gap-6">
                   <div className="relative">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-r from-orange-600 to-orange-500 text-2xl font-bold text-white">
-                      {profileData.name.charAt(0)}
+                    {console.log('🖼️ Rendering - imagePreview:', imagePreview, 'imageLoadError:', imageLoadError)}
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-orange-600 to-orange-500 text-2xl font-bold text-white overflow-hidden">
+                      {imagePreview && !imageLoadError ? (
+                        <img 
+                          src={getImageSrc(imagePreview)} 
+                          alt="Profile" 
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            console.error('❌ Image failed to load (original):', imagePreview);
+                            console.error('❌ Image failed to load (used):', getImageSrc(imagePreview));
+                            console.error('Error details:', e);
+                            setImageLoadError(true);
+                          }}
+                          onLoad={() => {
+                            console.log('✅ Image loaded successfully:', getImageSrc(imagePreview));
+                            setImageLoadError(false);
+                          }}
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold">
+                          {profileData.name ? profileData.name.charAt(0).toUpperCase() : 'M'}
+                        </span>
+                      )}
                     </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
                     <button
                       type="button"
-                      className="absolute right-0 bottom-0 rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-50"
+                      onClick={triggerFileInput}
+                      className="absolute right-0 bottom-0 z-10 cursor-pointer rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-50"
+                      title="Change profile picture"
                     >
                       <Camera className="h-4 w-4 text-gray-600" />
                     </button>
@@ -255,6 +379,11 @@ const ManagerProfile = () => {
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">{profileData.name}</h3>
                     <p className="text-sm text-gray-600">{profileData.role}</p>
+                    {profileImage && (
+                      <p className="mt-1 text-xs text-teal-600 font-medium">
+                        Image selected. Click "Save Changes" to upload.
+                      </p>
+                    )}
                   </div>
                 </div>
 
