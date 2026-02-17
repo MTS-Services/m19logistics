@@ -173,7 +173,7 @@ const EnquiriesManagement = () => {
                             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                                 Enquiry Submissions
                             </h1>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-2 text-base text-gray-600">
                                 View and manage customer enquiry submissions
                             </p>
                         </div>
@@ -282,7 +282,7 @@ const EnquiriesManagement = () => {
                                 <div className="p-12 text-center">
                                     <FileText className="mx-auto h-12 w-12 text-gray-400" />
                                     <h3 className="mt-4 text-lg font-medium text-gray-900">No enquiries found</h3>
-                                    <p className="mt-2 text-sm text-gray-600">
+                                    <p className="mt-2 text-base text-gray-600">
                                         Try adjusting your search or filter criteria
                                     </p>
                                 </div>

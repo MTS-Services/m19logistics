@@ -169,7 +169,7 @@ const ContactsManagement = () => {
                             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                                 Contact Messages
                             </h1>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-2 text-base text-gray-600">
                                 View and manage customer contact submissions
                             </p>
                         </div>
