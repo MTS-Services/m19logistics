@@ -10,14 +10,15 @@ const AuditLogsTable = ({ paginatedLogs, getActionStyle, formatDateTime, formatD
                         <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                             Date & Time
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
-                            Action
+                         <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
+                            Delivery Info
                         </th>
+                       
                         <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                             Description
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
-                            Delivery Info
+                            Status
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">
                             Actions
@@ -35,23 +36,7 @@ const AuditLogsTable = ({ paginatedLogs, getActionStyle, formatDateTime, formatD
                                         <span className="text-sm text-gray-900">{formatDateTime(log.createdAt)}</span>
                                     </div>
                                 </td>
-                                <td className="whitespace-nowrap px-6 py-4">
-                                    <span
-                                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${color}`}
-                                    >
-                                        <ActionIcon className="h-3 w-3" />
-                                        {label}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <p className="text-sm text-gray-900">{log.description}</p>
-                                    {log.reason && (
-                                        <p className="mt-1 text-xs text-gray-600">
-                                            <span className="font-medium">Reason:</span> {log.reason}
-                                        </p>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4">
+                                  <td className="px-6 py-4">
                                     {log.delivery ? (
                                         <div className="text-sm">
                                             <p className="font-medium text-gray-900">Delivery #{log.deliveryId}</p>
@@ -64,6 +49,24 @@ const AuditLogsTable = ({ paginatedLogs, getActionStyle, formatDateTime, formatD
                                         <span className="text-sm text-gray-500">N/A</span>
                                     )}
                                 </td>
+                             
+                                <td className="px-6 py-4">
+                                    <p className="text-sm text-gray-900">{log.description}</p>
+                                    {log.reason && (
+                                        <p className="mt-1 text-xs text-gray-600">
+                                            <span className="font-medium">Reason:</span> {log.reason}
+                                        </p>
+                                    )}
+                                </td>
+                                   <td className="whitespace-nowrap px-6 py-4">
+                                    <span
+                                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${color}`}
+                                    >
+                                        <ActionIcon className="h-3 w-3" />
+                                        {label}
+                                    </span>
+                                </td>
+                              
                                 <td className="whitespace-nowrap px-6 py-4">
                                     <button
                                         onClick={() => handleViewLog(log)}

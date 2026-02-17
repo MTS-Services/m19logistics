@@ -3,8 +3,14 @@ import { XCircle } from 'lucide-react';
 
 const AuditLogsModal = ({ selectedLog, isViewLoading, formatDateTime, formatDate, onClose }) => {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-50 p-4">
-            <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl">
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-50 p-4"
+            onClick={onClose}
+        >
+            <div
+                className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Modal Header */}
                 <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
                     <div className="flex items-center justify-between">
