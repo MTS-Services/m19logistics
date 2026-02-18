@@ -269,7 +269,7 @@ const HomeView = () => {
               </a>
               <a
                 href="https://wa.me/447577574676"
-                className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white shadow-lg transition-all hover:bg-blue-700 sm:w-auto"
+                className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-white px-8 py-4 font-semibold text-slate-900 shadow-lg transition-all hover:bg-gray-100 sm:w-auto"
               >
                 <Phone className="h-5 w-5" />
                 <span>WhatsApp 07577 574676</span>
