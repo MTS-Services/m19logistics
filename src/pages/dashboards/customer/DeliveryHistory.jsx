@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Package,
   Clock,
@@ -86,6 +87,8 @@ const mapApiDeliveryToUi = (item) => {
 };
 
 const DeliveryHistory = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showViewModal, setShowViewModal] = useState(false);
@@ -175,6 +178,53 @@ const DeliveryHistory = () => {
       clearTimeout(timer);
     };
   }, [filterStatus, searchQuery]);
+
+  // Auto-open modal for newly created delivery
+  useEffect(() => {
+    const newDeliveryId = location.state?.newDeliveryId;
+    const autoOpenModal = location.state?.autoOpenModal;
+
+    if (newDeliveryId && autoOpenModal && deliveries.length > 0) {
+      // Find the newly created delivery in the list
+      const newDelivery = deliveries.find(d => String(d.id) === String(newDeliveryId));
+      
+      if (newDelivery) {
+        // Auto-open the modal for the new delivery
+        setTimeout(() => {
+          handleViewDelivery(newDelivery);
+        }, 300);
+      } else {
+        // If not found, try to fetch it directly
+        const fetchAndOpenDelivery = async () => {
+          try {
+            const response = await getDeliveryById(newDeliveryId);
+            const apiDelivery = response?.data ?? response;
+            const mappedDelivery = mapApiDeliveryToUi(apiDelivery);
+            
+            // Add to deliveries list if not already there
+            setDeliveries(prev => {
+              const exists = prev.find(d => String(d.id) === String(newDeliveryId));
+              if (exists) return prev;
+              return [mappedDelivery, ...prev];
+            });
+            
+            // Open the modal
+            setTimeout(() => {
+              setSelectedDelivery(mappedDelivery);
+              setShowViewModal(true);
+            }, 300);
+          } catch (error) {
+            console.error('Failed to load new delivery:', error);
+          }
+        };
+        
+        fetchAndOpenDelivery();
+      }
+
+      // Clear the navigation state to prevent re-triggering
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [deliveries, location.state, location.pathname, navigate]);
 
   // Deliveries list is fetched using server-side filters (status/search)
   const filteredDeliveries = deliveries;

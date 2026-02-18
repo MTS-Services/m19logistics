@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Calendar,
   MapPin,
@@ -20,6 +21,7 @@ import { createDeliveryRequest } from '../../../services/deliveryService';
 
 const NewDelivery = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -142,6 +144,17 @@ const NewDelivery = () => {
         instructions: '',
       });
       setShowPreview(false);
+
+      // Extract the delivery ID from response
+      const newDeliveryId =
+        response?.data?.id || response?.data?.deliveryId || response?.id || response?.deliveryId;
+
+      // Navigate to Delivery History with the new delivery ID
+      setTimeout(() => {
+        navigate('/customer/deliveries', {
+          state: { newDeliveryId, autoOpenModal: true },
+        });
+      }, 500);
     } catch (error) {
       console.error('Error submitting delivery request:', error);
 
