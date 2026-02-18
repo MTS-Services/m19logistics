@@ -1,15 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Truck,
-  Settings,
-  Briefcase,
-  Phone,
-  Mail,
-  Upload,
-  Send,
-  CheckCircle,
-} from 'lucide-react';
+import { Truck, Settings, Briefcase, Phone, Mail, Upload, Send, CheckCircle } from 'lucide-react';
 
 const JobsView = () => {
   const [formData, setFormData] = useState({
@@ -129,7 +120,7 @@ We welcome people from all backgrounds and value the different skills and perspe
       {/* Job Categories Section */}
       <section className="bg-linear-to-b from-white to-gray-50 py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="mb-12 text-center">
             <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
               Current Opportunities
             </h2>
@@ -149,18 +140,17 @@ We welcome people from all backgrounds and value the different skills and perspe
                   <div
                     className={`absolute -top-10 -right-10 h-40 w-40 rounded-full bg-linear-to-br ${category.color} opacity-10 transition-opacity group-hover:opacity-20`}
                   ></div>
-                  
+
                   <div className="relative flex flex-col gap-4 md:flex-row md:items-start">
-                    <div className="flex items-center gap-4 md:items-start md:flex-col">
-                      <span className="text-5xl">{category.emoji}</span>
+                    <div className="flex items-center gap-4 md:flex-col md:items-start">
                       <Icon
                         className={`h-10 w-10 bg-linear-to-br ${category.color} bg-clip-text text-transparent`}
                       />
                     </div>
-                    
+
                     <div className="flex-1">
                       <h3 className="mb-4 text-2xl font-bold text-gray-900">{category.title}</h3>
-                      <p className="text-gray-600 whitespace-pre-line leading-relaxed">
+                      <p className="leading-relaxed whitespace-pre-line text-gray-600">
                         {category.description}
                       </p>
                       <p className="mt-4 text-lg font-semibold text-teal-600 italic">
@@ -179,10 +169,8 @@ We welcome people from all backgrounds and value the different skills and perspe
       <section className="bg-white py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-3xl">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                Apply Now
-              </h2>
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Apply Now</h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
                 Get in touch with us to discuss your application
               </p>
@@ -209,17 +197,18 @@ We welcome people from all backgrounds and value the different skills and perspe
             {/* Application Form */}
             <div className="rounded-2xl bg-linear-to-br from-gray-50 to-white p-8 shadow-lg">
               {submitSuccess && (
-                <div className="mb-6 flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 p-4 text-green-800">
+                <div className="mb-6 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800">
                   <CheckCircle className="h-5 w-5 shrink-0" />
                   <p className="font-medium">
-                    Thank you! Your application has been submitted successfully. We'll be in touch soon.
+                    Thank you! Your application has been submitted successfully. We'll be in touch
+                    soon.
                   </p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
                     Full Name *
                   </label>
                   <input
@@ -229,14 +218,14 @@ We welcome people from all backgrounds and value the different skills and perspe
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                     placeholder="Enter your full name"
                   />
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
                       Email Address *
                     </label>
                     <input
@@ -246,13 +235,13 @@ We welcome people from all backgrounds and value the different skills and perspe
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                       placeholder="your.email@example.com"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="phone" className="mb-2 block text-sm font-medium text-gray-700">
                       Phone Number *
                     </label>
                     <input
@@ -262,14 +251,17 @@ We welcome people from all backgrounds and value the different skills and perspe
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                       placeholder="07XXX XXXXXX"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="position"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Position of Interest *
                   </label>
                   <select
@@ -278,7 +270,7 @@ We welcome people from all backgrounds and value the different skills and perspe
                     value={formData.position}
                     onChange={handleInputChange}
                     required
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                   >
                     <option value="">Select a position</option>
                     <option value="driver">Driver</option>
@@ -289,7 +281,7 @@ We welcome people from all backgrounds and value the different skills and perspe
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-700">
                     Message / Cover Letter *
                   </label>
                   <textarea
@@ -299,13 +291,13 @@ We welcome people from all backgrounds and value the different skills and perspe
                     onChange={handleInputChange}
                     required
                     rows={6}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                     placeholder="Tell us about yourself and why you'd like to join M19 Logistics..."
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="cv" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="cv" className="mb-2 block text-sm font-medium text-gray-700">
                     Upload CV (PDF or Word) *
                   </label>
                   <div className="relative">
@@ -337,7 +329,7 @@ We welcome people from all backgrounds and value the different skills and perspe
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="group flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-blue-600 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:from-teal-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="group flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
@@ -362,14 +354,14 @@ We welcome people from all backgrounds and value the different skills and perspe
       <section className="bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">
+            <h3 className="mb-4 text-2xl font-bold text-white">
               Questions About Joining Our Team?
             </h3>
-            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+            <p className="mx-auto mb-8 max-w-2xl text-gray-300">
               We're happy to discuss opportunities, answer questions, or simply have a conversation
               about what it's like to work at M19 Logistics.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Link
                 to="/contact"
                 className="inline-flex items-center justify-center rounded-lg border-2 border-white/40 bg-transparent px-8 py-3 text-base font-bold text-white transition-all hover:bg-white/10"
