@@ -68,7 +68,9 @@ const ContactView = () => {
       const response = await submitContactForm(formData);
 
       if (response.success) {
-        toast.success(response.message || 'Thank you for contacting us! We will get back to you soon.');
+        toast.success(
+          response.message || 'Thank you for contacting us! We will get back to you soon.'
+        );
         // Reset form
         setFormData({
           name: '',
@@ -224,10 +226,11 @@ const ContactView = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.name
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.name
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="Your name"
                     disabled={isSubmitting}
                   />
@@ -241,10 +244,11 @@ const ContactView = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.email
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.email
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="your@email.com"
                     disabled={isSubmitting}
                   />
@@ -258,10 +262,11 @@ const ContactView = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.phone
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.phone
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="Your phone number"
                     disabled={isSubmitting}
                   />
@@ -275,10 +280,11 @@ const ContactView = () => {
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.message
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.message
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="How can we help you?"
                     disabled={isSubmitting}
                   ></textarea>

@@ -115,14 +115,14 @@ const HomeView = () => {
             <div className="flex flex-col gap-4 sm:flex-row">
               <Link
                 to="/enquiries"
-                className="group inline-flex items-center justify-center rounded-lg bg-teal-500 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-teal-600"
+                className="group inline-flex items-center justify-center rounded-lg bg-teal-600 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-teal-700"
               >
                 Get a Quote
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center rounded-lg border-2 border-white/40 bg-transparent px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/10"
+                className="inline-flex items-center justify-center rounded-lg border-2 border-white/40 bg-white px-8 py-4 text-lg font-bold text-slate-900 transition-all hover:bg-gray-100"
               >
                 Contact Us
               </Link>
