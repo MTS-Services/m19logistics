@@ -274,7 +274,7 @@ const EnquiriesManagement = () => {
 
                         {/* Enquiries List */}
                         <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-                            <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                            <div className="border-b border-gray-200 bg-white px-6 py-4">
                                 <h2 className="text-lg font-bold text-gray-900">Enquiry Submissions</h2>
                             </div>
 

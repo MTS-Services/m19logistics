@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Save, Loader2 } from 'lucide-react';
+import { X, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../../../services/axiosInstance';
 
@@ -16,6 +16,7 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -213,14 +214,27 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                             {!isEdit && (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Initial Password *</label>
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        placeholder="••••••••"
-                                        className={`mt-1 block w-full rounded-lg border px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            placeholder="••••••••"
+                                            className={`mt-1 block w-full rounded-lg border px-3 py-2 pr-10 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-5 w-5" />
+                                            ) : (
+                                                <Eye className="h-5 w-5" />
+                                            )}
+                                        </button>
+                                    </div>
                                     {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
                                 </div>
                             )}
