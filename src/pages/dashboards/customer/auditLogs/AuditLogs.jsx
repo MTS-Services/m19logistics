@@ -173,7 +173,7 @@ const AuditLogs = () => {
             <AuditLogsHeader />
 
             {/* Stats Card */}
-            <AuditLogsStats totalActivities={auditLogs.length} />
+            {/* <AuditLogsStats totalActivities={auditLogs.length} /> */}
 
             {/* Filters and Search */}
             <AuditLogsFilters
