@@ -207,7 +207,8 @@ const Profile = () => {
     try {
       let response;
       // preserve local preview (data URL) if user selected a new image
-      const localPreviewBefore = imagePreview && String(imagePreview).startsWith('data:') ? imagePreview : null;
+      const localPreviewBefore =
+        imagePreview && String(imagePreview).startsWith('data:') ? imagePreview : null;
 
       // If image is selected, send as FormData
       if (profileImage) {
@@ -246,7 +247,9 @@ const Profile = () => {
         }
         // clear stored preview only if server returned a usable profilePicture
         if (response.data.data?.user?.profilePicture) {
-          try { sessionStorage.removeItem('m19_profile_preview'); } catch (e) { }
+          try {
+            sessionStorage.removeItem('m19_profile_preview');
+          } catch (e) {}
         }
         setProfileImage(null);
         setProfilePicture(null);
@@ -257,9 +260,8 @@ const Profile = () => {
       console.error('Profile update error:', error);
 
       if (error.response) {
-        const errorMessage = error.response.data?.message ||
-          error.response.data?.error ||
-          'Failed to update profile';
+        const errorMessage =
+          error.response.data?.message || error.response.data?.error || 'Failed to update profile';
         toast.error(errorMessage);
       } else if (error.request) {
         toast.error('Network error. Please check your connection.');
@@ -307,9 +309,8 @@ const Profile = () => {
       console.error('Password change error:', error);
 
       if (error.response) {
-        const errorMessage = error.response.data?.message ||
-          error.response.data?.error ||
-          'Failed to change password';
+        const errorMessage =
+          error.response.data?.message || error.response.data?.error || 'Failed to change password';
         toast.error(errorMessage);
       } else if (error.request) {
         toast.error('Network error. Please check your connection.');
@@ -389,20 +390,22 @@ const Profile = () => {
         <div className="flex border-b border-gray-200">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${activeTab === 'profile'
-              ? 'border-b-2 border-teal-600 text-teal-600'
-              : 'text-gray-600 hover:text-gray-900'
-              }`}
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${
+              activeTab === 'profile'
+                ? 'border-b-2 border-teal-600 text-teal-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
           >
             <User className="mx-auto mb-1 h-5 w-5" />
             Profile Information
           </button>
           <button
             onClick={() => setActiveTab('security')}
-            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${activeTab === 'security'
-              ? 'border-b-2 border-teal-600 text-teal-600'
-              : 'text-gray-600 hover:text-gray-900'
-              }`}
+            className={`flex-1 px-6 py-4 text-sm font-medium transition-all ${
+              activeTab === 'security'
+                ? 'border-b-2 border-teal-600 text-teal-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
           >
             <Lock className="mx-auto mb-1 h-5 w-5" />
             Security
@@ -416,7 +419,7 @@ const Profile = () => {
               {/* Profile Picture Section */}
               <div className="mb-6 flex items-center gap-6">
                 <div className="relative">
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-2xl font-bold text-white overflow-hidden">
+                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-2xl font-bold text-white">
                     {imagePreview && !imageLoadError ? (
                       <img
                         src={getImageSrc(imagePreview)}
@@ -424,7 +427,10 @@ const Profile = () => {
                         className="h-full w-full object-cover"
                         onError={(e) => {
                           console.error('❌ Image failed to load (original):', imagePreview);
-                          console.error('❌ Image failed to load (used):', getImageSrc(imagePreview));
+                          console.error(
+                            '❌ Image failed to load (used):',
+                            getImageSrc(imagePreview)
+                          );
                           setImageLoadError(true);
                         }}
                         onLoad={() => {
@@ -458,7 +464,7 @@ const Profile = () => {
                   <h3 className="text-lg font-bold text-gray-900">{profileData.fullName}</h3>
                   <p className="text-sm text-gray-600">Customer</p>
                   {profileImage && (
-                    <p className="mt-1 text-xs text-teal-600 font-medium">
+                    <p className="mt-1 text-xs font-medium text-teal-600">
                       Image selected. Click "Save Changes" to upload.
                     </p>
                   )}
@@ -580,7 +586,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -721,7 +727,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {passwordLoading ? (
                     <>
@@ -752,7 +758,8 @@ const Profile = () => {
             <p className="text-sm text-gray-600">Your Pricing Tier</p>
             <p className="mt-1 text-lg font-bold text-gray-900">{accountInfo.pricingTier}</p>
             <p className="mt-1 text-sm text-gray-600">
-              Base rate: {accountInfo.ratePerDelivery} per {accountInfo.weightUnit}kg (up to {accountInfo.maxDistance} miles)
+              Base rate: {accountInfo.ratePerDelivery} per {accountInfo.weightUnit}kg (up to{' '}
+              {accountInfo.maxDistance} miles)
             </p>
           </div>
           <div>
