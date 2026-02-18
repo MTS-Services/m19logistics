@@ -168,13 +168,16 @@ const EnquiriesView = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     required
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.fullName
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.fullName
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="John Doe"
                   />
-                  {errors.fullName && <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>}
+                  {errors.fullName && (
+                    <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                  )}
                 </div>
 
                 <div>
@@ -203,10 +206,11 @@ const EnquiriesView = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.email
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.email
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="john@example.com"
                   />
                   {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -222,13 +226,16 @@ const EnquiriesView = () => {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     required
-                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.phoneNumber
+                    className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                      errors.phoneNumber
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                      }`}
+                    }`}
                     placeholder="07971 415430"
                   />
-                  {errors.phoneNumber && <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>}
+                  {errors.phoneNumber && (
+                    <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
+                  )}
                 </div>
               </div>
 
@@ -242,10 +249,11 @@ const EnquiriesView = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.subject
+                  className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                    errors.subject
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                    }`}
+                  }`}
                   placeholder="What is your enquiry about?"
                 />
                 {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject}</p>}
@@ -261,10 +269,11 @@ const EnquiriesView = () => {
                   onChange={handleChange}
                   required
                   rows="6"
-                  className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${errors.message
+                  className={`w-full rounded-md border px-4 py-2 focus:ring-1 focus:outline-none ${
+                    errors.message
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
-                    }`}
+                  }`}
                   placeholder="Please provide details about your enquiry..."
                 ></textarea>
                 {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
@@ -273,10 +282,9 @@ const EnquiriesView = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full rounded-md px-6 py-3 font-semibold text-white transition-colors ${isSubmitting
-                    ? 'cursor-not-allowed bg-teal-400'
-                    : 'bg-teal-600 hover:bg-teal-700'
-                  }`}
+                className={`w-full rounded-md px-6 py-3 font-semibold text-white transition-colors ${
+                  isSubmitting ? 'cursor-not-allowed bg-teal-400' : 'bg-teal-600 hover:bg-teal-700'
+                }`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
               </button>
@@ -286,7 +294,7 @@ const EnquiriesView = () => {
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               <a
                 href="tel:07971415430"
-                className="flex items-center justify-center space-x-3 rounded-lg bg-blue-50 p-4 text-blue-600 hover:bg-blue-100"
+                className="flex items-center justify-center space-x-3 rounded-lg bg-teal-500 px-6 py-4 font-semibold text-white shadow-lg transition-all hover:bg-teal-600"
               >
                 <Phone className="h-5 w-5" />
                 <span className="font-semibold">Call Us: 07971 415430</span>
@@ -294,7 +302,7 @@ const EnquiriesView = () => {
 
               <a
                 href="mailto:enquiries@m19logistics.com"
-                className="flex items-center justify-center space-x-3 rounded-lg bg-teal-50 p-4 text-teal-600 hover:bg-teal-100"
+                className="flex items-center justify-center space-x-3 rounded-lg border-2 border-teal-600 bg-transparent px-6 py-4 font-semibold text-teal-600 transition-all hover:bg-teal-50"
               >
                 <Mail className="h-5 w-5" />
                 <span className="font-semibold">Email Us</span>
