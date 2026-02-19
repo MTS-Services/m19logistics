@@ -186,8 +186,8 @@ const DeliveryHistory = () => {
 
     if (newDeliveryId && autoOpenModal && deliveries.length > 0) {
       // Find the newly created delivery in the list
-      const newDelivery = deliveries.find(d => String(d.id) === String(newDeliveryId));
-      
+      const newDelivery = deliveries.find((d) => String(d.id) === String(newDeliveryId));
+
       if (newDelivery) {
         // Auto-open the modal for the new delivery
         setTimeout(() => {
@@ -200,14 +200,14 @@ const DeliveryHistory = () => {
             const response = await getDeliveryById(newDeliveryId);
             const apiDelivery = response?.data ?? response;
             const mappedDelivery = mapApiDeliveryToUi(apiDelivery);
-            
+
             // Add to deliveries list if not already there
-            setDeliveries(prev => {
-              const exists = prev.find(d => String(d.id) === String(newDeliveryId));
+            setDeliveries((prev) => {
+              const exists = prev.find((d) => String(d.id) === String(newDeliveryId));
               if (exists) return prev;
               return [mappedDelivery, ...prev];
             });
-            
+
             // Open the modal
             setTimeout(() => {
               setSelectedDelivery(mappedDelivery);
@@ -217,7 +217,7 @@ const DeliveryHistory = () => {
             console.error('Failed to load new delivery:', error);
           }
         };
-        
+
         fetchAndOpenDelivery();
       }
 
@@ -408,7 +408,7 @@ const DeliveryHistory = () => {
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-600">Pending</p>
+              <p className="text-xs text-gray-600">Received</p>
               <p className="mt-1 text-2xl font-bold text-gray-900">{stats.pending}</p>
             </div>
             <div className="rounded-lg bg-red-50 p-2">
@@ -432,7 +432,7 @@ const DeliveryHistory = () => {
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-gray-600">Completed</p>
+              <p className="text-xs text-gray-600">Delivered</p>
               <p className="mt-1 text-2xl font-bold text-gray-900">{stats.completed}</p>
             </div>
             <div className="rounded-lg bg-green-50 p-2">
@@ -491,7 +491,7 @@ const DeliveryHistory = () => {
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
-              Pending
+              Received
             </button>
             <button
               onClick={() => handleFilterChange('allocated')}
@@ -501,7 +501,7 @@ const DeliveryHistory = () => {
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
-              In Progress
+              Allocated
             </button>
             <button
               onClick={() => handleFilterChange('delivered')}
@@ -511,7 +511,7 @@ const DeliveryHistory = () => {
                   : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
-              Completed
+              Delivered
             </button>
             <button
               onClick={handleExportCSV}
