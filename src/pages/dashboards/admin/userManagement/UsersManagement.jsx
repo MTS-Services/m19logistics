@@ -283,7 +283,6 @@ const UsersManagement = () => {
               <option value="customer">Customers</option>
               <option value="driver">Drivers</option>
               <option value="area_manager">Area Managers</option>
-              <option value="admin">Admins</option>
             </select>
           </div>
         </div>
