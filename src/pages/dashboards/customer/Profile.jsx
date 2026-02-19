@@ -748,7 +748,7 @@ const Profile = () => {
       </div>
 
       {/* Additional Information */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      {/* <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
           <Package className="h-5 w-5 text-teal-600" />
           Pricing Information
@@ -781,7 +781,7 @@ const Profile = () => {
             </a>
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
