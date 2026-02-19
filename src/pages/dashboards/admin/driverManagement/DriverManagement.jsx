@@ -52,7 +52,7 @@ const DriverManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
 
   // Fetch drivers from API
   const fetchDrivers = async () => {
@@ -125,8 +125,6 @@ const DriverManagement = () => {
     };
   }, [showActionDropdown]);
 
-
-
   const filteredDrivers = drivers.filter((driver) => {
     const matchesSearch =
       driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -188,7 +186,7 @@ const DriverManagement = () => {
     try {
       setIsDeleting(true);
       const response = await axiosInstance.delete(`/api/admin/users/${selectedDriver.id}`);
-      toast.success(response.data.message );
+      toast.success(response.data.message);
       fetchDrivers();
       setShowDeleteModal(false);
       setSelectedDriver(null);
@@ -212,7 +210,7 @@ const DriverManagement = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6 ">
+    <div className="p-2 sm:p-6">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
@@ -266,7 +264,7 @@ const DriverManagement = () => {
         {!loading && !error && (
           <>
             {/* Stats Overview */}
-            <div className="grid gap-6 md:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-lg bg-white p-6 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div>
@@ -286,30 +284,6 @@ const DriverManagement = () => {
                     </p>
                   </div>
                   <CheckCircle className="h-10 w-10 text-teal-600" />
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">This Week</p>
-                    <p className="text-2xl font-bold text-teal-600">
-                      {drivers.reduce((sum, d) => sum + d.completedThisWeek, 0)}
-                    </p>
-                  </div>
-                  <Calendar className="h-10 w-10 text-teal-600" />
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600">Avg. Rating</p>
-                    <p className="text-2xl font-bold text-teal-600">
-                      {(drivers.reduce((sum, d) => sum + d.rating, 0) / drivers.length).toFixed(1)}
-                    </p>
-                  </div>
-                  <Star className="h-10 w-10 text-teal-600" />
                 </div>
               </div>
             </div>
@@ -344,7 +318,7 @@ const DriverManagement = () => {
             </div>
 
             {/* Driver Table */}
-            <div className="overflow-visible rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
               {/* Table Header */}
               <div className="border-b border-gray-200 bg-white px-6 py-4">
                 <h2 className="text-lg font-bold text-gray-900">Driver Records</h2>
@@ -369,23 +343,23 @@ const DriverManagement = () => {
               ) : (
                 <>
                   {/* Desktop Table View - Hidden on mobile */}
-                  <div className="hidden overflow-visible lg:block">
-                    <table className="w-full">
+                  <div className="hidden overflow-x-auto lg:block">
+                    <table className="w-full text-left">
                       <thead className="border-b border-gray-200 bg-gray-50">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                          <th className="px-6 py-3 text-base font-semibold text-gray-600 uppercase">
                             Driver
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                          <th className="px-6 py-3 text-base font-semibold text-gray-600 uppercase">
                             Contact
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                          <th className="px-6 py-3 text-base font-semibold text-gray-600 uppercase">
                             Performance
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                          <th className="px-6 py-3 text-base font-semibold text-gray-600 uppercase">
                             Status
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                          <th className="px-6 py-3 text-base font-semibold text-gray-600 uppercase">
                             Actions
                           </th>
                         </tr>
@@ -408,8 +382,9 @@ const DriverManagement = () => {
                                     </div>
                                   )}
                                   <div
-                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                      }`}
+                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${
+                                      driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                    }`}
                                   ></div>
                                 </div>
                                 <div>
@@ -474,19 +449,18 @@ const DriverManagement = () => {
                             <td className="px-6 py-4">
                               <div className="space-y-2">
                                 {driver.status === 'active' ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-base font-semibold text-green-800">
                                     Active
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-800">
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-base font-semibold text-gray-800">
                                     Inactive
                                   </span>
                                 )}
-                             
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="relative action-dropdown-container">
+                              <div className="action-dropdown-container relative">
                                 <button
                                   onClick={() =>
                                     setShowActionDropdown(
@@ -536,8 +510,9 @@ const DriverManagement = () => {
                                 </div>
                               )}
                               <div
-                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                  }`}
+                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${
+                                  driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                }`}
                               ></div>
                             </div>
                             <div>
@@ -607,13 +582,11 @@ const DriverManagement = () => {
                               <p className="mt-0.5 text-xs text-gray-600">Avg. Time</p>
                             </div>
                           </div>
-
-                       
                         </div>
 
                         {/* Card Actions */}
                         <div className="mt-3 border-t border-gray-100 pt-3">
-                          <div className="relative action-dropdown-container">
+                          <div className="action-dropdown-container relative">
                             <button
                               onClick={() =>
                                 setShowActionDropdown(
@@ -660,10 +633,7 @@ const DriverManagement = () => {
 
         {/* Modals */}
         {showAddModal && (
-          <AddEditModal
-            onClose={() => setShowAddModal(false)}
-            onSuccess={fetchDrivers}
-          />
+          <AddEditModal onClose={() => setShowAddModal(false)} onSuccess={fetchDrivers} />
         )}
         {showEditModal && (
           <AddEditModal
@@ -741,8 +711,8 @@ const DriverManagement = () => {
 
                 <div className="mt-4 rounded-lg bg-blue-50 p-3">
                   <p className="text-xs text-blue-800">
-                    A password reset link will be sent to the driver's email address. The link
-                    will expire in 24 hours.
+                    A password reset link will be sent to the driver's email address. The link will
+                    expire in 24 hours.
                   </p>
                 </div>
 
@@ -772,15 +742,3 @@ const DriverManagement = () => {
 };
 
 export default DriverManagement;
-
-
-
-
-
-
-
-
-
-
-
-
