@@ -10,6 +10,7 @@ import {
   Clock,
   FileText,
   AlertCircle,
+  AlertTriangle,
   CheckCircle,
   Send,
   X,
@@ -661,7 +662,7 @@ const NewDelivery = () => {
                 {/* Warning Message Box */}
                 <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 shrink-0 text-orange-600" />
+                    <AlertTriangle className="h-5 w-5 shrink-0 text-orange-600" />
                     <div>
                       <p className="font-semibold text-orange-900">Important Information</p>
                       <p className="mt-1 text-base text-orange-800">
@@ -680,11 +681,11 @@ const NewDelivery = () => {
                   </div>
                   <ol className="space-y-1.5 text-base text-teal-800">
                     <li className="flex items-start gap-2">
-                      <span className="font-semibold">1.</span>
+                      <Package className="h-4 w-4 shrink-0 text-teal-600" />
                       <span>Complete your booking request</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="font-semibold">2.</span>
+                      <Phone className="h-4 w-4 shrink-0 text-teal-600" />
                       <span>
                         Call{' '}
                         <a
@@ -697,7 +698,7 @@ const NewDelivery = () => {
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="font-semibold">3.</span>
+                      <CheckCircle className="h-4 w-4 shrink-0 text-teal-600" />
                       <span>We'll confirm if same-day delivery is possible</span>
                     </li>
                   </ol>
