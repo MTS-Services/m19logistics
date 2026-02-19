@@ -416,9 +416,9 @@ const DriverManagement = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="grid grid-cols-3 gap-3">
-                                <div className="text-center">
-                                  <div className="flex items-center justify-center gap-1">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <div className="flex items-center gap-1">
                                     <Package className="h-3 w-3 text-teal-600" />
                                     <p className="text-sm font-bold text-gray-900">
                                       {driver.totalDeliveries}
@@ -426,23 +426,14 @@ const DriverManagement = () => {
                                   </div>
                                   <p className="mt-0.5 text-xs text-gray-500">Total</p>
                                 </div>
-                                <div className="text-center">
-                                  <div className="flex items-center justify-center gap-1">
+                                <div>
+                                  <div className="flex items-center gap-1">
                                     <CheckCircle className="h-3 w-3 text-teal-600" />
                                     <p className="text-sm font-bold text-gray-900">
                                       {driver.completedThisWeek}
                                     </p>
                                   </div>
                                   <p className="mt-0.5 text-xs text-gray-500">This Week</p>
-                                </div>
-                                <div className="text-center">
-                                  <div className="flex items-center justify-center gap-1">
-                                    <Clock className="h-3 w-3 text-teal-600" />
-                                    <p className="text-sm font-bold text-gray-900">
-                                      {driver.avgCompletionTime}
-                                    </p>
-                                  </div>
-                                  <p className="mt-0.5 text-xs text-gray-500">Avg. Time</p>
                                 </div>
                               </div>
                             </td>
@@ -553,7 +544,7 @@ const DriverManagement = () => {
                           </div>
 
                           {/* Performance Metrics */}
-                          <div className="mt-3 grid grid-cols-3 gap-2 rounded-lg bg-teal-50 p-3">
+                          <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-teal-50 p-3">
                             <div className="text-center">
                               <div className="flex items-center justify-center gap-1">
                                 <Package className="h-3 w-3 text-teal-600" />
@@ -571,15 +562,6 @@ const DriverManagement = () => {
                                 </p>
                               </div>
                               <p className="mt-0.5 text-xs text-gray-600">This Week</p>
-                            </div>
-                            <div className="text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                <Clock className="h-3 w-3 text-teal-600" />
-                                <p className="text-lg font-bold text-gray-900">
-                                  {driver.avgCompletionTime}
-                                </p>
-                              </div>
-                              <p className="mt-0.5 text-xs text-gray-600">Avg. Time</p>
                             </div>
                           </div>
                         </div>
