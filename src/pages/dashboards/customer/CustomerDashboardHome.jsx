@@ -688,7 +688,7 @@ const CustomerDashboardHome = () => {
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 sm:text-sm">Pending</p>
+                <p className="text-xs text-gray-600 sm:text-sm">Received</p>
                 <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.pending}</p>
               </div>
               <div className="rounded-lg bg-red-50 p-2 sm:p-3">
@@ -714,7 +714,7 @@ const CustomerDashboardHome = () => {
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 sm:text-sm">Completed</p>
+                <p className="text-xs text-gray-600 sm:text-sm">Delivered</p>
                 <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
                   {stats.completed}
                 </p>
@@ -762,7 +762,7 @@ const CustomerDashboardHome = () => {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                Pending
+                Received
               </button>
               <button
                 onClick={() => handleFilterChange('allocated')}
@@ -772,7 +772,7 @@ const CustomerDashboardHome = () => {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                In Progress
+                Allocated
               </button>
               <button
                 onClick={() => handleFilterChange('delivered')}
@@ -782,7 +782,7 @@ const CustomerDashboardHome = () => {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                Completed
+                Delivered
               </button>
             </div>
 

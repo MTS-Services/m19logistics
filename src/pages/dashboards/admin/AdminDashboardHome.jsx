@@ -114,7 +114,9 @@ const AdminDashboardHome = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
     // Scroll to table top for better UX
-    document.getElementById('recent-bookings-table')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document
+      .getElementById('recent-bookings-table')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
 
   const stats = [
@@ -163,7 +165,7 @@ const AdminDashboardHome = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6 ">
+    <div className="p-2 sm:p-6">
       <div className="space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="mb-6">
@@ -191,8 +193,9 @@ const AdminDashboardHome = () => {
                       {stat.value}
                     </p>
                     <p
-                      className={`mt-1 inline-flex items-center text-xs font-medium sm:mt-2 sm:text-sm ${stat.changeType === 'increase' ? 'text-green-600' : 'text-gray-600'
-                        }`}
+                      className={`mt-1 inline-flex items-center text-xs font-medium sm:mt-2 sm:text-sm ${
+                        stat.changeType === 'increase' ? 'text-green-600' : 'text-gray-600'
+                      }`}
                     >
                       <TrendingUp className="mr-1 h-3 w-3 sm:h-4 sm:w-4" />
                       <span className="hidden sm:inline">{stat.change} from last month</span>
@@ -247,7 +250,10 @@ const AdminDashboardHome = () => {
         </div>
 
         {/* Recent Bookings Table */}
-        <div id="recent-bookings-table" className="rounded-lg border border-gray-200 bg-white shadow-sm sm:rounded-xl">
+        <div
+          id="recent-bookings-table"
+          className="rounded-lg border border-gray-200 bg-white shadow-sm sm:rounded-xl"
+        >
           <div className="border-b border-gray-200 px-4 py-3 sm:px-6 sm:py-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-lg font-bold text-gray-900 sm:text-xl">Recent Bookings</h2>
@@ -273,7 +279,10 @@ const AdminDashboardHome = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {paginatedBookings.map((booking) => (
-                  <tr key={booking.deliveryId} className="text-sm transition-colors hover:bg-gray-50">
+                  <tr
+                    key={booking.deliveryId}
+                    className="text-sm transition-colors hover:bg-gray-50"
+                  >
                     <td className="px-4 py-3 font-medium text-gray-900 sm:px-6 sm:py-4">
                       {booking.invoiceNumber}
                     </td>
@@ -304,7 +313,6 @@ const AdminDashboardHome = () => {
 
           {/* Pagination */}
           {recentBookings.length > 0 && (
-
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -312,7 +320,6 @@ const AdminDashboardHome = () => {
               itemsPerPage={itemsPerPage}
               totalItems={recentBookings.length}
             />
-
           )}
         </div>
       </div>
