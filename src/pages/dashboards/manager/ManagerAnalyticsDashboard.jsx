@@ -22,9 +22,8 @@ const ManagerAnalyticsDashboard = () => {
   const [dateRange, setDateRange] = useState('this-week');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
-  const [selectedMetric, setSelectedMetric] = useState('overview');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
 
   // Dynamic data based on date range
   const getDataByDateRange = () => {
@@ -539,17 +538,221 @@ const ManagerAnalyticsDashboard = () => {
 
   const currentData = getDataByDateRange();
   const overviewStats = currentData.overviewStats;
-  const storePerformance = currentData.storePerformance;
-  const driverPerformance = currentData.driverPerformance;
-  const weeklyData = currentData.weeklyData;
+  // const storePerformance = currentData.storePerformance;
+  // const driverPerformance = currentData.driverPerformance;
+  // const weeklyData = currentData.weeklyData;
 
-  const monthlyTrends = [
-    { month: 'Aug', revenue: 48500, deliveries: 1078 },
-    { month: 'Sep', revenue: 51200, deliveries: 1138 },
-    { month: 'Oct', revenue: 49800, deliveries: 1106 },
-    { month: 'Nov', revenue: 52600, deliveries: 1169 },
-    { month: 'Dec', revenue: 54300, deliveries: 1207 },
-    { month: 'Jan', revenue: 12450, deliveries: 278 },
+  // const monthlyTrends = [
+  //   { month: 'Aug', revenue: 48500, deliveries: 1078 },
+  //   { month: 'Sep', revenue: 51200, deliveries: 1138 },
+  //   { month: 'Oct', revenue: 49800, deliveries: 1106 },
+  //   { month: 'Nov', revenue: 52600, deliveries: 1169 },
+  //   { month: 'Dec', revenue: 54300, deliveries: 1207 },
+  //   { month: 'Jan', revenue: 12450, deliveries: 278 },
+  // };
+
+  // All deliveries data
+  const allDeliveries = [
+    {
+      id: 'DEL-001',
+      customer: 'Topps Chester',
+      driver: 'John Smith',
+      status: 'Delivered',
+      date: '2026-02-19',
+      time: '10:30 AM',
+      amount: 45.5,
+      store: 'Topps Chester',
+    },
+    {
+      id: 'DEL-002',
+      customer: 'Topps Wrexham',
+      driver: 'Sarah Johnson',
+      status: 'Allocated',
+      date: '2026-02-19',
+      time: '11:15 AM',
+      amount: 52.3,
+      store: 'Topps Wrexham',
+    },
+    {
+      id: 'DEL-003',
+      customer: 'Topps Bangor',
+      driver: 'Mike Wilson',
+      status: 'Delivered',
+      date: '2026-02-19',
+      time: '09:45 AM',
+      amount: 38.75,
+      store: 'Topps Bangor',
+    },
+    {
+      id: 'DEL-004',
+      customer: 'Topps Conwy',
+      driver: 'Emma Davis',
+      status: 'Received',
+      date: '2026-02-19',
+      time: '12:00 PM',
+      amount: 67.2,
+      store: 'Topps Conwy',
+    },
+    {
+      id: 'DEL-005',
+      customer: 'Topps Llandudno',
+      driver: 'David Brown',
+      status: 'Delivered',
+      date: '2026-02-18',
+      time: '02:30 PM',
+      amount: 41.9,
+      store: 'Topps Llandudno',
+    },
+    {
+      id: 'DEL-006',
+      customer: 'Topps Chester',
+      driver: 'John Smith',
+      status: 'Allocated',
+      date: '2026-02-18',
+      time: '03:15 PM',
+      amount: 55.8,
+      store: 'Topps Chester',
+    },
+    {
+      id: 'DEL-007',
+      customer: 'Topps Wrexham',
+      driver: 'Sarah Johnson',
+      status: 'Delivered',
+      date: '2026-02-18',
+      time: '01:45 PM',
+      amount: 48.3,
+      store: 'Topps Wrexham',
+    },
+    {
+      id: 'DEL-008',
+      customer: 'Topps Bangor',
+      driver: 'Mike Wilson',
+      status: 'Cancelled',
+      date: '2026-02-18',
+      time: '04:00 PM',
+      amount: 0.0,
+      store: 'Topps Bangor',
+    },
+    {
+      id: 'DEL-009',
+      customer: 'Topps Conwy',
+      driver: 'Emma Davis',
+      status: 'Delivered',
+      date: '2026-02-17',
+      time: '10:00 AM',
+      amount: 62.4,
+      store: 'Topps Conwy',
+    },
+    {
+      id: 'DEL-010',
+      customer: 'Topps Llandudno',
+      driver: 'David Brown',
+      status: 'Delivered',
+      date: '2026-02-17',
+      time: '11:30 AM',
+      amount: 39.5,
+      store: 'Topps Llandudno',
+    },
+    {
+      id: 'DEL-011',
+      customer: 'Topps Chester',
+      driver: 'John Smith',
+      status: 'Allocated',
+      date: '2026-02-17',
+      time: '02:15 PM',
+      amount: 71.2,
+      store: 'Topps Chester',
+    },
+    {
+      id: 'DEL-012',
+      customer: 'Topps Wrexham',
+      driver: 'Sarah Johnson',
+      status: 'Delivered',
+      date: '2026-02-17',
+      time: '03:45 PM',
+      amount: 44.6,
+      store: 'Topps Wrexham',
+    },
+    {
+      id: 'DEL-013',
+      customer: 'Topps Bangor',
+      driver: 'Mike Wilson',
+      status: 'Received',
+      date: '2026-02-16',
+      time: '09:30 AM',
+      amount: 58.9,
+      store: 'Topps Bangor',
+    },
+    {
+      id: 'DEL-014',
+      customer: 'Topps Conwy',
+      driver: 'Emma Davis',
+      status: 'Delivered',
+      date: '2026-02-16',
+      time: '01:00 PM',
+      amount: 36.7,
+      store: 'Topps Conwy',
+    },
+    {
+      id: 'DEL-015',
+      customer: 'Topps Llandudno',
+      driver: 'David Brown',
+      status: 'Delivered',
+      date: '2026-02-16',
+      time: '02:30 PM',
+      amount: 49.8,
+      store: 'Topps Llandudno',
+    },
+    {
+      id: 'DEL-016',
+      customer: 'Topps Chester',
+      driver: 'John Smith',
+      status: 'Delivered',
+      date: '2026-02-15',
+      time: '10:45 AM',
+      amount: 53.2,
+      store: 'Topps Chester',
+    },
+    {
+      id: 'DEL-017',
+      customer: 'Topps Wrexham',
+      driver: 'Sarah Johnson',
+      status: 'Allocated',
+      date: '2026-02-15',
+      time: '11:20 AM',
+      amount: 47.5,
+      store: 'Topps Wrexham',
+    },
+    {
+      id: 'DEL-018',
+      customer: 'Topps Bangor',
+      driver: 'Mike Wilson',
+      status: 'Delivered',
+      date: '2026-02-15',
+      time: '03:00 PM',
+      amount: 65.3,
+      store: 'Topps Bangor',
+    },
+    {
+      id: 'DEL-019',
+      customer: 'Topps Conwy',
+      driver: 'Emma Davis',
+      status: 'Delivered',
+      date: '2026-02-14',
+      time: '09:15 AM',
+      amount: 42.8,
+      store: 'Topps Conwy',
+    },
+    {
+      id: 'DEL-020',
+      customer: 'Topps Llandudno',
+      driver: 'David Brown',
+      status: 'Delivered',
+      date: '2026-02-14',
+      time: '12:45 PM',
+      amount: 56.9,
+      store: 'Topps Llandudno',
+    },
   ];
 
   const handleExport = (format) => {
@@ -563,55 +766,12 @@ const ManagerAnalyticsDashboard = () => {
   const exportCSV = () => {
     let csvContent = '';
 
-    if (selectedMetric === 'overview' || selectedMetric === 'stores') {
-      // Overview Stats CSV
-      csvContent += 'Overview Statistics\n';
-      csvContent += 'Metric,Value,Change\n';
-      csvContent += `Total Revenue,£${overviewStats.totalRevenue.toLocaleString()},${overviewStats.revenueChange}%\n`;
-      csvContent += `Total Deliveries,${overviewStats.totalDeliveries},${overviewStats.deliveriesChange}%\n`;
-      csvContent += `Avg Revenue/Delivery,£${overviewStats.avgRevenuePerDelivery},${overviewStats.avgChange}%\n`;
-      csvContent += `Total VAT,£${overviewStats.totalVAT.toLocaleString()},${overviewStats.vatChange}%\n`;
-      csvContent += `Outstanding Invoices,£${overviewStats.outstandingInvoices.toLocaleString()},${overviewStats.outstandingCount} invoices\n`;
-      csvContent += `Completion Rate,${overviewStats.completionRate}%,${overviewStats.completionChange}%\n\n`;
-    }
-
-    if (selectedMetric === 'stores' || selectedMetric === 'overview') {
-      // Store Performance CSV
-      csvContent += 'Store Performance\n';
-      csvContent += 'Store Name,Deliveries,Revenue,Change %,Market Share %\n';
-      storePerformance.forEach((store) => {
-        csvContent += `${store.name},${store.deliveries},£${store.revenue.toLocaleString()},${store.change}%,${store.share}%\n`;
-      });
-      csvContent += '\n';
-    }
-
-    if (selectedMetric === 'drivers' || selectedMetric === 'overview') {
-      // Driver Performance CSV
-      csvContent += 'Driver Performance\n';
-      csvContent +=
-        'Driver,Deliveries,Avg Time,Completion Rate,Late Deliveries,Proofs Attached,Feedback Count,Rating\n';
-      driverPerformance.forEach((driver) => {
-        csvContent += `${driver.name},${driver.deliveries},${driver.avgTime},${driver.completionRate}%,${driver.lateDeliveries},${driver.proofsAttached},${driver.feedbackCount},${driver.rating}\n`;
-      });
-      csvContent += '\n';
-    }
-
-    if (selectedMetric === 'trends' || selectedMetric === 'overview') {
-      // Weekly Data CSV
-      csvContent += 'Weekly Performance\n';
-      csvContent += 'Day,Deliveries,Revenue\n';
-      weeklyData.forEach((day) => {
-        csvContent += `${day.day},${day.deliveries},£${day.revenue.toLocaleString()}\n`;
-      });
-      csvContent += '\n';
-
-      // Monthly Trends CSV
-      csvContent += 'Monthly Trends\n';
-      csvContent += 'Month,Revenue,Deliveries\n';
-      monthlyTrends.forEach((month) => {
-        csvContent += `${month.month},£${month.revenue.toLocaleString()},${month.deliveries}\n`;
-      });
-    }
+    // Deliveries CSV
+    csvContent += 'Total Deliveries Details\n';
+    csvContent += 'Delivery ID,Store,Driver,Date,Time,Amount,Status\n';
+    allDeliveries.forEach((delivery) => {
+      csvContent += `${delivery.id},${delivery.store},${delivery.driver},${delivery.date},${delivery.time},�${delivery.amount.toFixed(2)},${delivery.status}\n`;
+    });
 
     // Download CSV
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -620,7 +780,7 @@ const ManagerAnalyticsDashboard = () => {
     link.setAttribute('href', url);
     link.setAttribute(
       'download',
-      `analytics_${selectedMetric}_${dateRange}_${new Date().toISOString().split('T')[0]}.csv`
+      `deliveries_${dateRange}_${new Date().toISOString().split('T')[0]}.csv`
     );
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
@@ -659,11 +819,7 @@ const ManagerAnalyticsDashboard = () => {
     yPosition += 5;
     doc.text(`Date Range: ${dateRange}`, margin, yPosition);
     yPosition += 5;
-    doc.text(
-      `Report Type: ${selectedMetric.charAt(0).toUpperCase() + selectedMetric.slice(1)}`,
-      margin,
-      yPosition
-    );
+    doc.text('Report Type: Total Deliveries', margin, yPosition);
     yPosition += 10;
 
     // Line separator
@@ -671,102 +827,55 @@ const ManagerAnalyticsDashboard = () => {
     doc.line(margin, yPosition, pageWidth - margin, yPosition);
     yPosition += 10;
 
-    if (selectedMetric === 'overview' || selectedMetric === 'stores') {
-      // Overview Statistics
-      doc.setFontSize(14);
-      doc.setTextColor(13, 148, 136);
-      doc.text('Overview Statistics', margin, yPosition);
-      yPosition += 8;
+    // Deliveries Table Header
+    doc.setFontSize(14);
+    doc.setTextColor(13, 148, 136);
+    doc.text('Total Deliveries Details', margin, yPosition);
+    yPosition += 8;
 
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'bold');
+    doc.text('ID', margin, yPosition);
+    doc.text('Store', margin + 25, yPosition);
+    doc.text('Driver', margin + 70, yPosition);
+    doc.text('Date', margin + 105, yPosition);
+    doc.text('Amount', margin + 135, yPosition);
+    doc.text('Status', margin + 160, yPosition);
+    yPosition += 6;
+    doc.setFont(undefined, 'normal');
 
-      const overviewData = [
-        [
-          'Total Revenue:',
-          `£${overviewStats.totalRevenue.toLocaleString()}`,
-          `+${overviewStats.revenueChange}%`,
-        ],
-        [
-          'Total Deliveries:',
-          `${overviewStats.totalDeliveries}`,
-          `+${overviewStats.deliveriesChange}%`,
-        ],
-        [
-          'Avg Revenue/Delivery:',
-          `£${overviewStats.avgRevenuePerDelivery}`,
-          `+${overviewStats.avgChange}%`,
-        ],
-        [
-          'Total VAT:',
-          `£${overviewStats.totalVAT.toLocaleString()}`,
-          `+${overviewStats.vatChange}%`,
-        ],
-        [
-          'Outstanding Invoices:',
-          `£${overviewStats.outstandingInvoices.toLocaleString()}`,
-          `${overviewStats.outstandingCount} invoices`,
-        ],
-        [
-          'Completion Rate:',
-          `${overviewStats.completionRate}%`,
-          `+${overviewStats.completionChange}%`,
-        ],
-      ];
-
-      overviewData.forEach(([label, value, change]) => {
-        doc.text(label, margin, yPosition);
-        doc.text(value, margin + 60, yPosition);
-        doc.setTextColor(0, 128, 0);
-        doc.text(change, margin + 110, yPosition);
-        doc.setTextColor(0, 0, 0);
-        yPosition += lineHeight;
-      });
-
-      yPosition += 5;
-    }
-
-    if (selectedMetric === 'stores' || selectedMetric === 'overview') {
-      if (yPosition > 250) {
+    allDeliveries.forEach((delivery) => {
+      if (yPosition > 270) {
         doc.addPage();
         yPosition = 20;
       }
+      doc.setFontSize(7);
+      doc.text(delivery.id, margin, yPosition);
+      doc.text(delivery.store.substring(0, 18), margin + 25, yPosition);
+      doc.text(delivery.driver.substring(0, 15), margin + 70, yPosition);
+      doc.text(delivery.date, margin + 105, yPosition);
+      doc.text(`�${delivery.amount.toFixed(2)}`, margin + 135, yPosition);
 
-      // Store Performance
-      doc.setFontSize(14);
-      doc.setTextColor(13, 148, 136);
-      doc.text('Store Performance', margin, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(9);
+      // Status color
+      if (delivery.status === 'Delivered') {
+        doc.setTextColor(0, 128, 0);
+      } else if (delivery.status === 'Allocated') {
+        doc.setTextColor(0, 0, 255);
+      } else if (delivery.status === 'Received') {
+        doc.setTextColor(255, 165, 0);
+      } else {
+        doc.setTextColor(255, 0, 0);
+      }
+      doc.text(delivery.status, margin + 160, yPosition);
       doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'bold');
-      doc.text('Store', margin, yPosition);
-      doc.text('Deliveries', margin + 60, yPosition);
-      doc.text('Revenue', margin + 90, yPosition);
-      doc.text('Change', margin + 120, yPosition);
-      doc.text('Share', margin + 145, yPosition);
-      yPosition += 6;
-      doc.setFont(undefined, 'normal');
 
-      storePerformance.forEach((store) => {
-        if (yPosition > 270) {
-          doc.addPage();
-          yPosition = 20;
-        }
-        doc.text(store.name, margin, yPosition);
-        doc.text(store.deliveries.toString(), margin + 60, yPosition);
-        doc.text(`£${store.revenue.toLocaleString()}`, margin + 90, yPosition);
-        doc.setTextColor(store.change > 0 ? 0 : 255, store.change > 0 ? 128 : 0, 0);
-        doc.text(`${store.change > 0 ? '+' : ''}${store.change}%`, margin + 120, yPosition);
-        doc.setTextColor(0, 0, 0);
-        doc.text(`${store.share}%`, margin + 145, yPosition);
-        yPosition += lineHeight;
-      });
+      yPosition += lineHeight;
+    });
 
-      yPosition += 5;
-    }
+    yPosition += 10;
 
+    /*
     if (selectedMetric === 'drivers' || selectedMetric === 'overview') {
       if (yPosition > 250) {
         doc.addPage();
@@ -871,6 +980,7 @@ const ManagerAnalyticsDashboard = () => {
         yPosition += lineHeight;
       });
     }
+    */
 
     // Footer
     const pageCount = doc.internal.getNumberOfPages();
@@ -883,18 +993,16 @@ const ManagerAnalyticsDashboard = () => {
     }
 
     // Save PDF
-    doc.save(
-      `analytics_${selectedMetric}_${dateRange}_${new Date().toISOString().split('T')[0]}.pdf`
-    );
+    doc.save(`deliveries_${dateRange}_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  const getMaxValue = (data, key) => Math.max(...data.map((item) => item[key]));
+  // const getMaxValue = (data, key) => Math.max(...data.map((item) => item[key]));
 
-  // Pagination logic for Store Performance
+  // Pagination logic for Deliveries
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentStores = storePerformance.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(storePerformance.length / itemsPerPage);
+  const currentDeliveries = allDeliveries.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(allDeliveries.length / itemsPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -1127,634 +1235,91 @@ const ManagerAnalyticsDashboard = () => {
         </div>
       </div>
 
-      {/* Metric Selector */}
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedMetric('overview')}
-            className={`rounded-lg px-4 py-2 font-medium transition-all ${
-              selectedMetric === 'overview'
-                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setSelectedMetric('stores')}
-            className={`rounded-lg px-4 py-2 font-medium transition-all ${
-              selectedMetric === 'stores'
-                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Store Performance
-          </button>
-          <button
-            onClick={() => setSelectedMetric('drivers')}
-            className={`rounded-lg px-4 py-2 font-medium transition-all ${
-              selectedMetric === 'drivers'
-                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Driver Analytics
-          </button>
-          <button
-            onClick={() => setSelectedMetric('trends')}
-            className={`rounded-lg px-4 py-2 font-medium transition-all ${
-              selectedMetric === 'trends'
-                ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Trends & Charts
-          </button>
+      {/* Total Deliveries Table */}
+      <div className="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 px-6 py-4">
+          <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
+            <Package className="h-6 w-6 text-teal-600" />
+            Total Deliveries Details
+          </h2>
+          <p className="mt-1 text-sm text-gray-600">
+            Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, allDeliveries.length)} of{' '}
+            {allDeliveries.length} deliveries
+          </p>
         </div>
-      </div>
-
-      {/* Overview Content */}
-      {selectedMetric === 'overview' && (
-        <div className="space-y-6">
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Revenue Summary */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-                  <DollarSign className="h-5 w-5 text-teal-600" />
-                  Revenue Overview
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Revenue</span>
-                  <span className="text-lg font-bold text-teal-600">
-                    £{overviewStats.totalRevenue.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total VAT</span>
-                  <span className="text-lg font-bold text-gray-900">
-                    £{overviewStats.totalVAT.toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Avg per Delivery</span>
-                  <span className="text-lg font-bold text-gray-900">
-                    £{overviewStats.avgRevenuePerDelivery}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Outstanding</span>
-                  <span className="text-lg font-bold text-red-600">
-                    £{overviewStats.outstandingInvoices.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Delivery Summary */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-                  <Package className="h-5 w-5 text-teal-600" />
-                  Delivery Overview
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Deliveries</span>
-                  <span className="text-lg font-bold text-teal-600">
-                    {overviewStats.totalDeliveries}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Completion Rate</span>
-                  <span className="text-lg font-bold text-green-600">
-                    {overviewStats.completionRate}%
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Pending Invoices</span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {overviewStats.outstandingCount}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Change vs Last Period</span>
-                  <span
-                    className={`text-lg font-bold ${overviewStats.deliveriesChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-                  >
-                    {overviewStats.deliveriesChange > 0 ? '+' : ''}
-                    {overviewStats.deliveriesChange}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Top Performing Stores */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-                <BarChart3 className="h-5 w-5 text-teal-600" />
-                Top Performing Stores
-              </h3>
-            </div>
-            <div className="space-y-3">
-              {storePerformance
-                .sort((a, b) => b.revenue - a.revenue)
-                .slice(0, 5)
-                .map((store, index) => (
-                  <div key={store.id} className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-50 text-sm font-bold text-teal-600">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-900">{store.name}</p>
-                      <p className="text-sm text-gray-600">
-                        {store.deliveries} deliveries • £{store.revenue.toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span
-                        className={`text-sm font-semibold ${store.change > 0 ? 'text-green-600' : 'text-red-600'}`}
-                      >
-                        {store.change > 0 ? '+' : ''}
-                        {store.change}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-
-          {/* Performance Metrics */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm text-gray-600">Revenue Growth</span>
-                {overviewStats.revenueChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-              </div>
-              <p
-                className={`text-2xl font-bold ${overviewStats.revenueChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-              >
-                {overviewStats.revenueChange > 0 ? '+' : ''}
-                {overviewStats.revenueChange}%
-              </p>
-              <p className="mt-1 text-xs text-gray-500">vs last period</p>
-            </div>
-
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm text-gray-600">Delivery Growth</span>
-                {overviewStats.deliveriesChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-              </div>
-              <p
-                className={`text-2xl font-bold ${overviewStats.deliveriesChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-              >
-                {overviewStats.deliveriesChange > 0 ? '+' : ''}
-                {overviewStats.deliveriesChange}%
-              </p>
-              <p className="mt-1 text-xs text-gray-500">vs last period</p>
-            </div>
-
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm text-gray-600">Completion Rate</span>
-                <CheckCircle className="h-4 w-4 text-green-600" />
-              </div>
-              <p className="text-2xl font-bold text-green-600">{overviewStats.completionRate}%</p>
-              <p className="mt-1 text-xs text-gray-500">
-                {overviewStats.completionChange > 0 ? '+' : ''}
-                {overviewStats.completionChange}% vs last period
-              </p>
-            </div>
-          </div>
-
-          {/* Weekly Trend Chart */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-                <LineChart className="h-5 w-5 text-teal-600" />
-                {dateRange === 'this-month' || dateRange === 'last-month' ? 'Weekly' : 'Daily'}{' '}
-                Performance
-              </h3>
-            </div>
-            <div className="space-y-3">
-              {weeklyData.map((day) => (
-                <div key={day.day} className="flex items-center gap-4">
-                  <div className="w-20 text-sm font-semibold text-gray-600">{day.day}</div>
-                  <div className="flex flex-1 items-center gap-4">
-                    <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
-                      <div
-                        className="flex h-8 items-center justify-end rounded-full bg-linear-to-r from-teal-600 to-teal-500 pr-3 transition-all"
-                        style={{
-                          width: `${(day.deliveries / getMaxValue(weeklyData, 'deliveries')) * 100}%`,
-                        }}
-                      >
-                        <span className="text-sm font-semibold text-white">{day.deliveries}</span>
-                      </div>
-                    </div>
-                    <div className="w-24 text-right">
-                      <span className="text-sm font-bold text-teal-600">
-                        £{day.revenue.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Store Performance View */}
-      {selectedMetric === 'stores' && (
-        <div className="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
-              <BarChart3 className="h-6 w-6 text-teal-600" />
-              Store Performance Analysis
-            </h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Store
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Deliveries
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Revenue
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Change
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Market Share
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                    Performance
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {currentStores.map((store) => (
-                  <tr key={store.id} className="transition-colors hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-gray-900">{store.name}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-gray-900">{store.deliveries}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-teal-600">
-                        £{store.revenue.toLocaleString()}
-                      </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-1">
-                        {store.change > 0 ? (
-                          <TrendingUp className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <TrendingDown className="h-4 w-4 text-red-600" />
-                        )}
-                        <span
-                          className={`text-sm font-semibold ${store.change > 0 ? 'text-green-600' : 'text-red-600'}`}
-                        >
-                          {store.change > 0 ? '+' : ''}
-                          {store.change}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 max-w-25 flex-1 rounded-full bg-gray-200">
-                          <div
-                            className="h-2 rounded-full bg-linear-to-r from-teal-600 to-teal-500"
-                            style={{ width: `${store.share * 5}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-900">{store.share}%</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
-                          store.change > 15
-                            ? 'bg-green-100 text-green-600'
-                            : store.change > 5
-                              ? 'bg-teal-100 text-teal-600'
-                              : store.change > 0
-                                ? 'bg-blue-100 text-blue-600'
-                                : 'bg-red-100 text-red-600'
-                        }`}
-                      >
-                        {store.change > 15
-                          ? 'Excellent'
-                          : store.change > 5
-                            ? 'Good'
-                            : store.change > 0
-                              ? 'Average'
-                              : 'Needs Attention'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {storePerformance.length > itemsPerPage && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-              totalItems={storePerformance.length}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Driver Analytics View */}
-      {selectedMetric === 'drivers' && (
-        <div className="space-y-6">
-          {driverPerformance.map((driver) => (
-            <div
-              key={driver.id}
-              className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
-            >
-              <div className="mb-6 flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white shadow-md">
-                    {driver.name}
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">{driver.name}</h3>
-                    <div className="mt-1 flex items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <span
-                            key={i}
-                            className={`text-lg ${i < Math.floor(driver.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-600">
-                        {driver.rating}/5.0
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-lg bg-teal-50 px-4 py-2">
-                  <p className="text-xs text-gray-600">Completion Rate</p>
-                  <p className="text-2xl font-bold text-teal-600">{driver.completionRate}%</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-                <div className="rounded-lg bg-teal-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Package className="h-4 w-4 text-teal-600" />
-                    <p className="text-xs text-gray-600">Deliveries</p>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{driver.deliveries}</p>
-                </div>
-
-                <div className="rounded-lg bg-teal-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-teal-600" />
-                    <p className="text-xs text-gray-600">Avg Time</p>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{driver.avgTime}</p>
-                </div>
-
-                <div className="rounded-lg bg-teal-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-teal-600" />
-                    <p className="text-xs text-gray-600">Late</p>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{driver.lateDeliveries}</p>
-                </div>
-
-                <div className="rounded-lg bg-teal-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-teal-600" />
-                    <p className="text-xs text-gray-600">Proofs</p>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{driver.proofsAttached}</p>
-                </div>
-
-                <div className="rounded-lg bg-teal-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-teal-600" />
-                    <p className="text-xs text-gray-600">Feedback</p>
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{driver.feedbackCount}</p>
-                </div>
-
-                <div className="rounded-lg bg-teal-50 p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-teal-600" />
-                    <p className="text-xs text-gray-600">Efficiency</p>
-                  </div>
-                  <p className="text-2xl font-bold text-green-600">98%</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Trends & Charts View */}
-      {selectedMetric === 'trends' && (
-        <div className="space-y-6">
-          {/* Weekly Bar Chart */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                <BarChart3 className="h-6 w-6 text-teal-600" />
-                Weekly Deliveries & Revenue
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {weeklyData.map((day) => (
-                <div key={day.day} className="flex items-center gap-4">
-                  <div className="w-12 text-sm font-semibold text-gray-600">{day.day}</div>
-                  <div className="flex flex-1 items-center gap-4">
-                    <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
-                      <div
-                        className="flex h-8 items-center justify-end rounded-full bg-linear-to-r from-teal-600 to-teal-500 pr-3 transition-all"
-                        style={{
-                          width: `${(day.deliveries / getMaxValue(weeklyData, 'deliveries')) * 100}%`,
-                        }}
-                      >
-                        <span className="text-sm font-semibold text-white">{day.deliveries}</span>
-                      </div>
-                    </div>
-                    <div className="w-24 text-right">
-                      <span className="text-sm font-bold text-teal-600">
-                        £{day.revenue.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Monthly Trends */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                <LineChart className="h-6 w-6 text-teal-600" />
-                Monthly Revenue Trends
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {monthlyTrends.map((month, index) => {
-                const prevRevenue = index > 0 ? monthlyTrends[index - 1].revenue : month.revenue;
-                const change = (((month.revenue - prevRevenue) / prevRevenue) * 100).toFixed(1);
-                return (
-                  <div key={month.month} className="flex items-center gap-4">
-                    <div className="w-12 text-sm font-semibold text-gray-600">{month.month}</div>
-                    <div className="flex flex-1 items-center gap-4">
-                      <div className="relative h-8 flex-1 overflow-hidden rounded-full bg-gray-200">
-                        <div
-                          className="flex h-8 items-center justify-end rounded-full bg-linear-to-r from-teal-600 to-teal-500 pr-3 transition-all"
-                          style={{
-                            width: `${(month.revenue / getMaxValue(monthlyTrends, 'revenue')) * 100}%`,
-                          }}
-                        >
-                          <span className="text-sm font-semibold text-white">
-                            {month.deliveries}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="w-32 text-right">
-                        <p className="text-sm font-bold text-teal-600">
-                          £{month.revenue.toLocaleString()}
-                        </p>
-                        {index > 0 && (
-                          <p
-                            className={`text-xs font-semibold ${parseFloat(change) > 0 ? 'text-green-600' : 'text-red-600'}`}
-                          >
-                            {parseFloat(change) > 0 ? '+' : ''}
-                            {change}%
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Store Share Pie Chart */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                <PieChart className="h-6 w-6 text-teal-600" />
-                Store Market Share
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div className="flex items-center justify-center">
-                <div className="relative h-64 w-64">
-                  <svg viewBox="0 0 100 100" className="-rotate-90 transform">
-                    {
-                      storePerformance.reduce(
-                        (acc, store, index) => {
-                          const colors = [
-                            '#0d9488',
-                            '#14b8a6',
-                            '#2dd4bf',
-                            '#5eead4',
-                            '#99f6e4',
-                            '#ccfbf1',
-                          ];
-                          const startAngle = acc.angle;
-                          const angle = (store.share / 100) * 360;
-                          const endAngle = startAngle + angle;
-                          const largeArc = angle > 180 ? 1 : 0;
-
-                          const x1 = 50 + 40 * Math.cos((startAngle * Math.PI) / 180);
-                          const y1 = 50 + 40 * Math.sin((startAngle * Math.PI) / 180);
-                          const x2 = 50 + 40 * Math.cos((endAngle * Math.PI) / 180);
-                          const y2 = 50 + 40 * Math.sin((endAngle * Math.PI) / 180);
-
-                          acc.paths.push(
-                            <path
-                              key={store.id}
-                              d={`M 50 50 L ${x1} ${y1} A 40 40 0 ${largeArc} 1 ${x2} ${y2} Z`}
-                              fill={colors[index]}
-                              stroke="white"
-                              strokeWidth="0.5"
-                            />
-                          );
-                          acc.angle = endAngle;
-                          return acc;
-                        },
-                        { angle: 0, paths: [] }
-                      ).paths
-                    }
-                    <circle cx="50" cy="50" r="20" fill="white" />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-gray-900">{storePerformance.length}</p>
-                      <p className="text-xs text-gray-600">Stores</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {storePerformance.map((store, index) => {
-                  const colors = [
-                    'bg-teal-600',
-                    'bg-teal-500',
-                    'bg-teal-400',
-                    'bg-teal-300',
-                    'bg-teal-200',
-                    'bg-teal-100',
-                  ];
-                  return (
-                    <div
-                      key={store.id}
-                      className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="border-b border-gray-200 bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                  Delivery ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                  Store
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                  Driver
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                  Date & Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {currentDeliveries.map((delivery) => (
+                <tr key={delivery.id} className="transition-colors hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <p className="font-semibold text-teal-600">{delivery.id}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-semibold text-gray-900">{delivery.store}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="text-gray-900">{delivery.driver}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-semibold text-gray-900">{delivery.date}</p>
+                    <p className="text-sm text-gray-600">{delivery.time}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-semibold text-teal-600">£{delivery.amount.toFixed(2)}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${
+                        delivery.status === 'Delivered'
+                          ? 'bg-green-100 text-green-600'
+                          : delivery.status === 'Allocated'
+                            ? 'bg-blue-100 text-blue-600'
+                            : delivery.status === 'Received'
+                              ? 'bg-yellow-100 text-yellow-600'
+                              : 'bg-red-100 text-red-600'
+                      }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`h-4 w-4 rounded ${colors[index]}`} />
-                        <span className="text-sm font-semibold text-gray-900">{store.name}</span>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-teal-600">{store.share}%</p>
-                        <p className="text-xs text-gray-500">{store.deliveries} deliveries</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+                      {delivery.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+        {allDeliveries.length > itemsPerPage && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={allDeliveries.length}
+          />
+        )}
+      </div>
     </div>
   );
 };
