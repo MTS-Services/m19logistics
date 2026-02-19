@@ -11,6 +11,7 @@ import {
   CheckCircle,
   AlertCircle,
   Loader2,
+  X,
 } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -781,11 +782,21 @@ const SlotsManagement = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Update Slot Capacity</h2>
-                  <p className="mt-1 text-base text-gray-600">
-                    {selectedSlot.timeSlot} Slot -{' '}
-                    {new Date(selectedSlot.date).toLocaleDateString('en-GB')}
-                  </p>
+                  <div className="mt-2 inline-flex items-center rounded-lg bg-teal-100 px-3 py-1.5">
+                    <Clock className="mr-2 h-4 w-4 text-teal-600" />
+                    <span className="text-base font-[700] text-teal-900">
+                      {selectedSlot.timeSlot} Slot -{' '}
+                      {new Date(selectedSlot.date).toLocaleDateString('en-GB')}
+                    </span>
+                  </div>
                 </div>
+                <button
+                  onClick={() => setShowCapacityModal(false)}
+                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                  aria-label="Close modal"
+                >
+                  <X className="h-6 w-6" />
+                </button>
               </div>
             </div>
 
