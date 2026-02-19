@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Users,
@@ -28,7 +27,7 @@ import UserCard from './components/UserCard';
 import UsersTable from './components/UsersTable';
 import AddEditModal from './components/AddEditModal';
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
-import ResetPasswordModal from './components/ResetPasswordModal';
+// import ResetPasswordModal from './components/ResetPasswordModal';
 
 const UsersManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,11 +35,11 @@ const UsersManagement = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  // const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showActionDropdown, setShowActionDropdown] = useState(null);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -108,11 +107,11 @@ const UsersManagement = () => {
 
   const roleConfig = {
     admin: { icon: Shield, color: 'text-teal-700 bg-teal-100', label: 'Administrator' },
-    driver: { icon: Truck, color: 'text-teal-700 bg-teal-100', label: 'Driver' },
-    customer: { icon: Building, color: 'text-teal-700 bg-teal-100', label: 'Customer' },
+    driver: { icon: Truck, color: 'text-blue-700 bg-blue-100', label: 'Driver' },
+    customer: { icon: Building, color: 'text-purple-700 bg-purple-100', label: 'Customer' },
     area_manager: {
       icon: UserCheck,
-      color: 'text-teal-700 bg-teal-100',
+      color: 'text-orange-700 bg-orange-100',
       label: 'Area Manager',
     },
   };
@@ -195,38 +194,35 @@ const UsersManagement = () => {
     }
   };
 
-  const handleResetPassword = (user) => {
-    setSelectedUser(user);
-    setShowResetPasswordModal(true);
-    setShowActionDropdown(null);
-  };
+  // const handleResetPassword = (user) => {
+  //   setSelectedUser(user);
+  //   setShowResetPasswordModal(true);
+  //   setShowActionDropdown(null);
+  // };
 
-  const confirmResetPassword = () => {
-    alert('Password reset email sent to ' + selectedUser.email);
-    setShowResetPasswordModal(false);
-    setSelectedUser(null);
-  };
-
-
+  // const confirmResetPassword = () => {
+  //   alert('Password reset email sent to ' + selectedUser.email);
+  //   setShowResetPasswordModal(false);
+  //   setSelectedUser(null);
+  // };
 
   return (
-    <div className="p-2 sm:p-6  text-base">
+    <div className="p-2 text-base sm:p-6">
       <div className="space-y-6">
         <div className="mb-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
-
                 User Management
-
               </h1>
               <p className="mt-1 text-sm text-gray-600 sm:mt-2">
-
                 Manage admins, drivers, customers, and area managers
-
               </p>
             </div>
-            <button onClick={handleAddUser} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-medium text-white shadow-md hover:bg-teal-700 transition-all">
+            <button
+              onClick={handleAddUser}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-teal-700"
+            >
               <UserPlus className="h-5 w-5" />
               <span>Add User</span>
             </button>
@@ -234,7 +230,7 @@ const UsersManagement = () => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          <div className="rounded-lg bg-white p-6 shadow-sm border border-gray-100">
+          <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Users</p>
@@ -244,7 +240,7 @@ const UsersManagement = () => {
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow-sm border border-gray-100">
+          <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Customers</p>
@@ -254,7 +250,7 @@ const UsersManagement = () => {
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow-sm border border-gray-100">
+          <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Drivers</p>
@@ -263,26 +259,26 @@ const UsersManagement = () => {
               <Truck className="h-10 w-10 text-teal-600" />
             </div>
           </div>
-
-          <div className="rounded-lg bg-white p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Admins</p>
-                <p className="text-2xl font-bold text-gray-900">{adminsCount}</p>
-              </div>
-              <Shield className="h-10 w-10 text-teal-600" />
-            </div>
-          </div>
         </div>
 
         <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
           <div className="relative flex-1 md:max-w-md">
             <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-            <input type="text" placeholder="Search users..." value={searchTerm} onChange={(e) => handleSearchChange(e.target.value)} className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 outline-none focus:border-teal-500" />
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 outline-none focus:border-teal-500"
+            />
           </div>
           <div className="flex items-center space-x-2">
             <Filter className="h-5 w-5 text-gray-400" />
-            <select value={filterRole} onChange={(e) => handleFilterChange(e.target.value)} className="rounded-lg border border-gray-300 px-4 py-2 outline-none">
+            <select
+              value={filterRole}
+              onChange={(e) => handleFilterChange(e.target.value)}
+              className="rounded-lg border border-gray-300 px-4 py-2 outline-none"
+            >
               <option value="all">All Roles</option>
               <option value="customer">Customers</option>
               <option value="driver">Drivers</option>
@@ -292,11 +288,13 @@ const UsersManagement = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
-          <div className="border-b border-gray-200 bg-white px-6 py-4"><h2 className="text-lg font-bold text-gray-900">User Records</h2></div>
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-200 bg-white px-6 py-4">
+            <h2 className="text-lg font-bold text-gray-900">User Records</h2>
+          </div>
 
           {/* Mobile: show card list */}
-          <div className="md:hidden p-4 space-y-3">
+          <div className="space-y-3 p-4 md:hidden">
             {paginatedUsers.map((user) => (
               <UserCard
                 key={user.id}
@@ -304,7 +302,6 @@ const UsersManagement = () => {
                 roleConfig={roleConfig}
                 onEdit={handleEditUser}
                 onDelete={handleDeleteUser}
-                onReset={handleResetPassword}
               />
             ))}
           </div>
@@ -317,12 +314,17 @@ const UsersManagement = () => {
               showActionDropdown={showActionDropdown}
               setShowActionDropdown={setShowActionDropdown}
               handleEditUser={handleEditUser}
-              handleResetPassword={handleResetPassword}
               handleDeleteUser={handleDeleteUser}
             />
           </div>
 
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={filteredUsers.length} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredUsers.length}
+          />
         </div>
 
         {/* MODAL RENDERING AREA */}
@@ -360,7 +362,10 @@ const UsersManagement = () => {
           <AddEditModal
             isEdit
             user={selectedUser}
-            onClose={() => { setShowEditModal(false); setSelectedUser(null); }}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedUser(null);
+            }}
             onSuccess={(updatedUser) => {
               // Update the user in the list
               const mapped = {
@@ -389,12 +394,21 @@ const UsersManagement = () => {
         )}
 
         {showDeleteModal && selectedUser && (
-          <ConfirmDeleteModal user={selectedUser} onCancel={() => setShowDeleteModal(false)} onConfirm={confirmDelete} isDeleting={isDeleting} />
+          <ConfirmDeleteModal
+            user={selectedUser}
+            onCancel={() => setShowDeleteModal(false)}
+            onConfirm={confirmDelete}
+            isDeleting={isDeleting}
+          />
         )}
 
-        {showResetPasswordModal && selectedUser && (
-          <ResetPasswordModal user={selectedUser} onCancel={() => setShowResetPasswordModal(false)} onConfirm={confirmResetPassword} />
-        )}
+        {/* {showResetPasswordModal && selectedUser && (
+          <ResetPasswordModal
+            user={selectedUser}
+            onCancel={() => setShowResetPasswordModal(false)}
+            onConfirm={confirmResetPassword}
+          />
+        )} */}
       </div>
     </div>
   );
