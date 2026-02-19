@@ -503,16 +503,6 @@ const Invoices = () => {
                 >
                   Pending
                 </button>
-                <button
-                  onClick={() => handleFilterChange('overdue')}
-                  className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
-                    filterStatus === 'overdue'
-                      ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
-                      : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  Overdue
-                </button>
               </div>
             </div>
           </div>
