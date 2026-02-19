@@ -51,7 +51,7 @@ const ManagerDashboard = () => {
     {
       title: 'Finance',
       items: [
-        { name: 'Invoices', href: '/manager/invoices', icon: FileText },
+        // { name: 'Invoices', href: '/manager/invoices', icon: FileText },
         { name: 'Analytics', href: '/manager/analytics', icon: BarChart3 },
       ],
     },

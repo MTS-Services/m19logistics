@@ -168,7 +168,7 @@ const router = createBrowserRouter(
         <Route path="store-deliveries" element={<StoreDeliveries />} />
         <Route path="store-invoices" element={<StoreInvoices />} />
         {/* <Route path="store-analytics" element={<StoreAnalytics />} /> */}
-        <Route path="invoices" element={<ManagerInvoicesManagement />} />
+        {/* <Route path="invoices" element={<ManagerInvoicesManagement />} /> */}
         <Route path="analytics" element={<ManagerAnalyticsDashboard />} />
         <Route path="profile" element={<ManagerProfile />} />
       </Route>
