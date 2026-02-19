@@ -229,7 +229,7 @@ const UsersManagement = () => {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
