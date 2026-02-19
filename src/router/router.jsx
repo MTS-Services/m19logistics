@@ -65,7 +65,6 @@ import ManagerProfile from '../pages/dashboards/manager/ManagerProfile';
 import NotFound from '../pages/error/NotFound';
 import UnauthorizedView from '../pages/error/UnauthorizedView';
 
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -149,7 +148,7 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<AreaManagerDashboardHome />} />
         <Route path="deliveries" element={<StoreDeliveries />} />
         <Route path="invoices" element={<StoreInvoices />} />
-        <Route path="analytics" element={<StoreAnalytics />} />
+        {/* <Route path="analytics" element={<StoreAnalytics />} /> */}
         <Route path="profile" element={<AreaManagerProfile />} />
       </Route>
 
@@ -168,7 +167,7 @@ const router = createBrowserRouter(
         <Route path="drivers" element={<ManagerDriverManagement />} />
         <Route path="store-deliveries" element={<StoreDeliveries />} />
         <Route path="store-invoices" element={<StoreInvoices />} />
-        <Route path="store-analytics" element={<StoreAnalytics />} />
+        {/* <Route path="store-analytics" element={<StoreAnalytics />} /> */}
         <Route path="invoices" element={<ManagerInvoicesManagement />} />
         <Route path="analytics" element={<ManagerAnalyticsDashboard />} />
         <Route path="profile" element={<ManagerProfile />} />

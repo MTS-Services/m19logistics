@@ -45,7 +45,7 @@ const ManagerDashboard = () => {
       items: [
         { name: 'Store Deliveries', href: '/manager/store-deliveries', icon: Package },
         { name: 'Store Invoices', href: '/manager/store-invoices', icon: FileText },
-        { name: 'Store Analytics', href: '/manager/store-analytics', icon: BarChart3 },
+        // { name: 'Store Analytics', href: '/manager/store-analytics', icon: BarChart3 },
       ],
     },
     {

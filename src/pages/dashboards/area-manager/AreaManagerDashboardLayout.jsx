@@ -38,7 +38,7 @@ const AreaManagerDashboardLayout = () => {
       items: [
         { name: 'Store Deliveries', href: '/area-manager/deliveries', icon: Package },
         { name: 'Store Invoices', href: '/area-manager/invoices', icon: FileText },
-        { name: 'Store Analytics', href: '/area-manager/analytics', icon: BarChart3 },
+        // { name: 'Store Analytics', href: '/area-manager/analytics', icon: BarChart3 },
       ],
     },
     {
