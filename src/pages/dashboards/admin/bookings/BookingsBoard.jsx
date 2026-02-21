@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -45,6 +45,7 @@ const BookingsBoard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showActionDropdown, setShowActionDropdown] = useState(null);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, openUp: false });
+  const dropdownRef = useRef(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -55,9 +56,25 @@ const BookingsBoard = () => {
 
   const itemsPerPage = 5;
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!showActionDropdown) return;
+    const handleClickOutside = (e) => {
+      // Use setTimeout so the button's onClick fires first before we close
+      setTimeout(() => {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+          setShowActionDropdown(null);
+        }
+      }, 0);
+    };
+    document.addEventListener('click', handleClickOutside, true);
+    return () => document.removeEventListener('click', handleClickOutside, true);
+  }, [showActionDropdown]);
+
   // Toggle dropdown and calculate its fixed position from the button
   const toggleDropdown = useCallback(
     (deliveryId, e) => {
+      console.log('toggleDropdown called with deliveryId:', deliveryId, 'type:', typeof deliveryId);
       if (showActionDropdown === deliveryId) {
         setShowActionDropdown(null);
         return;
@@ -74,6 +91,7 @@ const BookingsBoard = () => {
         openUp,
       });
       setShowActionDropdown(deliveryId);
+      console.log('showActionDropdown set to:', deliveryId);
     },
     [showActionDropdown]
   );
@@ -320,12 +338,6 @@ const BookingsBoard = () => {
   const handleDeleteDelivery = (delivery) => {
     setSelectedDelivery(delivery);
     setShowDeleteModal(true);
-    setShowActionDropdown(null);
-  };
-
-  const handleAllocateDelivery = (delivery) => {
-    // Navigate to dedicated allocation page
-    navigate('/admin/bookings/allocate', { state: { delivery } });
     setShowActionDropdown(null);
   };
 
@@ -637,69 +649,119 @@ const BookingsBoard = () => {
         )}
       </div>
 
-      {/* Portal-rendered Action Dropdown - renders outside overflow containers */}
+      {/* Portal-rendered Action Dropdown */}
       {showActionDropdown &&
         ReactDOM.createPortal(
-          <>
-            {/* Backdrop */}
-            <div className="fixed inset-0 z-9998" onClick={() => setShowActionDropdown(null)} />
-            {/* Dropdown Menu */}
-            <div
-              className="fixed z-9999 w-48 rounded-lg border border-gray-200 bg-white shadow-xl"
-              style={{
-                top: dropdownPos.openUp ? 'auto' : `${dropdownPos.top}px`,
-                bottom: dropdownPos.openUp
-                  ? `${window.innerHeight - dropdownPos.top + 4}px`
-                  : 'auto',
-                left: `${dropdownPos.left}px`,
-              }}
-            >
-              <div className="py-1">
-                <button
-                  onClick={() => {
-                    const delivery = paginatedDeliveries.find((d) => d.id === showActionDropdown);
-                    if (delivery) handleViewDelivery(delivery);
-                  }}
-                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  <Eye className="h-4 w-4" />
-                  View Details
-                </button>
-                <button
-                  onClick={() => {
-                    const delivery = paginatedDeliveries.find((d) => d.id === showActionDropdown);
-                    if (delivery) handleAllocateDelivery(delivery);
-                  }}
-                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-teal-50"
-                >
-                  <UserCheck className="h-4 w-4" />
-                  Allocate
-                </button>
-                <button
-                  onClick={() => {
-                    const delivery = paginatedDeliveries.find((d) => d.id === showActionDropdown);
-                    if (delivery) handleEditDelivery(delivery);
-                  }}
-                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  <Edit className="h-4 w-4" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    const delivery = paginatedDeliveries.find((d) => d.id === showActionDropdown);
-                    if (delivery) handleDeleteDelivery(delivery);
-                  }}
-                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete
-                </button>
-              </div>
-            </div>
-          </>,
+          <DropdownMenu
+            dropdownRef={dropdownRef}
+            dropdownPos={dropdownPos}
+            showActionDropdown={showActionDropdown}
+            filteredDeliveries={filteredDeliveries}
+            setShowActionDropdown={setShowActionDropdown}
+            navigate={navigate}
+            handleViewDelivery={handleViewDelivery}
+            handleEditDelivery={handleEditDelivery}
+            handleDeleteDelivery={handleDeleteDelivery}
+          />,
           document.body
         )}
+    </div>
+  );
+};
+
+// Separate component so React properly attaches refs and event handlers
+const DropdownMenu = ({
+  dropdownRef,
+  dropdownPos,
+  showActionDropdown,
+  filteredDeliveries,
+  setShowActionDropdown,
+  navigate,
+  handleViewDelivery,
+  handleEditDelivery,
+  handleDeleteDelivery,
+}) => {
+  const handleAllocate = () => {
+    console.log('=== ALLOCATE BUTTON CLICKED ===');
+    const deliveryId = showActionDropdown;
+    const delivery = filteredDeliveries.find((d) => d.id === deliveryId);
+    console.log('Delivery found:', delivery);
+    if (delivery) {
+      setShowActionDropdown(null);
+      navigate('/admin/bookings/allocate', { state: { delivery } });
+    } else {
+      console.error('Delivery not found! ID:', deliveryId);
+    }
+  };
+
+  const handleView = () => {
+    const delivery = filteredDeliveries.find((d) => d.id === showActionDropdown);
+    if (delivery) handleViewDelivery(delivery);
+  };
+
+  const handleEdit = () => {
+    const delivery = filteredDeliveries.find((d) => d.id === showActionDropdown);
+    if (delivery) handleEditDelivery(delivery);
+  };
+
+  const handleDelete = () => {
+    const delivery = filteredDeliveries.find((d) => d.id === showActionDropdown);
+    if (delivery) handleDeleteDelivery(delivery);
+  };
+
+  return (
+    <div
+      ref={dropdownRef}
+      className="fixed w-48 rounded-lg border border-gray-200 bg-white shadow-2xl"
+      style={{
+        zIndex: 99999,
+        top: dropdownPos.openUp ? 'auto' : `${dropdownPos.top}px`,
+        bottom: dropdownPos.openUp ? `${window.innerHeight - dropdownPos.top + 4}px` : 'auto',
+        left: `${dropdownPos.left}px`,
+      }}
+    >
+      <div className="py-1">
+        <button
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={handleView}
+          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          <Eye className="h-4 w-4" />
+          View Details
+        </button>
+        <button
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={handleAllocate}
+          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-teal-50"
+        >
+          <UserCheck className="h-4 w-4" />
+          Allocate
+        </button>
+        <button
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={handleEdit}
+          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          <Edit className="h-4 w-4" />
+          Edit
+        </button>
+        <button
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
+          onClick={handleDelete}
+          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-red-600 transition-colors hover:bg-red-50"
+        >
+          <Trash2 className="h-4 w-4" />
+          Delete
+        </button>
+      </div>
     </div>
   );
 };
