@@ -35,11 +35,20 @@ import DeleteConfirmationModal from './components/DeleteConfirmationModal';
 console.log('Imported components:', {
   ViewDetailsModal: typeof ViewDetailsModal,
   EditDeliveryModal: typeof EditDeliveryModal,
-  DeleteConfirmationModal: typeof DeleteConfirmationModal
+  DeleteConfirmationModal: typeof DeleteConfirmationModal,
 });
 
 // Allocate Driver Modal Component
-const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery, setSearchQuery }) => {
+const AllocateDriverModal = ({
+  delivery,
+  drivers,
+  onClose,
+  onAssign,
+  searchQuery,
+  setSearchQuery,
+  loading,
+  error,
+}) => {
   const filteredDrivers = drivers.filter((driver) => {
     const matchesSearch =
       searchQuery === '' ||
@@ -50,7 +59,8 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
   });
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4"
+    <div
+      className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -62,11 +72,10 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
         <div className="border-b border-gray-200 p-4 sm:p-6">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">
-                Allocate Driver
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">Allocate Driver</h2>
               <p className="mt-1 text-base text-gray-600">
-                Assign a driver to delivery <span className="font-medium">{delivery?.spoNumber}</span>
+                Assign a driver to delivery{' '}
+                <span className="font-medium">{delivery?.spoNumber}</span>
               </p>
             </div>
             <button
@@ -80,13 +89,13 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
           {/* Search Bar */}
           <div className="mt-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search drivers by name, username, or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               />
             </div>
           </div>
@@ -94,11 +103,23 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
 
         {/* Modal Body - Drivers List */}
         <div className="max-h-[calc(90vh-200px)] overflow-y-auto p-4 sm:p-6">
-          {filteredDrivers.length === 0 ? (
+          {loading ? (
+            <div className="py-12 text-center">
+              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-teal-600"></div>
+              <p className="mt-4 text-base text-gray-600">Loading drivers...</p>
+            </div>
+          ) : error ? (
+            <div className="py-12 text-center">
+              <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
+              <p className="mt-4 text-base text-red-600">{error}</p>
+            </div>
+          ) : filteredDrivers.length === 0 ? (
             <div className="py-12 text-center">
               <Truck className="mx-auto h-12 w-12 text-gray-300" />
               <p className="mt-4 text-base text-gray-500">
-                {searchQuery ? 'No drivers found matching your search' : 'No active drivers available'}
+                {searchQuery
+                  ? 'No drivers found matching your search'
+                  : 'No active drivers available'}
               </p>
             </div>
           ) : (
@@ -124,7 +145,7 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                     </div>
 
                     {/* Details */}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                         <h3 className="font-semibold text-gray-900">{driver.name}</h3>
                         <span className="inline-flex w-fit items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-base font-medium text-teal-700">
@@ -139,12 +160,12 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                           <Phone className="h-3.5 w-3.5 shrink-0" />
                           <span className="truncate">{driver.phone}</span>
                         </div>
-                        <div className="hidden sm:block text-gray-300">•</div>
+                        <div className="hidden text-gray-300 sm:block">•</div>
                         <div className="flex items-center gap-1">
                           <Package className="h-3.5 w-3.5 shrink-0" />
                           <span>{driver.currentDeliveries} active</span>
                         </div>
-                        <div className="hidden sm:block text-gray-300">•</div>
+                        <div className="hidden text-gray-300 sm:block">•</div>
                         <div className="flex items-center gap-1">
                           <CheckCircle className="h-3.5 w-3.5 shrink-0" />
                           <span>{driver.totalDeliveries} completed</span>
@@ -236,11 +257,12 @@ const BookingsBoard = () => {
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const availableDrivers = [
-    { id: 1, name: 'John Smith', username: 'jsmith', email: 'john@example.com', status: 'active', rating: 4.8 },
-    { id: 2, name: 'Sarah Johnson', username: 'sjohnson', email: 'sarah@example.com', status: 'active', rating: 4.9 },
-    { id: 3, name: 'Mike Wilson', username: 'mwilson', email: 'mike@example.com', status: 'active', rating: 4.7 },
-  ];
+
+  // Driver-related states
+  const [drivers, setDrivers] = useState([]);
+  const [driversLoading, setDriversLoading] = useState(false);
+  const [driversError, setDriversError] = useState(null);
+
   const itemsPerPage = 5;
 
   // Fetch deliveries from API (inline to avoid dependency issues)
@@ -301,7 +323,7 @@ const BookingsBoard = () => {
       const response = await axiosInstance.get('/api/admin/deliveries');
 
       if (response.data.success) {
-        const mappedDeliveries = response.data.data.map(delivery => ({
+        const mappedDeliveries = response.data.data.map((delivery) => ({
           id: delivery.id,
           spoNumber: delivery.spoNumber,
           customer: delivery.customerName,
@@ -337,6 +359,40 @@ const BookingsBoard = () => {
       setError(err.response?.data?.message || 'An error occurred while fetching deliveries');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch drivers from API
+  const fetchDrivers = async () => {
+    try {
+      setDriversLoading(true);
+      setDriversError(null);
+      const response = await axiosInstance.get('/api/admin/users?role=DRIVER');
+
+      if (response.data.success) {
+        // Transform API response to expected format
+        const mappedDrivers = response.data.data.map((driver) => ({
+          id: driver.id,
+          name: driver.fullName,
+          username: driver.username,
+          email: driver.email,
+          phone: driver.phone,
+          profilePhoto: driver.profilePicture,
+          status: driver.driverProfile?.isActiveDriver ? 'active' : 'inactive',
+          rating: 4.5, // Default rating - you can calculate this based on actual data later
+          currentDeliveries: driver._count?.deliveriesAssigned || 0,
+          totalDeliveries: driver._count?.deliveriesAssigned || 0,
+          vehicleRegistration: driver.driverProfile?.vehicleRegistration,
+        }));
+        setDrivers(mappedDrivers);
+      } else {
+        setDriversError('Failed to fetch drivers');
+      }
+    } catch (err) {
+      console.error('Error fetching drivers:', err);
+      setDriversError(err.response?.data?.message || 'An error occurred while fetching drivers');
+    } finally {
+      setDriversLoading(false);
     }
   };
 
@@ -377,7 +433,6 @@ const BookingsBoard = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showActionDropdown]);
-
 
   // Calculate statistics
   const stats = {
@@ -483,6 +538,8 @@ const BookingsBoard = () => {
     setShowAllocateModal(true);
     setShowActionDropdown(null);
     setDriverSearchQuery('');
+    // Fetch drivers when modal opens
+    fetchDrivers();
   };
 
   const confirmDelete = () => {
@@ -495,6 +552,22 @@ const BookingsBoard = () => {
   const handleAssignDriver = async (driver) => {
     try {
       console.log('Assigning driver:', driver, 'to delivery:', selectedDelivery);
+
+      // Make API call to assign driver
+      const response = await axiosInstance.patch(
+        `/api/admin/deliveries/${selectedDelivery.id}/assign`,
+        { driverId: driver.id }
+      );
+
+      if (response.data.success) {
+        // Refresh deliveries list to show updated data
+        await fetchDeliveries();
+
+        // Show success message
+        alert(
+          `Driver ${driver.name} successfully assigned to delivery ${selectedDelivery.spoNumber}`
+        );
+      }
 
       setShowAllocateModal(false);
       setSelectedDelivery(null);
@@ -538,7 +611,7 @@ const BookingsBoard = () => {
   console.log('Render - showViewModal:', showViewModal, 'selectedDelivery:', selectedDelivery);
 
   return (
-    <div className="p-2 sm:p-6 ">
+    <div className="p-2 sm:p-6">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6">
@@ -581,7 +654,10 @@ const BookingsBoard = () => {
             <>
               {/* Desktop Table View - Hidden on mobile */}
               <div className="hidden overflow-x-auto lg:block">
-                {console.log('Rendering desktop table with deliveries:', paginatedDeliveries.length)}
+                {console.log(
+                  'Rendering desktop table with deliveries:',
+                  paginatedDeliveries.length
+                )}
                 <table className="w-full">
                   <thead className="border-b border-gray-200 bg-gray-50">
                     <tr>
@@ -791,7 +867,10 @@ const BookingsBoard = () => {
                         <div className="relative" data-dropdown="true">
                           <button
                             onClick={() => {
-                              console.log('Mobile dropdown button clicked for delivery:', delivery.id);
+                              console.log(
+                                'Mobile dropdown button clicked for delivery:',
+                                delivery.id
+                              );
                               setShowActionDropdown(
                                 showActionDropdown === delivery.id ? null : delivery.id
                               );
@@ -864,7 +943,12 @@ const BookingsBoard = () => {
         </div>
 
         {/* View Details Modal */}
-        {console.log('Modal check - showViewModal:', showViewModal, 'selectedDelivery:', selectedDelivery)}
+        {console.log(
+          'Modal check - showViewModal:',
+          showViewModal,
+          'selectedDelivery:',
+          selectedDelivery
+        )}
         {showViewModal && selectedDelivery && (
           <ViewDetailsModal
             delivery={selectedDelivery}
@@ -901,7 +985,9 @@ const BookingsBoard = () => {
         {showAllocateModal && selectedDelivery && (
           <AllocateDriverModal
             delivery={selectedDelivery}
-            drivers={availableDrivers}
+            drivers={drivers}
+            loading={driversLoading}
+            error={driversError}
             onClose={() => {
               setShowAllocateModal(false);
               setSelectedDelivery(null);
