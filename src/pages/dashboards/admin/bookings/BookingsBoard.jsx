@@ -631,9 +631,10 @@ const BookingsBoard = () => {
           <EditDeliveryModal
             delivery={selectedDelivery}
             onClose={() => setShowEditModal(false)}
-            onSave={(updatedDelivery) => {
-              console.log('Saving delivery:', updatedDelivery);
+            onSave={() => {
               setShowEditModal(false);
+              setSelectedDelivery(null);
+              fetchDeliveries();
             }}
           />
         )}
