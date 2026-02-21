@@ -341,11 +341,22 @@ const BookingsBoard = () => {
     setShowActionDropdown(null);
   };
 
-  const confirmDelete = () => {
-    console.log('Delete delivery:', selectedDelivery);
-    // Add actual delete logic here
-    setShowDeleteModal(false);
-    setSelectedDelivery(null);
+  const confirmDelete = async () => {
+    if (!selectedDelivery) return;
+    try {
+      const response = await axiosInstance.delete(`/api/admin/deliveries/${selectedDelivery.id}`);
+      if (response.data.success) {
+        toast.success('Delivery deleted successfully!');
+        setShowDeleteModal(false);
+        setSelectedDelivery(null);
+        fetchDeliveries();
+      } else {
+        toast.error(response.data.message || 'Failed to delete delivery.');
+      }
+    } catch (err) {
+      console.error('Delete error:', err?.response?.data);
+      toast.error(err?.response?.data?.message || 'Failed to delete delivery.');
+    }
   };
 
   if (loading) {
