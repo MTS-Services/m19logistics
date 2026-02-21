@@ -22,7 +22,9 @@ import {
   X,
   Save,
   UserCheck,
+  Loader2,
 } from 'lucide-react';
+import { toast } from 'react-toastify';
 import Pagination from '../../../../components/Pagination';
 import axiosInstance from '../../../../services/axiosInstance';
 import Loading from '../../../../components/Loading';
@@ -48,6 +50,7 @@ const AllocateDriverModal = ({
   setSearchQuery,
   loading,
   error,
+  assigningDriverId,
 }) => {
   const filteredDrivers = drivers.filter((driver) => {
     const matchesSearch =
@@ -211,11 +214,21 @@ const AllocateDriverModal = ({
                     {/* Assign Button */}
                     <button
                       onClick={() => onAssign(driver)}
-                      className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-base font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
+                      disabled={assigningDriverId === driver.id}
+                      className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-base font-medium text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6"
                     >
                       <span className="flex items-center justify-center gap-2">
-                        <UserCheck className="h-4 w-4" />
-                        Assign
+                        {assigningDriverId === driver.id ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Assigning...
+                          </>
+                        ) : (
+                          <>
+                            <UserCheck className="h-4 w-4" />
+                            Assign
+                          </>
+                        )}
                       </span>
                     </button>
                   </div>
@@ -262,6 +275,7 @@ const BookingsBoard = () => {
   const [drivers, setDrivers] = useState([]);
   const [driversLoading, setDriversLoading] = useState(false);
   const [driversError, setDriversError] = useState(null);
+  const [assigningDriverId, setAssigningDriverId] = useState(null);
 
   const itemsPerPage = 5;
 
@@ -551,30 +565,45 @@ const BookingsBoard = () => {
 
   const handleAssignDriver = async (driver) => {
     try {
+      setAssigningDriverId(driver.id);
       console.log('Assigning driver:', driver, 'to delivery:', selectedDelivery);
 
       // Make API call to assign driver
-      const response = await axiosInstance.patch(
-        `/api/admin/deliveries/${selectedDelivery.id}/assign`,
+      const response = await axiosInstance.post(
+        `/api/admin/deliveries/${selectedDelivery.id}/allocate`,
         { driverId: driver.id }
       );
 
       if (response.data.success) {
-        // Refresh deliveries list to show updated data
-        await fetchDeliveries();
-
         // Show success message
-        alert(
-          `Driver ${driver.name} successfully assigned to delivery ${selectedDelivery.spoNumber}`
+        toast.success(
+          `Driver ${driver.name} successfully assigned to delivery ${selectedDelivery.spoNumber}`,
+          {
+            position: 'top-right',
+            autoClose: 3000,
+          }
         );
-      }
 
-      setShowAllocateModal(false);
-      setSelectedDelivery(null);
-      setDriverSearchQuery('');
+        // Reset assigning state immediately
+        setAssigningDriverId(null);
+
+        // Close modal
+        setShowAllocateModal(false);
+        setSelectedDelivery(null);
+        setDriverSearchQuery('');
+
+        // Refresh deliveries list in background (fire and forget)
+        fetchDeliveries().catch((err) => {
+          console.error('Error refreshing deliveries:', err);
+        });
+      }
     } catch (err) {
       console.error('Error assigning driver:', err);
-      alert(err.response?.data?.message || 'Failed to assign driver');
+      setAssigningDriverId(null);
+      toast.error(err.response?.data?.message || 'Failed to assign driver. Please try again.', {
+        position: 'top-right',
+        autoClose: 4000,
+      });
     }
   };
 
@@ -988,6 +1017,7 @@ const BookingsBoard = () => {
             drivers={drivers}
             loading={driversLoading}
             error={driversError}
+            assigningDriverId={assigningDriverId}
             onClose={() => {
               setShowAllocateModal(false);
               setSelectedDelivery(null);
