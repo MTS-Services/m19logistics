@@ -124,7 +124,7 @@ const DriverProfile = () => {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          timeout: 30000, // 30 seconds for file upload
+          timeout: 30000,
         });
       } else {
         // Send as JSON if no image
@@ -361,7 +361,7 @@ const DriverProfile = () => {
           <form onSubmit={handleProfileUpdate}>
             <div className="mb-6 flex items-center gap-6">
               <div className="relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
                   {imagePreview && !imageLoadError ? (
                     <img
                       src={getImageSrc(imagePreview)}
