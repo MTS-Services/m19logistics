@@ -356,7 +356,7 @@ const ManagerProfile = () => {
                 <div className="mb-6 flex items-center gap-6">
                   <div className="relative">
                     {console.log('🖼️ Rendering - imagePreview:', imagePreview, 'imageLoadError:', imageLoadError)}
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-orange-600 to-orange-500 text-2xl font-bold text-white overflow-hidden">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-r from-orange-600 to-orange-500 text-2xl font-bold text-white overflow-hidden">
                       {imagePreview && !imageLoadError ? (
                         <img 
                           src={getImageSrc(imagePreview)} 

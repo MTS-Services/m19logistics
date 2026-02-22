@@ -18,7 +18,6 @@ import {
   Trash2,
   Building,
   Package,
-  TrendingUp,
   Printer,
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
