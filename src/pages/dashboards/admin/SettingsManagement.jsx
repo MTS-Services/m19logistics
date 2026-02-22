@@ -40,14 +40,11 @@ const SettingsManagement = () => {
 
   // System Settings
   const [systemSettings, setSystemSettings] = useState({
-    maintenanceMode: false,
-    autoInvoiceGeneration: true,
-    invoiceGenerationDay: 'Sunday',
-    invoiceGenerationTime: '00:00',
-    enableAuditLog: true,
-    sessionTimeout: '30',
-    passwordResetRequired: true,
+    invoiceGenerationDay: '',
+    invoiceGenerationTime: '',
+    autoInvoicing: 'false',
   });
+  const [systemSaving, setSystemSaving] = useState(false);
 
   const [activeTab, setActiveTab] = useState('company');
   const [companySaving, setCompanySaving] = useState(false);
@@ -88,6 +85,14 @@ const SettingsManagement = () => {
             sortCode: d.banking.sort_code ?? '',
             accountNumber: d.banking.account_number ?? '',
             paymentTerms: d.banking.payment_terms ?? '',
+          });
+        }
+        // Populate system settings from API
+        if (d.system) {
+          setSystemSettings({
+            invoiceGenerationDay: d.system.invoice_generation_day ?? '',
+            invoiceGenerationTime: d.system.invoice_generation_time ?? '',
+            autoInvoicing: d.system.auto_invoicing ?? 'false',
           });
         }
       }
@@ -188,13 +193,33 @@ const SettingsManagement = () => {
     }
   };
 
-  const handleSaveSystemSettings = () => {
-    setTimeout(() => {
-      toast.success('System settings saved successfully!', {
-        position: 'top-right',
-        autoClose: 3000,
-      });
-    }, 500);
+  const handleSaveSystemSettings = async () => {
+    try {
+      setSystemSaving(true);
+      const payload = {
+        invoice_generation_day: systemSettings.invoiceGenerationDay,
+        invoice_generation_time: systemSettings.invoiceGenerationTime,
+        auto_invoicing: systemSettings.autoInvoicing,
+      };
+      const response = await axiosInstance.put(ENDPOINT.API.ADMIN_SETTINGS.UPDATE_SYSTEM, payload);
+      if (response.data.success) {
+        const d = response.data.data;
+        setSystemSettings({
+          invoiceGenerationDay: d.invoice_generation_day,
+          invoiceGenerationTime: d.invoice_generation_time,
+          autoInvoicing: d.auto_invoicing,
+        });
+        toast.success(response.data.message || 'System configuration updated successfully', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to update system settings:', err);
+      toast.error(err.response?.data?.message || 'Failed to update system configuration');
+    } finally {
+      setSystemSaving(false);
+    }
   };
 
   const handleResetToDefaults = () => {
@@ -600,9 +625,12 @@ const SettingsManagement = () => {
               <Database className="h-6 w-6 text-teal-600" />
               System Configuration
             </h2>
+            {settingsLoading && <Loader2 className="h-5 w-5 animate-spin text-teal-600" />}
           </div>
 
-          <div className="space-y-4">
+          <div
+            className={`space-y-4 transition-opacity ${settingsLoading ? 'pointer-events-none opacity-50' : ''}`}
+          >
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -615,6 +643,7 @@ const SettingsManagement = () => {
                   }
                   className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
                 >
+                  <option value="">Select day</option>
                   <option value="Sunday">Sunday</option>
                   <option value="Monday">Monday</option>
                   <option value="Tuesday">Tuesday</option>
@@ -629,7 +658,8 @@ const SettingsManagement = () => {
                   Generation Time
                 </label>
                 <input
-                  type="time"
+                  type="text"
+                  placeholder="e.g. 12:00 AM"
                   value={systemSettings.invoiceGenerationTime}
                   onChange={(e) =>
                     setSystemSettings({ ...systemSettings, invoiceGenerationTime: e.target.value })
@@ -638,15 +668,37 @@ const SettingsManagement = () => {
                 />
               </div>
             </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Auto Invoicing
+                </label>
+                <select
+                  value={systemSettings.autoInvoicing}
+                  onChange={(e) =>
+                    setSystemSettings({ ...systemSettings, autoInvoicing: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                >
+                  <option value="true">Enabled</option>
+                  <option value="false">Disabled</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <div className="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-6">
             <button
               onClick={handleSaveSystemSettings}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              disabled={systemSaving || settingsLoading}
+              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Save className="h-5 w-5" />
-              Save Changes
+              {systemSaving ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Save className="h-5 w-5" />
+              )}
+              {systemSaving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
