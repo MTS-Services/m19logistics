@@ -12,7 +12,7 @@ const FooterLayout = () => {
           {/* Brand Section */}
           <div className="md:col-span-2">
             <div className="mb-4 flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-blue-600 to-purple-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-r from-blue-600 to-purple-600">
                 <span className="text-sm font-bold text-white">RB</span>
               </div>
               <span className="text-xl font-bold text-gray-900">React Boilerplate</span>
