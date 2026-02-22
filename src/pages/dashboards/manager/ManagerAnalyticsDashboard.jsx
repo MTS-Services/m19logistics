@@ -6,15 +6,9 @@ import {
   TrendingDown,
   DollarSign,
   Package,
-  Truck,
-  Users,
-  Clock,
   CheckCircle,
   XCircle,
   FileText,
-  BarChart3,
-  PieChart,
-  LineChart,
 } from 'lucide-react';
 import Pagination from '../../../components/Pagination';
 
