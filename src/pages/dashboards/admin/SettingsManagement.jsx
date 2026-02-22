@@ -579,7 +579,7 @@ const SettingsManagement = () => {
             <button
               onClick={handleSaveBankingSettings}
               disabled={bankingSaving || settingsLoading}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
             >
               {bankingSaving ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
