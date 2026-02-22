@@ -4,23 +4,14 @@ import {
   UserPlus,
   Search,
   Filter,
-  Edit,
-  Trash2,
   Key,
-  Upload,
   Mail,
   Phone,
   X,
-  Save,
   CheckCircle,
   Clock,
   Package,
-  TrendingUp,
   Star,
-  MapPin,
-  Camera,
-  FileText,
-  BarChart3,
   Calendar,
   EllipsisVertical,
   AlertCircle,
@@ -303,7 +294,9 @@ const ManagerDriverManagement = () => {
                     <p className="text-sm text-gray-600">Avg. Rating</p>
                     <p className="text-2xl font-bold text-teal-600">
                       {drivers.length > 0
-                        ? (drivers.reduce((sum, d) => sum + d.rating, 0) / drivers.length).toFixed(1)
+                        ? (drivers.reduce((sum, d) => sum + d.rating, 0) / drivers.length).toFixed(
+                            1
+                          )
                         : 'N/A'}
                     </p>
                   </div>
@@ -406,8 +399,9 @@ const ManagerDriverManagement = () => {
                                     </div>
                                   )}
                                   <div
-                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                      }`}
+                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${
+                                      driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                    }`}
                                   ></div>
                                 </div>
                                 <div>
@@ -483,7 +477,7 @@ const ManagerDriverManagement = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="relative action-dropdown-container">
+                              <div className="action-dropdown-container relative">
                                 <button
                                   onClick={() =>
                                     setShowActionDropdown(
@@ -533,8 +527,9 @@ const ManagerDriverManagement = () => {
                                 </div>
                               )}
                               <div
-                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                  }`}
+                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${
+                                  driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                }`}
                               ></div>
                             </div>
                             <div>
@@ -608,7 +603,7 @@ const ManagerDriverManagement = () => {
 
                         {/* Card Actions */}
                         <div className="mt-3 border-t border-gray-100 pt-3">
-                          <div className="relative action-dropdown-container">
+                          <div className="action-dropdown-container relative">
                             <button
                               onClick={() =>
                                 setShowActionDropdown(
@@ -655,10 +650,7 @@ const ManagerDriverManagement = () => {
 
         {/* Modals */}
         {showAddModal && (
-          <AddEditModal
-            onClose={() => setShowAddModal(false)}
-            onSuccess={fetchDrivers}
-          />
+          <AddEditModal onClose={() => setShowAddModal(false)} onSuccess={fetchDrivers} />
         )}
         {showEditModal && (
           <AddEditModal
@@ -736,8 +728,8 @@ const ManagerDriverManagement = () => {
 
                 <div className="mt-4 rounded-lg bg-blue-50 p-3">
                   <p className="text-xs text-blue-800">
-                    A password reset link will be sent to the driver's email address. The link
-                    will expire in 24 hours.
+                    A password reset link will be sent to the driver's email address. The link will
+                    expire in 24 hours.
                   </p>
                 </div>
 
