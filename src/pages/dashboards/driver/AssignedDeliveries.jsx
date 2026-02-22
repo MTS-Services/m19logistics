@@ -300,14 +300,14 @@ const AssignedDeliveries = () => {
                             </a>
                           </div>
                           <div className="flex items-start gap-2 text-sm text-gray-600">
-                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                             <div>
                               <p className="font-medium">Depot:</p>
                               <p>{delivery.depotAddress}</p>
                             </div>
                           </div>
                           <div className="flex items-start gap-2 text-sm text-gray-600">
-                            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                             <div>
                               <p className="font-medium">Delivery:</p>
                               <p>{delivery.deliveryAddress}</p>
@@ -321,7 +321,7 @@ const AssignedDeliveries = () => {
                           </div>
                           {delivery.instructions && (
                             <div className="flex items-start gap-2 text-sm text-gray-600">
-                              <FileText className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                              <FileText className="mt-0.5 h-4 w-4 shrink-0" />
                               <span className="italic">{delivery.instructions}</span>
                             </div>
                           )}
@@ -331,10 +331,10 @@ const AssignedDeliveries = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-[180px]">
+                  <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-45">
                     <button
                       onClick={() => handleNavigate(delivery.deliveryAddress)}
-                      className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                      className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                     >
                       <Navigation className="h-4 w-4" />
                       Navigate
