@@ -6,7 +6,6 @@ import {
   XCircle,
   Clock,
   MapPin,
-  User,
   Phone,
   Calendar,
   Weight,
@@ -18,7 +17,6 @@ import {
   Trash2,
   EllipsisVertical,
   X,
-  Save,
   UserCheck,
 } from 'lucide-react';
 import Pagination from '../../../components/Pagination';
@@ -31,7 +29,14 @@ import EditDeliveryModal from '../admin/bookings/components/EditDeliveryModal';
 import DeleteConfirmationModal from '../admin/bookings/components/DeleteConfirmationModal';
 
 // Allocate Driver Modal Component
-const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery, setSearchQuery }) => {
+const AllocateDriverModal = ({
+  delivery,
+  drivers,
+  onClose,
+  onAssign,
+  searchQuery,
+  setSearchQuery,
+}) => {
   const filteredDrivers = drivers.filter((driver) => {
     const matchesSearch =
       searchQuery === '' ||
@@ -42,7 +47,8 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
   });
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4"
+    <div
+      className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -54,11 +60,10 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
         <div className="border-b border-gray-200 p-4 sm:p-6">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">
-                Allocate Driver
-              </h2>
+              <h2 className="text-lg font-semibold text-gray-900 sm:text-xl">Allocate Driver</h2>
               <p className="mt-1 text-base text-gray-600">
-                Assign a driver to delivery <span className="font-medium">{delivery?.spoNumber}</span>
+                Assign a driver to delivery{' '}
+                <span className="font-medium">{delivery?.spoNumber}</span>
               </p>
             </div>
             <button
@@ -72,13 +77,13 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
           {/* Search Bar */}
           <div className="mt-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search drivers by name, username, or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               />
             </div>
           </div>
@@ -90,7 +95,9 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
             <div className="py-12 text-center">
               <Truck className="mx-auto h-12 w-12 text-gray-300" />
               <p className="mt-4 text-base text-gray-500">
-                {searchQuery ? 'No drivers found matching your search' : 'No active drivers available'}
+                {searchQuery
+                  ? 'No drivers found matching your search'
+                  : 'No active drivers available'}
               </p>
             </div>
           ) : (
@@ -116,7 +123,7 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                     </div>
 
                     {/* Details */}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                         <h3 className="font-semibold text-gray-900">{driver.name}</h3>
                         <span className="inline-flex w-fit items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-base font-medium text-teal-700">
@@ -131,12 +138,12 @@ const AllocateDriverModal = ({ delivery, drivers, onClose, onAssign, searchQuery
                           <Phone className="h-3.5 w-3.5 shrink-0" />
                           <span className="truncate">{driver.phone}</span>
                         </div>
-                        <div className="hidden sm:block text-gray-300">•</div>
+                        <div className="hidden text-gray-300 sm:block">•</div>
                         <div className="flex items-center gap-1">
                           <Package className="h-3.5 w-3.5 shrink-0" />
                           <span>{driver.currentDeliveries} active</span>
                         </div>
-                        <div className="hidden sm:block text-gray-300">•</div>
+                        <div className="hidden text-gray-300 sm:block">•</div>
                         <div className="flex items-center gap-1">
                           <CheckCircle className="h-3.5 w-3.5 shrink-0" />
                           <span>{driver.totalDeliveries} completed</span>
@@ -235,7 +242,7 @@ const ManagerBookingsBoard = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Fetch deliveries
         const deliveriesResponse = await axiosInstance.get('/api/admin/deliveries');
         // Fetch drivers
@@ -306,7 +313,7 @@ const ManagerBookingsBoard = () => {
       const response = await axiosInstance.get('/api/admin/deliveries');
 
       if (response.data.success) {
-        const mappedDeliveries = response.data.data.map(delivery => ({
+        const mappedDeliveries = response.data.data.map((delivery) => ({
           id: delivery.id,
           spoNumber: delivery.spoNumber,
           customer: delivery.customerName,
