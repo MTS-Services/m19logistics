@@ -195,7 +195,7 @@ const NavbarLayout = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center space-x-2 rounded-lg bg-gradient-to-r from-teal-600 to-teal-700 px-4 py-3 text-base font-semibold text-white shadow-md transition-all duration-200 hover:from-teal-700 hover:to-teal-800 hover:shadow-lg"
+                className="flex items-center justify-center space-x-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-700 px-4 py-3 text-base font-semibold text-white shadow-md transition-all duration-200 hover:from-teal-700 hover:to-teal-800 hover:shadow-lg"
                 style={{
                   animation: isOpen ? 'slideIn 0.3s ease-out 0.2s forwards' : 'none',
                   opacity: isOpen ? 1 : 0,
