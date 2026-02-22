@@ -30,12 +30,13 @@ const SettingsManagement = () => {
 
   // Banking Details
   const [bankingSettings, setBankingSettings] = useState({
-    bankName: 'NatWest Bank',
-    accountHolder: 'M19 Logistics Limited',
-    sortCode: '01-10-01',
-    accountNumber: '72696370',
-    paymentTerms: '30 Days (End of Month)',
+    bankName: '',
+    accountHolder: '',
+    sortCode: '',
+    accountNumber: '',
+    paymentTerms: '',
   });
+  const [bankingSaving, setBankingSaving] = useState(false);
 
   // System Settings
   const [systemSettings, setSystemSettings] = useState({
@@ -77,6 +78,16 @@ const SettingsManagement = () => {
             website: d.company.website ?? '',
             address: d.company.address ?? '',
             founded: d.company.founded_year ?? '',
+          });
+        }
+        // Populate banking settings from API
+        if (d.banking) {
+          setBankingSettings({
+            bankName: d.banking.bank_name ?? '',
+            accountHolder: d.banking.account_holder ?? '',
+            sortCode: d.banking.sort_code ?? '',
+            accountNumber: d.banking.account_number ?? '',
+            paymentTerms: d.banking.payment_terms ?? '',
           });
         }
       }
@@ -144,13 +155,37 @@ const SettingsManagement = () => {
     }
   };
 
-  const handleSaveBankingSettings = () => {
-    setTimeout(() => {
-      toast.success('Banking details saved successfully!', {
-        position: 'top-right',
-        autoClose: 3000,
-      });
-    }, 500);
+  const handleSaveBankingSettings = async () => {
+    try {
+      setBankingSaving(true);
+      const payload = {
+        bank_name: bankingSettings.bankName,
+        account_holder: bankingSettings.accountHolder,
+        sort_code: bankingSettings.sortCode,
+        account_number: bankingSettings.accountNumber,
+        payment_terms: bankingSettings.paymentTerms,
+      };
+      const response = await axiosInstance.put(ENDPOINT.API.ADMIN_SETTINGS.UPDATE_BANKING, payload);
+      if (response.data.success) {
+        const d = response.data.data;
+        setBankingSettings({
+          bankName: d.bank_name,
+          accountHolder: d.account_holder,
+          sortCode: d.sort_code,
+          accountNumber: d.account_number,
+          paymentTerms: d.payment_terms,
+        });
+        toast.success(response.data.message || 'Banking details updated successfully', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to update banking settings:', err);
+      toast.error(err.response?.data?.message || 'Failed to update banking details');
+    } finally {
+      setBankingSaving(false);
+    }
   };
 
   const handleSaveSystemSettings = () => {
@@ -543,10 +578,15 @@ const SettingsManagement = () => {
           <div className="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-6">
             <button
               onClick={handleSaveBankingSettings}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              disabled={bankingSaving || settingsLoading}
+              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <Save className="h-5 w-5" />
-              Save Changes
+              {bankingSaving ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Save className="h-5 w-5" />
+              )}
+              {bankingSaving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
