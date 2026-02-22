@@ -87,7 +87,7 @@ const FooterLayout = () => {
                 </div>
               </li>
               <li className="flex items-start space-x-2">
-                <Mail className="mt-1 h-4 w-4 flex-shrink-0 text-teal-400" />
+                <Mail className="mt-1 h-4 w-4 shrink-0 text-teal-400" />
                 <div className="space-y-1">
                   <a
                     href="mailto:enquiries@m19logistics.com"
