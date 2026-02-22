@@ -17,15 +17,16 @@ import { ENDPOINT } from '../../../services/httpEndpoint';
 const SettingsManagement = () => {
   // Company Settings
   const [companySettings, setCompanySettings] = useState({
-    companyName: 'M19 Logistics Limited',
-    vatNumber: '447 5918 54',
-    phone: '07971415430',
-    altPhone: 'WhatsApp 07577574676',
-    email: 'ben@m19logistics.com',
-    website: 'www.m19logistics.com',
-    address: 'Wrexham, United Kingdom',
-    founded: '2019',
+    companyName: '',
+    vatNumber: '',
+    phone: '',
+    altPhone: '',
+    email: '',
+    website: '',
+    address: '',
+    founded: '',
   });
+  const [settingsLoading, setSettingsLoading] = useState(true);
 
   // Banking Details
   const [bankingSettings, setBankingSettings] = useState({
@@ -48,6 +49,7 @@ const SettingsManagement = () => {
   });
 
   const [activeTab, setActiveTab] = useState('company');
+  const [companySaving, setCompanySaving] = useState(false);
 
   // Status summary state for the 4 stat cards
   const [statusSummary, setStatusSummary] = useState(null);
@@ -55,7 +57,36 @@ const SettingsManagement = () => {
 
   useEffect(() => {
     fetchStatusSummary();
+    fetchAllSettings();
   }, []);
+
+  const fetchAllSettings = async () => {
+    try {
+      setSettingsLoading(true);
+      const response = await axiosInstance.get(ENDPOINT.API.ADMIN_SETTINGS.GET_ALL);
+      if (response.data.success) {
+        const d = response.data.data;
+        // Populate company settings from API
+        if (d.company) {
+          setCompanySettings({
+            companyName: d.company.name ?? '',
+            vatNumber: d.company.vat_number ?? '',
+            phone: d.company.primary_phone ?? '',
+            altPhone: d.company.alternative_phone ?? '',
+            email: d.company.email ?? '',
+            website: d.company.website ?? '',
+            address: d.company.address ?? '',
+            founded: d.company.founded_year ?? '',
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch settings:', err);
+      toast.error('Failed to load settings');
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
 
   const fetchStatusSummary = async () => {
     try {
@@ -73,18 +104,44 @@ const SettingsManagement = () => {
   };
 
   // Save handlers with toast notifications
-  const handleSaveCompanySettings = () => {
-    // Simulate API call
-    setTimeout(() => {
-      toast.success('Company settings saved successfully!', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    }, 500);
+  const handleSaveCompanySettings = async () => {
+    try {
+      setCompanySaving(true);
+      const payload = {
+        name: companySettings.companyName,
+        vat_number: companySettings.vatNumber,
+        primary_phone: companySettings.phone,
+        alternative_phone: companySettings.altPhone,
+        email: companySettings.email,
+        website: companySettings.website,
+        address: companySettings.address,
+        founded_year: companySettings.founded,
+      };
+      const response = await axiosInstance.put(ENDPOINT.API.ADMIN_SETTINGS.UPDATE_COMPANY, payload);
+      if (response.data.success) {
+        // Sync state with what the server returned
+        const d = response.data.data;
+        setCompanySettings({
+          companyName: d.name,
+          vatNumber: d.vat_number,
+          phone: d.primary_phone,
+          altPhone: d.alternative_phone,
+          email: d.email,
+          website: d.website,
+          address: d.address,
+          founded: d.founded_year,
+        });
+        toast.success(response.data.message || 'Company information updated successfully', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to update company settings:', err);
+      toast.error(err.response?.data?.message || 'Failed to update company information');
+    } finally {
+      setCompanySaving(false);
+    }
   };
 
   const handleSaveBankingSettings = () => {
@@ -264,9 +321,12 @@ const SettingsManagement = () => {
               <Building className="h-6 w-6 text-teal-600" />
               Company Information
             </h2>
+            {settingsLoading && <Loader2 className="h-5 w-5 animate-spin text-teal-600" />}
           </div>
 
-          <div className="space-y-4">
+          <div
+            className={`space-y-4 transition-opacity ${settingsLoading ? 'pointer-events-none opacity-50' : ''}`}
+          >
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -386,10 +446,15 @@ const SettingsManagement = () => {
             </button>
             <button
               onClick={handleSaveCompanySettings}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg"
+              disabled={companySaving || settingsLoading}
+              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Save className="h-5 w-5" />
-              Save Changes
+              {companySaving ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Save className="h-5 w-5" />
+              )}
+              {companySaving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
