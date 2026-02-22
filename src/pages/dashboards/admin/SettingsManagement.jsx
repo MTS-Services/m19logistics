@@ -1,19 +1,18 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Settings,
   Mail,
   MapPin,
   DollarSign,
-  Shield,
   Database,
   Save,
   RefreshCw,
-  User,
   Building,
-  Phone,
-  Globe,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import axiosInstance from '../../../services/axiosInstance';
+import { ENDPOINT } from '../../../services/httpEndpoint';
 
 const SettingsManagement = () => {
   // Company Settings
@@ -49,6 +48,29 @@ const SettingsManagement = () => {
   });
 
   const [activeTab, setActiveTab] = useState('company');
+
+  // Status summary state for the 4 stat cards
+  const [statusSummary, setStatusSummary] = useState(null);
+  const [statusLoading, setStatusLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStatusSummary();
+  }, []);
+
+  const fetchStatusSummary = async () => {
+    try {
+      setStatusLoading(true);
+      const response = await axiosInstance.get(ENDPOINT.API.ADMIN_SETTINGS.STATUS_SUMMARY);
+      if (response.data.success) {
+        setStatusSummary(response.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch settings status summary:', err);
+      toast.error('Failed to load settings status');
+    } finally {
+      setStatusLoading(false);
+    }
+  };
 
   // Save handlers with toast notifications
   const handleSaveCompanySettings = () => {
@@ -110,7 +132,17 @@ const SettingsManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">System Status</p>
-              <p className="mt-1 text-2xl font-bold text-green-600">Active</p>
+              {statusLoading ? (
+                <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
+              ) : (
+                <p
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.systemStatus === 'Active' ? 'text-green-600' : 'text-red-600'
+                  }`}
+                >
+                  {statusSummary?.systemStatus ?? '—'}
+                </p>
+              )}
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <Settings className="h-6 w-6 text-teal-600" />
@@ -122,7 +154,17 @@ const SettingsManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Email Config</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">Enabled</p>
+              {statusLoading ? (
+                <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
+              ) : (
+                <p
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.emailConfig === 'Enabled' ? 'text-gray-900' : 'text-red-600'
+                  }`}
+                >
+                  {statusSummary?.emailConfig ?? '—'}
+                </p>
+              )}
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <Mail className="h-6 w-6 text-teal-600" />
@@ -134,7 +176,17 @@ const SettingsManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Maps API</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">Active</p>
+              {statusLoading ? (
+                <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
+              ) : (
+                <p
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.mapsApi === 'Active' ? 'text-gray-900' : 'text-red-600'
+                  }`}
+                >
+                  {statusSummary?.mapsApi ?? '—'}
+                </p>
+              )}
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <MapPin className="h-6 w-6 text-teal-600" />
@@ -146,9 +198,17 @@ const SettingsManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Auto Invoicing</p>
-              <p className="mt-1 text-2xl font-bold text-gray-900">
-                {systemSettings.autoInvoiceGeneration ? 'On' : 'Off'}
-              </p>
+              {statusLoading ? (
+                <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
+              ) : (
+                <p
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.autoInvoicing === 'On' ? 'text-gray-900' : 'text-red-600'
+                  }`}
+                >
+                  {statusSummary?.autoInvoicing ?? '—'}
+                </p>
+              )}
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <DollarSign className="h-6 w-6 text-teal-600" />

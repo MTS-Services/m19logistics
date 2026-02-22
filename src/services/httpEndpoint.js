@@ -65,5 +65,13 @@ export const ENDPOINT = {
       DELETE: (id) => `/api/admin/enquiries/${id}`,
       MARK_READ: (id) => `/api/admin/enquiries/${id}/mark-read`,
     },
+    ADMIN_SETTINGS: {
+      STATUS_SUMMARY: '/api/admin/settings/status/summary',
+      GET_ALL: '/api/admin/settings',
+      UPDATE_COMPANY: '/api/admin/settings/company',
+      UPDATE_BANKING: '/api/admin/settings/banking',
+      UPDATE_SYSTEM: '/api/admin/settings/system',
+      INVOICE_GEN_CONFIG: '/api/admin/settings/invoice-generation',
+    },
   },
 };
