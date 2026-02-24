@@ -36,7 +36,6 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
         const updatePayload = {
           fullName: formData.fullName,
           username: formData.username,
-          email: formData.email,
           phone: formData.phone,
           vehicleRegistration: formData.vehicleRegistration,
         };
@@ -119,8 +118,13 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  readOnly={isEdit}
                   placeholder="driver@example.com"
-                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                  className={`mt-1 block w-full rounded-lg border px-3 py-2 ${
+                    isEdit
+                      ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-500 select-none'
+                      : 'border-gray-300 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none'
+                  }`}
                 />
               </div>
               <div>
