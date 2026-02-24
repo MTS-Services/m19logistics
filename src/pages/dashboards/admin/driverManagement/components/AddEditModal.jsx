@@ -33,9 +33,15 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
     try {
       setIsSubmitting(true);
       if (isEdit) {
-        const updatePayload = { fullName: formData.fullName, phone: formData.phone };
-        await axiosInstance.put(`/api/admin/users/${driver.id}`, updatePayload);
-        toast.success('Driver updated successfully');
+        const updatePayload = {
+          fullName: formData.fullName,
+          username: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+          vehicleRegistration: formData.vehicleRegistration,
+        };
+        const response = await axiosInstance.put(`/api/admin/drivers/${driver.id}`, updatePayload);
+        toast.success(response.data.message || 'Driver updated successfully');
       } else {
         const createPayload = {
           email: formData.email,
@@ -103,7 +109,6 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
                   onChange={handleChange}
                   placeholder="e.g., BK01"
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
-                  disabled={isEdit}
                 />
               </div>
               <div>
@@ -116,7 +121,6 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
                   required
                   placeholder="driver@example.com"
                   className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
-                  disabled={isEdit}
                 />
               </div>
               <div>
