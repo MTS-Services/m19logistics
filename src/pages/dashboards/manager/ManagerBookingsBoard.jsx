@@ -422,6 +422,9 @@ const ManagerBookingsBoard = () => {
                               <Truck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                               <div>
                                 <p className="text-sm text-gray-900">{delivery.driver || '—'}</p>
+                                {delivery.driverId && (
+                                  <p className="text-xs text-gray-500">ID: {delivery.driverId}</p>
+                                )}
                                 <p className="text-xs text-gray-600">
                                   {delivery.driverPhone || ''}
                                 </p>
