@@ -57,6 +57,7 @@ import AreaManagerProfile from '../pages/dashboards/area-manager/AreaManagerProf
 import ManagerDashboard from '../pages/dashboards/manager/ManagerDashboard';
 import ManagerDashboardHome from '../pages/dashboards/manager/ManagerDashboardHome';
 import ManagerBookingsBoard from '../pages/dashboards/manager/ManagerBookingsBoard';
+import ManagerAllocateDriverPage from '../pages/dashboards/manager/ManagerAllocateDriverPage';
 import ManagerDriverManagement from '../pages/dashboards/manager/ManagerDriverManagement';
 import ManagerInvoicesManagement from '../pages/dashboards/manager/ManagerInvoicesManagement';
 import ManagerAnalyticsDashboard from '../pages/dashboards/manager/ManagerAnalyticsDashboard';
@@ -166,6 +167,7 @@ const router = createBrowserRouter(
         <Route index element={<ManagerDashboardHome />} />
         <Route path="dashboard" element={<ManagerDashboardHome />} />
         <Route path="bookings" element={<ManagerBookingsBoard />} />
+        <Route path="bookings/allocate" element={<ManagerAllocateDriverPage />} />
         <Route path="drivers" element={<ManagerDriverManagement />} />
         <Route path="store-deliveries" element={<StoreDeliveries />} />
         <Route path="store-invoices" element={<StoreInvoices />} />
