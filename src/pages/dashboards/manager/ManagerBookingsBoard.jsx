@@ -686,9 +686,7 @@ const ManagerBookingsBoard = () => {
                 subtotal: updatedDelivery.subtotal,
                 vatAmount: updatedDelivery.vatAmount,
               };
-              setDeliveries((prev) =>
-                prev.map((d) => (d.id === mapped.id ? mapped : d))
-              );
+              setDeliveries((prev) => prev.map((d) => (d.id === mapped.id ? mapped : d)));
               setSelectedDelivery(mapped);
               setShowEditModal(false);
             }}
