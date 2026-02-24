@@ -87,7 +87,7 @@ const ManagerBookingsBoard = () => {
           requestedBy: delivery.requestedBy,
           specialInstructions: delivery.specialInstructions,
           deliveredAt: delivery.deliveredAt,
-          cancelReason: delivery.cancelReason,
+          cancelReason: delivery.cancellationReason,
           customerId: delivery.customerId,
           driverId: delivery.driverId,
           isAdditionalDelivery: delivery.isAdditionalDelivery,
@@ -658,7 +658,38 @@ const ManagerBookingsBoard = () => {
             delivery={selectedDelivery}
             onClose={() => setShowEditModal(false)}
             onSave={(updatedDelivery) => {
-              console.log('Saving delivery:', updatedDelivery);
+              const mapped = {
+                id: updatedDelivery.id,
+                spoNumber: updatedDelivery.spoNumber,
+                customer: updatedDelivery.customerName,
+                deliveryDate: updatedDelivery.deliveryDate,
+                timeSlot: updatedDelivery.timeSlot,
+                weight: updatedDelivery.weight,
+                address: updatedDelivery.deliveryAddress,
+                contact: updatedDelivery.customerName,
+                phone: updatedDelivery.customerPhone,
+                status: formatStatus(updatedDelivery.status),
+                cost: updatedDelivery.totalPrice,
+                driver: updatedDelivery.driver?.fullName || null,
+                driverPhone: updatedDelivery.driver?.phone || null,
+                driverEmail: updatedDelivery.driver?.email || null,
+                requestedBy: updatedDelivery.requestedBy,
+                specialInstructions: updatedDelivery.specialInstructions,
+                deliveredAt: updatedDelivery.deliveredAt,
+                cancelReason: updatedDelivery.cancellationReason,
+                customerId: updatedDelivery.customerId,
+                driverId: updatedDelivery.driverId,
+                isAdditionalDelivery: updatedDelivery.isAdditionalDelivery,
+                distanceFromDepot: updatedDelivery.distanceFromDepot,
+                calculatedBasePrice: updatedDelivery.calculatedBasePrice,
+                distanceSurcharge: updatedDelivery.distanceSurcharge,
+                subtotal: updatedDelivery.subtotal,
+                vatAmount: updatedDelivery.vatAmount,
+              };
+              setDeliveries((prev) =>
+                prev.map((d) => (d.id === mapped.id ? mapped : d))
+              );
+              setSelectedDelivery(mapped);
               setShowEditModal(false);
             }}
           />
