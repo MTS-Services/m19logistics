@@ -174,7 +174,7 @@ const ManagerDriverManagement = () => {
   const confirmDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await axiosInstance.delete(`/api/admin/users/${selectedDriver.id}`);
+      const response = await axiosInstance.delete(`/api/admin/drivers/${selectedDriver.id}`);
       toast.success(response.data.message || 'Driver deleted successfully');
       fetchDrivers();
       setShowDeleteModal(false);
