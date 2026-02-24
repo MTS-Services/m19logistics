@@ -4,6 +4,7 @@ import {
   Package,
   CheckCircle,
   Phone,
+  Mail,
   Search,
   AlertCircle,
   UserCheck,
@@ -189,6 +190,18 @@ const ManagerAllocateDriverPage = () => {
               <p className="text-sm text-gray-600">Cost</p>
               <p className="font-medium text-gray-900">£{delivery.cost}</p>
             </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver Name</p>
+              <p className="font-medium text-gray-900">{delivery.driver || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver Phone</p>
+              <p className="font-medium text-gray-900">{delivery.driverPhone || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver Email</p>
+              <p className="font-medium text-gray-900">{delivery.driverEmail || '—'}</p>
+            </div>
           </div>
         </div>
 
@@ -269,6 +282,11 @@ const ManagerAllocateDriverPage = () => {
                           <div className="flex items-center gap-1">
                             <Phone className="h-3.5 w-3.5 shrink-0" />
                             <span className="truncate">{driver.phone}</span>
+                          </div>
+                          <div className="hidden text-gray-300 sm:block">•</div>
+                          <div className="flex items-center gap-1">
+                            <Mail className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{driver.email}</span>
                           </div>
                           <div className="hidden text-gray-300 sm:block">•</div>
                           <div className="flex items-center gap-1">
