@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Package,
   Search,
@@ -10,8 +10,11 @@ import {
   User,
   FileText,
   X,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import Pagination from '../../../components/Pagination';
+import axiosInstance from '../../../services/axiosInstance';
 
 const StoreDeliveries = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,112 +23,56 @@ const StoreDeliveries = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deliveries, setDeliveries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const itemsPerPage = 5;
 
+  const fetchDeliveries = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axiosInstance.get('/api/admin/deliveries');
+      if (response.data.success) {
+        const mapped = response.data.data.map((d) => ({
+          id: d.id,
+          spoNumber: d.spoNumber,
+          storeName: d.customer?.customerProfile?.storeName || d.customer?.fullName || 'N/A',
+          deliveryAddress: d.deliveryAddress,
+          date: d.deliveryDate ? d.deliveryDate.split('T')[0] : 'N/A',
+          timeSlot: d.timeSlot,
+          weight: d.weight,
+          status: d.status,
+          driver: d.driver?.fullName || 'Unassigned',
+          customerName: d.customerName,
+          phone: d.customerPhone,
+          cost: parseFloat(d.totalPrice) || 0,
+        }));
+        setDeliveries(mapped);
+      } else {
+        setError('Failed to fetch deliveries');
+      }
+    } catch (err) {
+      console.error('Error fetching deliveries:', err);
+      setError(err.response?.data?.message || 'An error occurred while fetching deliveries');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDeliveries();
+  }, []);
+
+  // Build dynamic store list from fetched data
   const stores = [
     'All',
-    'Topps Chester',
-    'Topps Nantwich',
-    'Topps Newcastle',
-    'Topps Northwich',
-    'Topps Rhyl',
-    'Topps Wrexham',
+    ...Array.from(
+      new Set(deliveries.map((d) => d.storeName).filter((s) => s && s !== 'N/A'))
+    ).sort(),
   ];
 
-  const [deliveries] = useState([
-    {
-      id: 1,
-      spoNumber: 'SPO013349',
-      storeName: 'Topps Chester',
-      depot: '4 Bumpers Lane, Sealand Ind Est, Chester, CH1 4LY',
-      deliveryAddress: '123 Main Street, Liverpool, L1 1AA',
-      date: '2026-01-16',
-      timeSlot: 'AM',
-      weight: 1200,
-      status: 'Allocated',
-      driver: 'BK',
-      customerName: 'John Smith',
-      phone: '01234567890',
-      cost: 90.0,
-    },
-    {
-      id: 2,
-      spoNumber: 'SPO013350',
-      storeName: 'Topps Newcastle',
-      depot: 'Unit 4, Lyme Court, ST5 3TF',
-      deliveryAddress: '456 High Street, Manchester, M1 1AA',
-      date: '2026-01-16',
-      timeSlot: 'PM',
-      weight: 800,
-      status: 'Delivered',
-      driver: 'BK',
-      customerName: 'Sarah Johnson',
-      phone: '01234567891',
-      cost: 50.0,
-    },
-    {
-      id: 3,
-      spoNumber: 'SPO013351',
-      storeName: 'Topps Wrexham',
-      depot: 'Unit 7–9 Cambrian Price Ind. Est., Wrexham LL13 8DL',
-      deliveryAddress: '789 Park Lane, Birmingham, B1 1AA',
-      date: '2026-01-15',
-      timeSlot: 'AM',
-      weight: 1600,
-      status: 'Delivered',
-      driver: 'BK',
-      customerName: 'Mike Wilson',
-      phone: '01234567892',
-      cost: 135.0,
-    },
-    {
-      id: 4,
-      spoNumber: 'SPO013352',
-      storeName: 'Topps Rhyl',
-      depot: 'Unit 7–9 Cambrian Price Ind. Est., Wrexham LL13 8DL',
-      deliveryAddress: '321 Oak Street, Leeds, LS1 1AA',
-      date: '2026-01-17',
-      timeSlot: 'PM',
-      weight: 700,
-      status: 'Received',
-      driver: 'BK',
-      customerName: 'Emily Davis',
-      phone: '01234567893',
-      cost: 45.0,
-    },
-    {
-      id: 5,
-      spoNumber: 'SPO013353',
-      storeName: 'Topps Nantwich',
-      depot: '4 Bumpers Lane, Sealand Ind Est, Chester, CH1 4LY',
-      deliveryAddress: '654 Cedar Road, Bristol, BS1 1AA',
-      date: '2026-01-18',
-      timeSlot: 'AM',
-      weight: 1100,
-      status: 'Cancelled',
-      driver: 'BK',
-      customerName: 'Anna Brown',
-      phone: '01234567894',
-      cost: 75.0,
-    },
-    {
-      id: 6,
-      spoNumber: 'SPO013354',
-      storeName: 'Topps Northwich',
-      depot: 'Unit 4, Lyme Court, ST5 3TF',
-      deliveryAddress: '987 Birch Avenue, Cardiff, CF1 1AA',
-      date: '2026-01-19',
-      timeSlot: 'PM',
-      weight: 900,
-      status: 'Allocated',
-      driver: 'BK',
-      customerName: 'David Green',
-      phone: '01234567895',
-      cost: 60.0,
-    },
-  ]);
-
-  const statusOptions = ['All', 'Received', 'Allocated', 'Delivered', 'Cancelled'];
+  const statusOptions = ['All', 'RECEIVED', 'ALLOCATED', 'DELIVERED', 'CANCELLED'];
 
   const filteredDeliveries = deliveries.filter((delivery) => {
     // Normalize search query to extract SPO number
@@ -139,7 +86,7 @@ const StoreDeliveries = () => {
       delivery.storeName.toLowerCase().includes(normalizedQuery) ||
       delivery.deliveryAddress.toLowerCase().includes(normalizedQuery);
 
-    const matchesStatus = statusFilter === 'All' || delivery.status === statusFilter;
+    const matchesStatus = statusFilter === 'All' || delivery.status === statusFilter.toUpperCase();
     const matchesStore = storeFilter === 'All' || delivery.storeName === storeFilter;
 
     return matchesSearch && matchesStatus && matchesStore;
@@ -171,19 +118,52 @@ const StoreDeliveries = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'Received':
+    switch (status?.toUpperCase()) {
+      case 'RECEIVED':
         return 'bg-blue-100 text-blue-600';
-      case 'Allocated':
+      case 'ALLOCATED':
         return 'bg-yellow-100 text-yellow-600';
-      case 'Delivered':
+      case 'DELIVERED':
         return 'bg-green-100 text-green-600';
-      case 'Cancelled':
+      case 'CANCELLED':
         return 'bg-red-100 text-red-600';
       default:
         return 'bg-gray-100 text-gray-600';
     }
   };
+
+  const formatStatus = (status) => {
+    if (!status) return '';
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center p-8">
+        <div className="flex flex-col items-center gap-3 text-gray-500">
+          <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+          <p className="text-sm">Loading deliveries...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center p-8">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <AlertCircle className="h-8 w-8 text-red-500" />
+          <p className="text-sm text-red-600">{error}</p>
+          <button
+            onClick={fetchDeliveries}
+            className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
@@ -241,7 +221,7 @@ const StoreDeliveries = () => {
               >
                 {statusOptions.map((status) => (
                   <option key={status} value={status}>
-                    {status}
+                    {status === 'All' ? 'All' : formatStatus(status)}
                   </option>
                 ))}
               </select>
@@ -292,7 +272,7 @@ const StoreDeliveries = () => {
                                 delivery.status
                               )}`}
                             >
-                              {delivery.status}
+                              {formatStatus(delivery.status)}
                             </span>
                           </div>
 
@@ -382,7 +362,7 @@ const StoreDeliveries = () => {
                         selectedDelivery.status
                       )}`}
                     >
-                      {selectedDelivery.status}
+                      {formatStatus(selectedDelivery.status)}
                     </span>
                   </div>
                   <div>
@@ -394,12 +374,6 @@ const StoreDeliveries = () => {
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-700">Driver</label>
                     <p className="text-sm text-gray-900">{selectedDelivery.driver}</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Depot Address
-                    </label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.depot}</p>
                   </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium text-gray-700">
