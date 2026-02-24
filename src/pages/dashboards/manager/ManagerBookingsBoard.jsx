@@ -50,7 +50,6 @@ const ManagerBookingsBoard = () => {
   // Handle refresh after driver allocation
   useEffect(() => {
     if (location.state?.refreshDeliveries) {
-      if (location.state.message) toast.success(location.state.message);
       navigate(location.pathname, { replace: true, state: {} });
       fetchDeliveries();
     }
