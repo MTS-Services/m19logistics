@@ -203,6 +203,22 @@ const AllocateDriverPage = () => {
               <p className="text-sm text-gray-600">Cost</p>
               <p className="font-medium text-gray-900">£{delivery.cost}</p>
             </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver Name</p>
+              <p className="font-medium text-gray-900">{delivery.driver || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver ID</p>
+              <p className="font-medium text-gray-900">{delivery.driverId || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver Phone</p>
+              <p className="font-medium text-gray-900">{delivery.driverPhone || '—'}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Driver Email</p>
+              <p className="font-medium text-gray-900">{delivery.driverEmail || '—'}</p>
+            </div>
           </div>
         </div>
 

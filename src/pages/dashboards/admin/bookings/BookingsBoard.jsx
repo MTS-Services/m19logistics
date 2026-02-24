@@ -99,11 +99,8 @@ const BookingsBoard = () => {
   // Check for refresh request from allocation page
   useEffect(() => {
     if (location.state?.refreshDeliveries) {
-      if (location.state.message) {
-        toast.success(location.state.message);
-      }
-      // Clear the state
       navigate(location.pathname, { replace: true, state: {} });
+      fetchDeliveries();
     }
   }, [location, navigate]);
 
@@ -128,11 +125,13 @@ const BookingsBoard = () => {
             phone: delivery.customerPhone,
             status: formatStatus(delivery.status),
             cost: delivery.totalPrice,
-            driver: delivery.driverId ? `Driver ${delivery.driverId}` : null,
+            driver: delivery.driver?.fullName || null,
+            driverPhone: delivery.driver?.phone || null,
+            driverEmail: delivery.driver?.email || null,
             requestedBy: delivery.requestedBy,
             specialInstructions: delivery.specialInstructions,
             deliveredAt: delivery.deliveredAt,
-            cancelReason: delivery.cancelReason,
+            cancelReason: delivery.cancellationReason,
             // Additional API fields
             customerId: delivery.customerId,
             driverId: delivery.driverId,
@@ -177,11 +176,13 @@ const BookingsBoard = () => {
           phone: delivery.customerPhone,
           status: formatStatus(delivery.status),
           cost: delivery.totalPrice,
-          driver: delivery.driverId ? `Driver ${delivery.driverId}` : null,
+          driver: delivery.driver?.fullName || null,
+          driverPhone: delivery.driver?.phone || null,
+          driverEmail: delivery.driver?.email || null,
           requestedBy: delivery.requestedBy,
           specialInstructions: delivery.specialInstructions,
           deliveredAt: delivery.deliveredAt,
-          cancelReason: delivery.cancelReason,
+          cancelReason: delivery.cancellationReason,
           // Additional API fields
           customerId: delivery.customerId,
           driverId: delivery.driverId,
@@ -459,6 +460,9 @@ const BookingsBoard = () => {
                           Cost
                         </th>
                         <th className="px-6 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
+                          Driver
+                        </th>
+                        <th className="px-6 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Actions
                         </th>
                       </tr>
@@ -516,6 +520,23 @@ const BookingsBoard = () => {
                               <span className="text-base font-semibold text-gray-900">
                                 £{formatCurrency(delivery.cost)}
                               </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-start gap-2">
+                                <Truck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                                <div>
+                                  <p className="text-sm text-gray-900">{delivery.driver || '—'}</p>
+                                  {delivery.driverId && (
+                                    <p className="text-xs text-gray-500">ID: {delivery.driverId}</p>
+                                  )}
+                                  <p className="text-xs text-gray-600">
+                                    {delivery.driverPhone || ''}
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    {delivery.driverEmail || ''}
+                                  </p>
+                                </div>
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="relative" data-dropdown="true">
@@ -593,6 +614,20 @@ const BookingsBoard = () => {
                             </p>
                           </div>
                         </div>
+
+                        <div className="flex items-start gap-2">
+                          <Truck className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                          <div className="flex-1">
+                            <p className="text-base text-gray-600">Driver</p>
+                            <p className="font-medium text-gray-900">{delivery.driver || '—'}</p>
+                            {delivery.driverPhone && (
+                              <p className="text-sm text-gray-600">{delivery.driverPhone}</p>
+                            )}
+                            {delivery.driverEmail && (
+                              <p className="text-sm text-gray-600">{delivery.driverEmail}</p>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Card Actions */}
@@ -642,10 +677,38 @@ const BookingsBoard = () => {
           <EditDeliveryModal
             delivery={selectedDelivery}
             onClose={() => setShowEditModal(false)}
-            onSave={() => {
+            onSave={(updatedDelivery) => {
+              const mapped = {
+                id: updatedDelivery.id,
+                spoNumber: updatedDelivery.spoNumber,
+                customer: updatedDelivery.customerName,
+                deliveryDate: updatedDelivery.deliveryDate,
+                timeSlot: updatedDelivery.timeSlot,
+                weight: updatedDelivery.weight,
+                address: updatedDelivery.deliveryAddress,
+                contact: updatedDelivery.customerName,
+                phone: updatedDelivery.customerPhone,
+                status: formatStatus(updatedDelivery.status),
+                cost: updatedDelivery.totalPrice,
+                driver: updatedDelivery.driver?.fullName || null,
+                driverPhone: updatedDelivery.driver?.phone || null,
+                driverEmail: updatedDelivery.driver?.email || null,
+                requestedBy: updatedDelivery.requestedBy,
+                specialInstructions: updatedDelivery.specialInstructions,
+                deliveredAt: updatedDelivery.deliveredAt,
+                cancelReason: updatedDelivery.cancellationReason,
+                customerId: updatedDelivery.customerId,
+                driverId: updatedDelivery.driverId,
+                isAdditionalDelivery: updatedDelivery.isAdditionalDelivery,
+                distanceFromDepot: updatedDelivery.distanceFromDepot,
+                calculatedBasePrice: updatedDelivery.calculatedBasePrice,
+                distanceSurcharge: updatedDelivery.distanceSurcharge,
+                subtotal: updatedDelivery.subtotal,
+                vatAmount: updatedDelivery.vatAmount,
+              };
+              setDeliveries((prev) => prev.map((d) => (d.id === mapped.id ? mapped : d)));
+              setSelectedDelivery(mapped);
               setShowEditModal(false);
-              setSelectedDelivery(null);
-              fetchDeliveries();
             }}
           />
         )}

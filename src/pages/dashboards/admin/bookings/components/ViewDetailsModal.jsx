@@ -112,6 +112,9 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
                     <div>
                       <p className="text-base text-gray-500 uppercase">Assigned Driver</p>
                       <p className="font-medium text-gray-900">{delivery.driver}</p>
+                      {delivery.driverId && (
+                        <p className="text-sm text-gray-500">ID: {delivery.driverId}</p>
+                      )}
                       {delivery.driverPhone && (
                         <p className="text-base text-gray-600">{delivery.driverPhone}</p>
                       )}
