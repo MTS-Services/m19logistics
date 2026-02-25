@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Package,
   Search,
@@ -11,14 +11,23 @@ import {
   X,
   Loader2,
   AlertCircle,
+  Truck,
+  RotateCcw,
 } from 'lucide-react';
 import Pagination from '../../../components/Pagination';
 import axiosInstance from '../../../services/axiosInstance';
 
 const StoreDeliveries = () => {
+  // Client-side filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [storeFilter, setStoreFilter] = useState('All');
+
+  // Server-side filters (query params)
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [driverFilter, setDriverFilter] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,11 +36,22 @@ const StoreDeliveries = () => {
   const [error, setError] = useState(null);
   const itemsPerPage = 5;
 
-  const fetchDeliveries = async () => {
+  const buildQueryParams = useCallback(() => {
+    const params = new URLSearchParams();
+    if (statusFilter !== 'All') params.append('status', statusFilter);
+    if (driverFilter !== 'All') params.append('driverId', driverFilter);
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    return params.toString();
+  }, [statusFilter, driverFilter, startDate, endDate]);
+
+  const fetchDeliveries = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.get('/api/admin/deliveries');
+      const query = buildQueryParams();
+      const url = query ? `/api/admin/deliveries?${query}` : '/api/admin/deliveries';
+      const response = await axiosInstance.get(url);
       if (response.data.success) {
         const mapped = response.data.data.map((d) => ({
           id: d.id,
@@ -42,10 +62,28 @@ const StoreDeliveries = () => {
           timeSlot: d.timeSlot,
           weight: d.weight,
           status: d.status,
-          driver: d.driver?.fullName || 'Unassigned',
+          driverId: d.driverId,
+          driverName: d.driver?.fullName || 'Unassigned',
+          driverPhone: d.driver?.phone || 'N/A',
+          driverEmail: d.driver?.email || 'N/A',
           customerName: d.customerName,
           phone: d.customerPhone,
+          requestedBy: d.requestedBy || 'N/A',
+          specialInstructions: d.specialInstructions || 'N/A',
+          distanceFromDepot: d.distanceFromDepot || 'N/A',
+          calculatedBasePrice: parseFloat(d.calculatedBasePrice) || 0,
+          distanceSurcharge: parseFloat(d.distanceSurcharge) || 0,
+          subtotal: parseFloat(d.subtotal) || 0,
+          vatAmount: parseFloat(d.vatAmount) || 0,
           cost: parseFloat(d.totalPrice) || 0,
+          isAdditionalDelivery: d.isAdditionalDelivery || false,
+          deliveredAt: d.deliveredAt ? d.deliveredAt.split('T')[0] : null,
+          receivedBy: d.receivedBy || null,
+          signatureUrl: d.signatureUrl || null,
+          photoUrl: d.photoUrl || null,
+          acceptedAt: d.acceptedAt || null,
+          cancelledAt: d.cancelledAt || null,
+          cancellationReason: d.cancellationReason || null,
         }));
         setDeliveries(mapped);
       } else {
@@ -57,11 +95,13 @@ const StoreDeliveries = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [buildQueryParams]);
 
+  // Re-fetch whenever server-side filters change
   useEffect(() => {
     fetchDeliveries();
-  }, []);
+    setCurrentPage(1);
+  }, [fetchDeliveries]);
 
   // Build dynamic store list from fetched data
   const stores = [
@@ -71,12 +111,22 @@ const StoreDeliveries = () => {
     ).sort(),
   ];
 
+  // Build dynamic driver list from fetched data
+  const drivers = [
+    { id: 'All', name: 'All Drivers' },
+    ...Array.from(
+      new Map(
+        deliveries
+          .filter((d) => d.driverId && d.driverName !== 'Unassigned')
+          .map((d) => [d.driverId, { id: d.driverId, name: d.driverName }])
+      ).values()
+    ).sort((a, b) => a.name.localeCompare(b.name)),
+  ];
+
   const statusOptions = ['All', 'RECEIVED', 'ALLOCATED', 'DELIVERED', 'CANCELLED'];
 
   const filteredDeliveries = deliveries.filter((delivery) => {
-    // Normalize search query to extract SPO number
     const normalizedQuery = searchQuery.trim().toLowerCase();
-    // Extract just the SPO number from formats like "SPO: SPO013349", "SPO:SPO013349", "SPO013349"
     const spoMatch = normalizedQuery.match(/spo[:\s]*([a-z0-9]+)/);
     const extractedSpo = spoMatch ? spoMatch[1] : normalizedQuery;
 
@@ -85,10 +135,9 @@ const StoreDeliveries = () => {
       delivery.storeName.toLowerCase().includes(normalizedQuery) ||
       delivery.deliveryAddress.toLowerCase().includes(normalizedQuery);
 
-    const matchesStatus = statusFilter === 'All' || delivery.status === statusFilter.toUpperCase();
     const matchesStore = storeFilter === 'All' || delivery.storeName === storeFilter;
 
-    return matchesSearch && matchesStatus && matchesStore;
+    return matchesSearch && matchesStore;
   });
 
   // Pagination calculations
@@ -98,11 +147,26 @@ const StoreDeliveries = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedDeliveries = filteredDeliveries.slice(startIndex, endIndex);
 
-  // Reset to page 1 when filters change
-  const handleFilterChange = (type, value) => {
+  const handleClientFilterChange = (type, value) => {
     if (type === 'search') setSearchQuery(value);
-    if (type === 'status') setStatusFilter(value);
     if (type === 'store') setStoreFilter(value);
+    setCurrentPage(1);
+  };
+
+  const handleServerFilterChange = (type, value) => {
+    if (type === 'status') setStatusFilter(value);
+    if (type === 'driver') setDriverFilter(value);
+    if (type === 'startDate') setStartDate(value);
+    if (type === 'endDate') setEndDate(value);
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setStoreFilter('All');
+    setStatusFilter('All');
+    setDriverFilter('All');
+    setStartDate('');
+    setEndDate('');
     setCurrentPage(1);
   };
 
@@ -135,6 +199,14 @@ const StoreDeliveries = () => {
     if (!status) return '';
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   };
+
+  const hasActiveFilters =
+    statusFilter !== 'All' ||
+    driverFilter !== 'All' ||
+    storeFilter !== 'All' ||
+    startDate ||
+    endDate ||
+    searchQuery;
 
   if (loading) {
     return (
@@ -181,49 +253,106 @@ const StoreDeliveries = () => {
 
         {/* Filters */}
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-700">Filters</p>
+            {hasActiveFilters && (
+              <button
+                onClick={handleResetFilters}
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset All
+              </button>
+            )}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Search */}
             <div className="relative">
               <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
+                onChange={(e) => handleClientFilterChange('search', e.target.value)}
                 placeholder="Search by SPO, store, or address..."
                 className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               />
             </div>
 
-            {/* Store Filter */}
+            {/* Status Filter → server-side */}
             <div className="relative">
-              <Building2 className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Filter className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <select
-                value={storeFilter}
-                onChange={(e) => handleFilterChange('store', e.target.value)}
+                value={statusFilter}
+                onChange={(e) => handleServerFilterChange('status', e.target.value)}
                 className="w-full appearance-none rounded-md border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               >
-                {stores.map((store) => (
-                  <option key={store} value={store}>
-                    {store}
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>
+                    {status === 'All' ? 'All Status' : formatStatus(status)}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Status Filter */}
+            {/* Driver Filter → server-side */}
             <div className="relative">
-              <Filter className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <Truck className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <select
-                value={statusFilter}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
+                value={driverFilter}
+                onChange={(e) => handleServerFilterChange('driver', e.target.value)}
                 className="w-full appearance-none rounded-md border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
               >
-                {statusOptions.map((status) => (
-                  <option key={status} value={status}>
-                    {status === 'All' ? 'All' : formatStatus(status)}
+                {drivers.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Store Filter → client-side */}
+            <div className="relative">
+              <Building2 className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+              <select
+                value={storeFilter}
+                onChange={(e) => handleClientFilterChange('store', e.target.value)}
+                className="w-full appearance-none rounded-md border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+              >
+                {stores.map((store) => (
+                  <option key={store} value={store}>
+                    {store === 'All' ? 'All Stores' : store}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Start Date → server-side */}
+            <div className="flex items-center rounded-md border border-gray-300 focus-within:border-teal-500 focus-within:ring-1 focus-within:ring-teal-500">
+              <div className="flex shrink-0 items-center gap-2 rounded-l-md border-r border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                <Calendar className="h-4 w-4 text-gray-400" />
+                <span className="whitespace-nowrap">Start Date</span>
+              </div>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => handleServerFilterChange('startDate', e.target.value)}
+                className="w-full rounded-r-md bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none"
+              />
+            </div>
+
+            {/* End Date → server-side */}
+            <div className="flex items-center rounded-md border border-gray-300 focus-within:border-teal-500 focus-within:ring-1 focus-within:ring-teal-500">
+              <div className="flex shrink-0 items-center gap-2 rounded-l-md border-r border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-500">
+                <Calendar className="h-4 w-4 text-gray-400" />
+                <span className="whitespace-nowrap">End Date</span>
+              </div>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => handleServerFilterChange('endDate', e.target.value)}
+                className="w-full rounded-r-md bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none"
+              />
             </div>
           </div>
         </div>
@@ -294,6 +423,10 @@ const StoreDeliveries = () => {
                               <User className="h-4 w-4" />
                               <span>{delivery.customerName}</span>
                             </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Truck className="h-4 w-4" />
+                              <span>{delivery.driverName}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -347,70 +480,249 @@ const StoreDeliveries = () => {
               </div>
 
               <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      SPO Number
-                    </label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.spoNumber}</p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
-                    <span
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(
-                        selectedDelivery.status
-                      )}`}
-                    >
-                      {formatStatus(selectedDelivery.status)}
-                    </span>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Store Name
-                    </label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.storeName}</p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">Driver</label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.driver}</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Delivery Address
-                    </label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.deliveryAddress}</p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Delivery Date
-                    </label>
-                    <p className="text-sm text-gray-900">
-                      {selectedDelivery.date} - {selectedDelivery.timeSlot}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">Weight</label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.weight} kg</p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Customer Name
-                    </label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.customerName}</p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      Phone Number
-                    </label>
-                    <p className="text-sm text-gray-900">{selectedDelivery.phone}</p>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">Cost</label>
-                    <p className="text-sm font-bold text-green-600">
-                      £{selectedDelivery.cost.toFixed(2)}
-                    </p>
+                {/* Basic Info */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
+                    Delivery Info
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        SPO Number
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.spoNumber}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
+                      <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(selectedDelivery.status)}`}
+                      >
+                        {formatStatus(selectedDelivery.status)}
+                      </span>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Store Name
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.storeName}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Time Slot
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.timeSlot}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Delivery Address
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.deliveryAddress}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Delivery Date
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.date}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">Weight</label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.weight} kg</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Distance from Depot
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedDelivery.distanceFromDepot} miles
+                      </p>
+                    </div>
+                    {selectedDelivery.isAdditionalDelivery && (
+                      <div>
+                        <label className="mb-1 block text-sm font-medium text-gray-700">
+                          Additional Delivery
+                        </label>
+                        <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-700">
+                          Yes
+                        </span>
+                      </div>
+                    )}
+                    <div className="md:col-span-2">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Requested By
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.requestedBy}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Special Instructions
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        {selectedDelivery.specialInstructions}
+                      </p>
+                    </div>
                   </div>
                 </div>
+
+                {/* Customer Info */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
+                    Customer
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Customer Name
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.customerName}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Phone Number
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.phone}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Driver Info */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
+                    Driver
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Driver Name
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.driverName}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Driver Phone
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.driverPhone}</p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Driver Email
+                      </label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.driverEmail}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing */}
+                <div>
+                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
+                    Pricing
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Base Price
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        £{selectedDelivery.calculatedBasePrice.toFixed(2)}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Distance Surcharge
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        £{selectedDelivery.distanceSurcharge.toFixed(2)}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Subtotal
+                      </label>
+                      <p className="text-sm text-gray-900">
+                        £{selectedDelivery.subtotal.toFixed(2)}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">VAT</label>
+                      <p className="text-sm text-gray-900">
+                        £{selectedDelivery.vatAmount.toFixed(2)}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">Total</label>
+                      <p className="text-sm font-bold text-green-600">
+                        £{selectedDelivery.cost.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delivery Proof (only if DELIVERED) */}
+                {selectedDelivery.status?.toUpperCase() === 'DELIVERED' && (
+                  <div>
+                    <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
+                      Delivery Proof
+                    </h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {selectedDelivery.deliveredAt && (
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-gray-700">
+                            Delivered At
+                          </label>
+                          <p className="text-sm text-gray-900">{selectedDelivery.deliveredAt}</p>
+                        </div>
+                      )}
+                      {selectedDelivery.receivedBy && (
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-gray-700">
+                            Received By
+                          </label>
+                          <p className="text-sm text-gray-900">{selectedDelivery.receivedBy}</p>
+                        </div>
+                      )}
+                      {selectedDelivery.signatureUrl && (
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-gray-700">
+                            Signature
+                          </label>
+                          <a
+                            href={selectedDelivery.signatureUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-teal-600 underline hover:text-teal-800"
+                          >
+                            View Signature
+                          </a>
+                        </div>
+                      )}
+                      {selectedDelivery.photoUrl && (
+                        <div>
+                          <label className="mb-1 block text-sm font-medium text-gray-700">
+                            Delivery Photo
+                          </label>
+                          <a
+                            href={selectedDelivery.photoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-teal-600 underline hover:text-teal-800"
+                          >
+                            View Photo
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Cancellation Info (only if CANCELLED) */}
+                {selectedDelivery.status?.toUpperCase() === 'CANCELLED' &&
+                  selectedDelivery.cancellationReason && (
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                      <h3 className="mb-1 text-sm font-semibold text-red-900">
+                        Cancellation Reason
+                      </h3>
+                      <p className="text-sm text-red-700">{selectedDelivery.cancellationReason}</p>
+                    </div>
+                  )}
 
                 {/* Read-Only Notice */}
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
