@@ -268,10 +268,10 @@ const JobApplicationsManagement = () => {
       {/* Header */}
       <div className="mb-5 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="text-base font-bold text-gray-900 sm:text-2xl lg:text-3xl">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
             Jobs Application
           </h1>
-          <p className="mt-0.5 text-base text-gray-500">Manage and review all job applications</p>
+          <p className="mt-2 text-base text-gray-600">Manage and review all job applications</p>
         </div>
         <button
           onClick={fetchStats}
@@ -301,25 +301,21 @@ const JobApplicationsManagement = () => {
       {!loading && (
         <>
           {/* Stats Cards */}
-          <div className="mb-5 grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-6">
+          <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             {statsCards.map((card) => {
               const Icon = card.icon;
               return (
                 <div
                   key={card.label}
-                  className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:p-4"
+                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
                 >
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      <p className="truncate text-xs leading-tight text-gray-500 sm:text-sm">
-                        {card.label}
-                      </p>
-                      <p className="mt-0.5 text-base font-bold text-gray-900 sm:text-2xl">
-                        {card.value}
-                      </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base text-gray-600">{card.label}</p>
+                      <p className="mt-1 text-2xl font-bold text-gray-900">{card.value}</p>
                     </div>
-                    <div className={`hidden rounded-lg p-1.5 sm:block sm:p-2 ${card.color}`}>
-                      <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${card.iconColor}`} />
+                    <div className={`rounded-lg p-2 ${card.color}`}>
+                      <Icon className={`h-5 w-5 ${card.iconColor}`} />
                     </div>
                   </div>
                 </div>
@@ -340,7 +336,7 @@ const JobApplicationsManagement = () => {
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                className="w-full bg-transparent text-base text-gray-700 outline-none placeholder:text-gray-400"
               />
             </div>
 
@@ -391,25 +387,25 @@ const JobApplicationsManagement = () => {
                   <table className="w-full min-w-175 text-base">
                     <thead>
                       <tr className="border-b border-gray-100 bg-gray-50">
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Applicant
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Contact
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Position
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Applied Date
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Status
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           CV
                         </th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-600 uppercase">
                           Actions
                         </th>
                       </tr>
