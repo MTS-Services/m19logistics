@@ -1,25 +1,51 @@
-import React, { useState } from 'react';
-import {
-  Calendar,
-  Download,
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Package,
-  CheckCircle,
-  XCircle,
-  FileText,
-} from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { DollarSign, Package, Users } from 'lucide-react';
 import Pagination from '../../../components/Pagination';
+import axiosInstance from '../../../services/axiosInstance';
 
 const ManagerAnalyticsDashboard = () => {
-  const [dateRange, setDateRange] = useState('this-week');
-  const [customStartDate, setCustomStartDate] = useState('');
-  const [customEndDate, setCustomEndDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  // Dynamic data based on date range
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [summary, setSummary] = useState({});
+  // eslint-disable-next-line no-unused-vars
+  const [deliveriesByStatus, setDeliveriesByStatus] = useState({});
+  const [recentDeliveries, setRecentDeliveries] = useState([]);
+
+  const fetchAnalytics = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.get('/api/admin/analytics');
+      const data = response.data?.data || {};
+      setSummary(data.summary || {});
+      setDeliveriesByStatus(data.deliveriesByStatus || {});
+      setRecentDeliveries(
+        (data.recentDeliveries || []).map((d) => ({
+          id: d.id,
+          spoNumber: d.spoNumber,
+          customerName: d.customerName,
+          driverName: d.driver?.fullName || 'N/A',
+          deliveryDate: d.deliveryDate,
+          timeSlot: d.timeSlot,
+          amount: parseFloat(d.totalPrice || 0),
+          status: d.status,
+        }))
+      );
+    } catch {
+      setError('Failed to load analytics data.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
+
+  // eslint-disable-next-line no-unused-vars
   const getDataByDateRange = () => {
     const dataByRange = {
       'this-week': {
@@ -527,26 +553,18 @@ const ManagerAnalyticsDashboard = () => {
       },
     };
 
-    return dataByRange[dateRange] || dataByRange['this-week'];
+    return dataByRange['this-week'];
   };
 
-  const currentData = getDataByDateRange();
-  const overviewStats = currentData.overviewStats;
-  // const storePerformance = currentData.storePerformance;
-  // const driverPerformance = currentData.driverPerformance;
-  // const weeklyData = currentData.weeklyData;
+  const overviewStats = {
+    totalRevenue: parseFloat(summary.totalRevenue || 0),
+    totalDeliveries: summary.totalDeliveries || 0,
+    activeCustomers: summary.activeCustomers || 0,
+  };
 
-  // const monthlyTrends = [
-  //   { month: 'Aug', revenue: 48500, deliveries: 1078 },
-  //   { month: 'Sep', revenue: 51200, deliveries: 1138 },
-  //   { month: 'Oct', revenue: 49800, deliveries: 1106 },
-  //   { month: 'Nov', revenue: 52600, deliveries: 1169 },
-  //   { month: 'Dec', revenue: 54300, deliveries: 1207 },
-  //   { month: 'Jan', revenue: 12450, deliveries: 278 },
-  // };
-
-  // All deliveries data
-  const allDeliveries = [
+  // All deliveries data (API data)
+  const allDeliveries = recentDeliveries;
+  const _hardcodedDeliveries = [
     {
       id: 'DEL-001',
       customer: 'Topps Chester',
@@ -749,247 +767,6 @@ const ManagerAnalyticsDashboard = () => {
     },
   ];
 
-  const handleExport = (format) => {
-    if (format === 'csv') {
-      exportCSV();
-    } else if (format === 'pdf') {
-      exportPDF();
-    }
-  };
-
-  const exportCSV = () => {
-    let csvContent = '';
-
-    // Deliveries CSV
-    csvContent += 'Total Deliveries Details\n';
-    csvContent += 'Delivery ID,Store,Driver,Date,Time,Amount,Status\n';
-    allDeliveries.forEach((delivery) => {
-      csvContent += `${delivery.id},${delivery.store},${delivery.driver},${delivery.date},${delivery.time},�${delivery.amount.toFixed(2)},${delivery.status}\n`;
-    });
-
-    // Download CSV
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `deliveries_${dateRange}_${new Date().toISOString().split('T')[0]}.csv`
-    );
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const exportPDF = async () => {
-    // Dynamic import jsPDF
-    const { jsPDF } = await import('jspdf');
-    const doc = new jsPDF();
-
-    let yPosition = 20;
-    const pageWidth = doc.internal.pageSize.width;
-    const margin = 15;
-    const lineHeight = 7;
-
-    // Header
-    doc.setFontSize(20);
-    doc.setTextColor(13, 148, 136); // Teal color
-    doc.text('M19 LOGISTICS', margin, yPosition);
-    yPosition += 10;
-
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Analytics Dashboard Report', margin, yPosition);
-    yPosition += 8;
-
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text(
-      `Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
-      margin,
-      yPosition
-    );
-    yPosition += 5;
-    doc.text(`Date Range: ${dateRange}`, margin, yPosition);
-    yPosition += 5;
-    doc.text('Report Type: Total Deliveries', margin, yPosition);
-    yPosition += 10;
-
-    // Line separator
-    doc.setDrawColor(200, 200, 200);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 10;
-
-    // Deliveries Table Header
-    doc.setFontSize(14);
-    doc.setTextColor(13, 148, 136);
-    doc.text('Total Deliveries Details', margin, yPosition);
-    yPosition += 8;
-
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'bold');
-    doc.text('ID', margin, yPosition);
-    doc.text('Store', margin + 25, yPosition);
-    doc.text('Driver', margin + 70, yPosition);
-    doc.text('Date', margin + 105, yPosition);
-    doc.text('Amount', margin + 135, yPosition);
-    doc.text('Status', margin + 160, yPosition);
-    yPosition += 6;
-    doc.setFont(undefined, 'normal');
-
-    allDeliveries.forEach((delivery) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      doc.setFontSize(7);
-      doc.text(delivery.id, margin, yPosition);
-      doc.text(delivery.store.substring(0, 18), margin + 25, yPosition);
-      doc.text(delivery.driver.substring(0, 15), margin + 70, yPosition);
-      doc.text(delivery.date, margin + 105, yPosition);
-      doc.text(`�${delivery.amount.toFixed(2)}`, margin + 135, yPosition);
-
-      // Status color
-      if (delivery.status === 'Delivered') {
-        doc.setTextColor(0, 128, 0);
-      } else if (delivery.status === 'Allocated') {
-        doc.setTextColor(0, 0, 255);
-      } else if (delivery.status === 'Received') {
-        doc.setTextColor(255, 165, 0);
-      } else {
-        doc.setTextColor(255, 0, 0);
-      }
-      doc.text(delivery.status, margin + 160, yPosition);
-      doc.setTextColor(0, 0, 0);
-
-      yPosition += lineHeight;
-    });
-
-    yPosition += 10;
-
-    /*
-    if (selectedMetric === 'drivers' || selectedMetric === 'overview') {
-      if (yPosition > 250) {
-        doc.addPage();
-        yPosition = 20;
-      }
-
-      // Driver Performance
-      doc.setFontSize(14);
-      doc.setTextColor(13, 148, 136);
-      doc.text('Driver Performance', margin, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(9);
-      doc.setTextColor(0, 0, 0);
-
-      driverPerformance.forEach((driver) => {
-        doc.setFont(undefined, 'bold');
-        doc.text(`Driver: ${driver.name}`, margin, yPosition);
-        yPosition += 6;
-        doc.setFont(undefined, 'normal');
-
-        doc.text(`Deliveries: ${driver.deliveries}`, margin + 5, yPosition);
-        doc.text(`Avg Time: ${driver.avgTime}`, margin + 60, yPosition);
-        yPosition += 6;
-        doc.text(`Completion Rate: ${driver.completionRate}%`, margin + 5, yPosition);
-        doc.text(`Late: ${driver.lateDeliveries}`, margin + 60, yPosition);
-        yPosition += 6;
-        doc.text(`Proofs: ${driver.proofsAttached}`, margin + 5, yPosition);
-        doc.text(`Feedback: ${driver.feedbackCount}`, margin + 60, yPosition);
-        yPosition += 6;
-        doc.text(`Rating: ${driver.rating}/5.0`, margin + 5, yPosition);
-        yPosition += 8;
-      });
-    }
-
-    if (selectedMetric === 'trends' || selectedMetric === 'overview') {
-      if (yPosition > 200) {
-        doc.addPage();
-        yPosition = 20;
-      }
-
-      // Weekly Performance
-      doc.setFontSize(14);
-      doc.setTextColor(13, 148, 136);
-      doc.text('Weekly Performance', margin, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(9);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'bold');
-      doc.text('Day', margin, yPosition);
-      doc.text('Deliveries', margin + 40, yPosition);
-      doc.text('Revenue', margin + 80, yPosition);
-      yPosition += 6;
-      doc.setFont(undefined, 'normal');
-
-      weeklyData.forEach((day) => {
-        doc.text(day.day, margin, yPosition);
-        doc.text(day.deliveries.toString(), margin + 40, yPosition);
-        doc.text(`£${day.revenue.toLocaleString()}`, margin + 80, yPosition);
-        yPosition += lineHeight;
-      });
-
-      yPosition += 8;
-
-      if (yPosition > 200) {
-        doc.addPage();
-        yPosition = 20;
-      }
-
-      // Monthly Trends
-      doc.setFontSize(14);
-      doc.setTextColor(13, 148, 136);
-      doc.text('Monthly Trends', margin, yPosition);
-      yPosition += 8;
-
-      doc.setFontSize(9);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'bold');
-      doc.text('Month', margin, yPosition);
-      doc.text('Revenue', margin + 40, yPosition);
-      doc.text('Deliveries', margin + 80, yPosition);
-      yPosition += 6;
-      doc.setFont(undefined, 'normal');
-
-      monthlyTrends.forEach((month, index) => {
-        if (yPosition > 270) {
-          doc.addPage();
-          yPosition = 20;
-        }
-        doc.text(month.month, margin, yPosition);
-        doc.text(`£${month.revenue.toLocaleString()}`, margin + 40, yPosition);
-        doc.text(month.deliveries.toString(), margin + 80, yPosition);
-
-        if (index > 0) {
-          const prevRevenue = monthlyTrends[index - 1].revenue;
-          const change = (((month.revenue - prevRevenue) / prevRevenue) * 100).toFixed(1);
-          doc.setTextColor(parseFloat(change) > 0 ? 0 : 255, parseFloat(change) > 0 ? 128 : 0, 0);
-          doc.text(`${parseFloat(change) > 0 ? '+' : ''}${change}%`, margin + 120, yPosition);
-          doc.setTextColor(0, 0, 0);
-        }
-        yPosition += lineHeight;
-      });
-    }
-    */
-
-    // Footer
-    const pageCount = doc.internal.getNumberOfPages();
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.text(`Page ${i} of ${pageCount}`, pageWidth - 30, doc.internal.pageSize.height - 10);
-      doc.text('M19 Logistics - Confidential', margin, doc.internal.pageSize.height - 10);
-    }
-
-    // Save PDF
-    doc.save(`deliveries_${dateRange}_${new Date().toISOString().split('T')[0]}.pdf`);
-  };
-
   // const getMaxValue = (data, key) => Math.max(...data.map((item) => item[key]));
 
   // Pagination logic for Deliveries
@@ -1014,62 +791,17 @@ const ManagerAnalyticsDashboard = () => {
         </div>
       </div>
 
-      {/* Date Range Selector */}
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div className="flex flex-wrap items-center gap-2">
-            <Calendar className="h-5 w-5 text-teal-600" />
-            <span className="text-sm font-semibold text-gray-700">Date Range:</span>
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-            >
-              <option value="this-week">This Week</option>
-              <option value="last-week">Last Week</option>
-              <option value="this-month">This Month</option>
-              <option value="last-month">Last Month</option>
-              <option value="this-year">This Year</option>
-              <option value="custom">Custom Range</option>
-            </select>
-
-            {dateRange === 'custom' && (
-              <>
-                <input
-                  type="date"
-                  value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
-                  className="rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-                <span className="text-gray-500">to</span>
-                <input
-                  type="date"
-                  value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
-                  className="rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleExport('csv')}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:shadow-lg"
-            >
-              <Download className="h-4 w-4" />
-              Export CSV
-            </button>
-            <button
-              onClick={() => handleExport('pdf')}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-white shadow-md transition-all hover:shadow-lg"
-            >
-              <FileText className="h-4 w-4" />
-              Export PDF
-            </button>
-          </div>
+      {loading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent" />
+          <span className="ml-3 text-gray-600">Loading analytics...</span>
         </div>
-      </div>
+      )}
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+          {error}
+        </div>
+      )}
 
       {/* Overview Stats */}
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -1080,20 +812,6 @@ const ManagerAnalyticsDashboard = () => {
               <p className="text-3xl font-bold text-gray-900">
                 £{overviewStats.totalRevenue.toLocaleString()}
               </p>
-              <div className="mt-2 flex items-center gap-1">
-                {overviewStats.revenueChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-                <span
-                  className={`text-sm font-semibold ${overviewStats.revenueChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {overviewStats.revenueChange > 0 ? '+' : ''}
-                  {overviewStats.revenueChange}%
-                </span>
-                <span className="text-sm text-gray-500">vs last period</span>
-              </div>
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <DollarSign className="h-6 w-6 text-teal-600" />
@@ -1106,20 +824,6 @@ const ManagerAnalyticsDashboard = () => {
             <div className="flex-1">
               <p className="mb-1 text-sm text-gray-600">Total Deliveries</p>
               <p className="text-3xl font-bold text-gray-900">{overviewStats.totalDeliveries}</p>
-              <div className="mt-2 flex items-center gap-1">
-                {overviewStats.deliveriesChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-                <span
-                  className={`text-sm font-semibold ${overviewStats.deliveriesChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {overviewStats.deliveriesChange > 0 ? '+' : ''}
-                  {overviewStats.deliveriesChange}%
-                </span>
-                <span className="text-sm text-gray-500">vs last period</span>
-              </div>
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
               <Package className="h-6 w-6 text-teal-600" />
@@ -1130,100 +834,11 @@ const ManagerAnalyticsDashboard = () => {
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className="mb-1 text-sm text-gray-600">Avg Revenue/Delivery</p>
-              <p className="text-3xl font-bold text-gray-900">
-                £{overviewStats.avgRevenuePerDelivery}
-              </p>
-              <div className="mt-2 flex items-center gap-1">
-                {overviewStats.avgChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-                <span
-                  className={`text-sm font-semibold ${overviewStats.avgChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {overviewStats.avgChange > 0 ? '+' : ''}
-                  {overviewStats.avgChange}%
-                </span>
-                <span className="text-sm text-gray-500">vs last period</span>
-              </div>
+              <p className="mb-1 text-sm text-gray-600">Active Customers</p>
+              <p className="text-3xl font-bold text-gray-900">{overviewStats.activeCustomers}</p>
             </div>
             <div className="rounded-lg bg-teal-50 p-3">
-              <TrendingUp className="h-6 w-6 text-teal-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="mb-1 text-sm text-gray-600">Total VAT Collected</p>
-              <p className="text-3xl font-bold text-gray-900">
-                £{overviewStats.totalVAT.toLocaleString()}
-              </p>
-              <div className="mt-2 flex items-center gap-1">
-                {overviewStats.vatChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-                <span
-                  className={`text-sm font-semibold ${overviewStats.vatChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {overviewStats.vatChange > 0 ? '+' : ''}
-                  {overviewStats.vatChange}%
-                </span>
-                <span className="text-sm text-gray-500">vs last period</span>
-              </div>
-            </div>
-            <div className="rounded-lg bg-teal-50 p-3">
-              <FileText className="h-6 w-6 text-teal-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="mb-1 text-sm text-gray-600">Outstanding Invoices</p>
-              <p className="text-3xl font-bold text-gray-900">
-                £{overviewStats.outstandingInvoices.toLocaleString()}
-              </p>
-              <div className="mt-2 flex items-center gap-1">
-                <span className="text-sm text-gray-500">
-                  {overviewStats.outstandingCount} unpaid invoices
-                </span>
-              </div>
-            </div>
-            <div className="rounded-lg bg-teal-50 p-3">
-              <XCircle className="h-6 w-6 text-teal-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="mb-1 text-sm text-gray-600">Completion Rate</p>
-              <p className="text-3xl font-bold text-gray-900">{overviewStats.completionRate}%</p>
-              <div className="mt-2 flex items-center gap-1">
-                {overviewStats.completionChange > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-                <span
-                  className={`text-sm font-semibold ${overviewStats.completionChange > 0 ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {overviewStats.completionChange > 0 ? '+' : ''}
-                  {overviewStats.completionChange}%
-                </span>
-                <span className="text-sm text-gray-500">vs last period</span>
-              </div>
-            </div>
-            <div className="rounded-lg bg-teal-50 p-3">
-              <CheckCircle className="h-6 w-6 text-teal-600" />
+              <Users className="h-6 w-6 text-teal-600" />
             </div>
           </div>
         </div>
@@ -1272,14 +887,14 @@ const ManagerAnalyticsDashboard = () => {
                     <p className="font-semibold text-teal-600">{delivery.id}</p>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-semibold text-gray-900">{delivery.store}</p>
+                    <p className="font-semibold text-gray-900">{delivery.customerName}</p>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="text-gray-900">{delivery.driver}</p>
+                    <p className="text-gray-900">{delivery.driverName}</p>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-semibold text-gray-900">{delivery.date}</p>
-                    <p className="text-sm text-gray-600">{delivery.time}</p>
+                    <p className="font-semibold text-gray-900">{delivery.deliveryDate}</p>
+                    <p className="text-sm text-gray-600">{delivery.timeSlot}</p>
                   </td>
                   <td className="px-6 py-4">
                     <p className="font-semibold text-teal-600">£{delivery.amount.toFixed(2)}</p>
