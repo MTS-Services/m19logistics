@@ -467,282 +467,246 @@ const StoreDeliveries = () => {
 
         {/* Detail Modal */}
         {showDetailModal && selectedDelivery && (
-          <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-gray-900">Delivery Details</h2>
-                <button
-                  onClick={() => setShowDetailModal(false)}
-                  className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 sm:p-4">
+            <div className="max-h-[95vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white shadow-2xl">
+              {/* Modal Header */}
+              <div className="rounded-t-xl bg-linear-to-r from-teal-600 to-teal-500 px-4 py-4 sm:px-6 sm:py-5">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1 pr-3">
+                    <p className="text-xs font-medium tracking-widest text-teal-100 uppercase">
+                      SPO Number
+                    </p>
+                    <h2 className="mt-0.5 truncate text-lg font-bold text-white sm:text-xl">
+                      {selectedDelivery.spoNumber}
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setShowDetailModal(false)}
+                    className="shrink-0 rounded-lg p-1.5 text-teal-200 transition-colors hover:bg-teal-700 hover:text-white"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="mt-3 flex flex-wrap items-end justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getStatusColor(selectedDelivery.status)}`}
+                    >
+                      {formatStatus(selectedDelivery.status)}
+                    </span>
+                    {selectedDelivery.isAdditionalDelivery && (
+                      <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-700">
+                        Additional
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs text-teal-100">Total Cost</p>
+                    <p className="text-xl font-bold text-white sm:text-2xl">
+                      £{selectedDelivery.cost.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-6">
-                {/* Basic Info */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                    Delivery Info
-                  </h3>
-                  <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-4 p-3 sm:space-y-5 sm:p-6">
+                {/* Delivery Summary Row */}
+                <div className="grid grid-cols-3 divide-x divide-gray-100 rounded-lg border border-gray-200 bg-gray-50">
+                  <div className="flex flex-col items-center px-2 py-3 text-center sm:px-4">
+                    <Calendar className="mb-1 h-4 w-4 text-teal-500" />
+                    <p className="text-xs text-gray-500">Date</p>
+                    <p className="mt-0.5 text-xs font-semibold text-gray-800 sm:text-sm">
+                      {selectedDelivery.date}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center px-2 py-3 text-center sm:px-4">
+                    <Package className="mb-1 h-4 w-4 text-teal-500" />
+                    <p className="text-xs text-gray-500">Slot · Weight</p>
+                    <p className="mt-0.5 text-xs font-semibold text-gray-800 sm:text-sm">
+                      {selectedDelivery.timeSlot} · {selectedDelivery.weight} kg
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center px-2 py-3 text-center sm:px-4">
+                    <MapPin className="mb-1 h-4 w-4 text-teal-500" />
+                    <p className="text-xs text-gray-500">Distance</p>
+                    <p className="mt-0.5 text-xs font-semibold text-gray-800 sm:text-sm">
+                      {selectedDelivery.distanceFromDepot} miles
+                    </p>
+                  </div>
+                </div>
+
+                {/* Address + Store */}
+                <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                     <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        SPO Number
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.spoNumber}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
-                      <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(selectedDelivery.status)}`}
-                      >
-                        {formatStatus(selectedDelivery.status)}
-                      </span>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Store Name
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.storeName}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Time Slot
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.timeSlot}</p>
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Delivery Address
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.deliveryAddress}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Delivery Date
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.date}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">Weight</label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.weight} kg</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Distance from Depot
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        {selectedDelivery.distanceFromDepot} miles
+                      <p className="text-xs font-medium text-gray-500">Delivery Address</p>
+                      <p className="mt-0.5 text-sm font-medium text-gray-800">
+                        {selectedDelivery.deliveryAddress}
                       </p>
                     </div>
-                    {selectedDelivery.isAdditionalDelivery && (
+                  </div>
+                  {selectedDelivery.storeName !== 'N/A' && (
+                    <div className="mt-3 flex items-start gap-3 border-t border-gray-100 pt-3">
+                      <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
                       <div>
-                        <label className="mb-1 block text-sm font-medium text-gray-700">
-                          Additional Delivery
-                        </label>
-                        <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-700">
-                          Yes
-                        </span>
+                        <p className="text-xs font-medium text-gray-500">Store</p>
+                        <p className="mt-0.5 text-sm font-medium text-gray-800">
+                          {selectedDelivery.storeName}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {selectedDelivery.specialInstructions !== 'N/A' && (
+                    <div className="mt-3 flex items-start gap-3 border-t border-gray-100 pt-3">
+                      <Eye className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                      <div>
+                        <p className="text-xs font-medium text-gray-500">Special Instructions</p>
+                        <p className="mt-0.5 text-sm text-gray-700">
+                          {selectedDelivery.specialInstructions}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Customer & Driver Cards */}
+                <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+                  {/* Customer */}
+                  <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="rounded-md bg-blue-50 p-1.5">
+                        <User className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <p className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                        Customer
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {selectedDelivery.customerName}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">{selectedDelivery.phone}</p>
+                    {selectedDelivery.requestedBy !== 'N/A' && (
+                      <p className="mt-2 text-xs text-gray-400">
+                        Requested by:{' '}
+                        <span className="text-gray-600">{selectedDelivery.requestedBy}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Driver */}
+                  <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="rounded-md bg-orange-50 p-1.5">
+                        <Truck className="h-4 w-4 text-orange-500" />
+                      </div>
+                      <p className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                        Driver
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800">
+                      {selectedDelivery.driverName}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-500">{selectedDelivery.driverPhone}</p>
+                    <p className="mt-0.5 text-xs text-gray-400">{selectedDelivery.driverEmail}</p>
+                  </div>
+                </div>
+
+                {/* Pricing Breakdown */}
+                <div className="rounded-lg border border-gray-200 p-3 sm:p-4">
+                  <p className="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                    Pricing
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Base Price</span>
+                      <span>£{selectedDelivery.calculatedBasePrice.toFixed(2)}</span>
+                    </div>
+                    {selectedDelivery.distanceSurcharge > 0 && (
+                      <div className="flex justify-between text-sm text-gray-600">
+                        <span>Distance Surcharge</span>
+                        <span>£{selectedDelivery.distanceSurcharge.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="md:col-span-2">
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Requested By
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.requestedBy}</p>
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>VAT (20%)</span>
+                      <span>£{selectedDelivery.vatAmount.toFixed(2)}</span>
                     </div>
-                    <div className="md:col-span-2">
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Special Instructions
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        {selectedDelivery.specialInstructions}
-                      </p>
+                    <div className="flex justify-between border-t border-gray-200 pt-2 text-sm font-bold text-gray-900">
+                      <span>Total</span>
+                      <span className="text-teal-600">£{selectedDelivery.cost.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Customer Info */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                    Customer
-                  </h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Customer Name
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.customerName}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Phone Number
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.phone}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Driver Info */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                    Driver
-                  </h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Driver Name
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.driverName}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Driver Phone
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.driverPhone}</p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Driver Email
-                      </label>
-                      <p className="text-sm text-gray-900">{selectedDelivery.driverEmail}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pricing */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                    Pricing
-                  </h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Base Price
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        £{selectedDelivery.calculatedBasePrice.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Distance Surcharge
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        £{selectedDelivery.distanceSurcharge.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Subtotal
-                      </label>
-                      <p className="text-sm text-gray-900">
-                        £{selectedDelivery.subtotal.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">VAT</label>
-                      <p className="text-sm text-gray-900">
-                        £{selectedDelivery.vatAmount.toFixed(2)}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">Total</label>
-                      <p className="text-sm font-bold text-green-600">
-                        £{selectedDelivery.cost.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Delivery Proof (only if DELIVERED) */}
+                {/* Proof of Delivery — DELIVERED only */}
                 {selectedDelivery.status?.toUpperCase() === 'DELIVERED' && (
-                  <div>
-                    <h3 className="mb-3 text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                      Delivery Proof
-                    </h3>
-                    <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-lg border border-green-200 bg-green-50 p-3 sm:p-4">
+                    <p className="mb-3 text-xs font-semibold tracking-wide text-green-700 uppercase">
+                      Proof of Delivery
+                    </p>
+                    <div className="grid gap-3 sm:grid-cols-2">
                       {selectedDelivery.deliveredAt && (
                         <div>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">
-                            Delivered At
-                          </label>
-                          <p className="text-sm text-gray-900">{selectedDelivery.deliveredAt}</p>
+                          <p className="text-xs text-green-600">Delivered At</p>
+                          <p className="text-sm font-medium text-green-900">
+                            {selectedDelivery.deliveredAt}
+                          </p>
                         </div>
                       )}
                       {selectedDelivery.receivedBy && (
                         <div>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">
-                            Received By
-                          </label>
-                          <p className="text-sm text-gray-900">{selectedDelivery.receivedBy}</p>
+                          <p className="text-xs text-green-600">Received By</p>
+                          <p className="text-sm font-medium text-green-900">
+                            {selectedDelivery.receivedBy}
+                          </p>
                         </div>
                       )}
-                      {selectedDelivery.signatureUrl && (
-                        <div>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">
-                            Signature
-                          </label>
+                    </div>
+                    {(selectedDelivery.signatureUrl || selectedDelivery.photoUrl) && (
+                      <div className="mt-3 flex gap-3 border-t border-green-200 pt-3">
+                        {selectedDelivery.signatureUrl && (
                           <a
                             href={selectedDelivery.signatureUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-teal-600 underline hover:text-teal-800"
+                            className="flex items-center gap-1.5 rounded-md border border-green-200 bg-white px-3 py-1.5 text-xs font-medium text-teal-700 shadow-sm transition-colors hover:bg-green-100"
                           >
-                            View Signature
+                            <Eye className="h-3.5 w-3.5" /> Signature
                           </a>
-                        </div>
-                      )}
-                      {selectedDelivery.photoUrl && (
-                        <div>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">
-                            Delivery Photo
-                          </label>
+                        )}
+                        {selectedDelivery.photoUrl && (
                           <a
                             href={selectedDelivery.photoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-teal-600 underline hover:text-teal-800"
+                            className="flex items-center gap-1.5 rounded-md border border-green-200 bg-white px-3 py-1.5 text-xs font-medium text-teal-700 shadow-sm transition-colors hover:bg-green-100"
                           >
-                            View Photo
+                            <Eye className="h-3.5 w-3.5" /> Photo
                           </a>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {/* Cancellation Info (only if CANCELLED) */}
+                {/* Cancellation — CANCELLED only */}
                 {selectedDelivery.status?.toUpperCase() === 'CANCELLED' &&
                   selectedDelivery.cancellationReason && (
-                    <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-                      <h3 className="mb-1 text-sm font-semibold text-red-900">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4">
+                      <p className="mb-1 text-xs font-semibold tracking-wide text-red-600 uppercase">
                         Cancellation Reason
-                      </h3>
-                      <p className="text-sm text-red-700">{selectedDelivery.cancellationReason}</p>
+                      </p>
+                      <p className="text-sm text-red-800">{selectedDelivery.cancellationReason}</p>
                     </div>
                   )}
-
-                {/* Read-Only Notice */}
-                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                  <div className="flex items-start gap-3">
-                    <Eye className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
-                    <div>
-                      <h3 className="text-sm font-semibold text-blue-900">Read-Only Access</h3>
-                      <p className="mt-1 text-sm text-blue-700">
-                        You cannot edit or modify this delivery. Contact an administrator to make
-                        changes.
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              <div className="mt-6">
+              {/* Footer */}
+              <div className="border-t border-gray-100 px-3 py-3 sm:px-6 sm:py-4">
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="w-full rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                  className="w-full rounded-lg bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
                 >
                   Close
                 </button>
