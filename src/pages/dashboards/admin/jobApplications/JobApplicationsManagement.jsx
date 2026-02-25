@@ -460,7 +460,7 @@ const JobApplicationsManagement = () => {
                                 href={app.cvUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1 rounded-md border border-teal-200 bg-teal-50 px-2.5 py-1 text-base font-medium text-teal-700 transition-all hover:bg-teal-100"
+                                className="flex items-center gap-1 rounded-md border border-teal-200 bg-teal-50 px-2.5 py-1 text-base font-medium whitespace-nowrap text-teal-700 transition-all hover:bg-teal-100"
                               >
                                 <Download className="h-3 w-3" />
                                 Download CV
