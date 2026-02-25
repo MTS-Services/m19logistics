@@ -19,6 +19,7 @@ import {
   Calendar,
   MessageSquare,
   HelpCircle,
+  Briefcase,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -46,6 +47,7 @@ const AdminDashboard = () => {
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
         { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
         { name: 'Enquiries', href: '/admin/enquiries', icon: HelpCircle },
+        { name: 'Jobs Application', href: '/admin/job-applications', icon: Briefcase },
         { name: 'Audit Logs', href: '/admin/audit-logs', icon: FileText },
         { name: 'Slots', href: '/admin/slots', icon: Calendar },
       ],
@@ -78,8 +80,9 @@ const AdminDashboard = () => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
@@ -115,10 +118,11 @@ const AdminDashboard = () => {
                         key={item.name}
                         to={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${active
-                          ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
-                          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-                          }`}
+                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                          active
+                            ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
+                            : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                        }`}
                       >
                         {/* Active indicator bar */}
                         {active && (
@@ -127,8 +131,9 @@ const AdminDashboard = () => {
 
                         <div className="flex items-center space-x-3">
                           <div
-                            className={`rounded-lg p-1.5 transition-colors ${active ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700'
-                              }`}
+                            className={`rounded-lg p-1.5 transition-colors ${
+                              active ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700'
+                            }`}
                           >
                             <Icon
                               className={`h-5 w-5 ${active ? 'text-white' : 'text-gray-400 group-hover:text-teal-400'}`}
@@ -188,8 +193,9 @@ const AdminDashboard = () => {
                 <p className="text-xs text-gray-500">Administrator</p>
               </div>
               <ChevronDown
-                className={`h-4 w-4 text-gray-500 transition-transform ${userDropdownOpen ? 'rotate-180' : ''
-                  }`}
+                className={`h-4 w-4 text-gray-500 transition-transform ${
+                  userDropdownOpen ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
