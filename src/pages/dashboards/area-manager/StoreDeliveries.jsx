@@ -8,7 +8,6 @@ import {
   MapPin,
   Calendar,
   User,
-  FileText,
   X,
   Loader2,
   AlertCircle,
@@ -139,7 +138,7 @@ const StoreDeliveries = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center p-8">
+      <div className="flex min-h-100 items-center justify-center p-8">
         <div className="flex flex-col items-center gap-3 text-gray-500">
           <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
           <p className="text-sm">Loading deliveries...</p>
@@ -150,7 +149,7 @@ const StoreDeliveries = () => {
 
   if (error) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center p-8">
+      <div className="flex min-h-100 items-center justify-center p-8">
         <div className="flex flex-col items-center gap-3 text-center">
           <AlertCircle className="h-8 w-8 text-red-500" />
           <p className="text-sm text-red-600">{error}</p>
@@ -282,7 +281,7 @@ const StoreDeliveries = () => {
                               <span className="font-medium">{delivery.storeName}</span>
                             </div>
                             <div className="flex items-start gap-2 text-sm text-gray-600">
-                              <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                              <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
                               <span>{delivery.deliveryAddress}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -301,10 +300,10 @@ const StoreDeliveries = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-[180px]">
+                    <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-45">
                       <button
                         onClick={() => handleViewDetails(delivery)}
-                        className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                        className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                       >
                         <Eye className="h-4 w-4" />
                         View Details
@@ -416,7 +415,7 @@ const StoreDeliveries = () => {
                 {/* Read-Only Notice */}
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
                   <div className="flex items-start gap-3">
-                    <Eye className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600" />
+                    <Eye className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
                     <div>
                       <h3 className="text-sm font-semibold text-blue-900">Read-Only Access</h3>
                       <p className="mt-1 text-sm text-blue-700">
@@ -431,7 +430,7 @@ const StoreDeliveries = () => {
               <div className="mt-6">
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="w-full rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                  className="w-full rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                 >
                   Close
                 </button>
