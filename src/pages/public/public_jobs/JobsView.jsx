@@ -1,18 +1,30 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Truck, Settings, Briefcase, Phone, Mail, Upload, Send, CheckCircle } from 'lucide-react';
+import {
+  Truck,
+  Settings,
+  Briefcase,
+  Phone,
+  Mail,
+  Upload,
+  Send,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import axiosInstance from '../../../services/axiosInstance';
 
 const JobsView = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
-    phone: '',
-    message: '',
-    position: '',
+    phoneNumber: '',
+    coverLetter: '',
+    positionOfInterest: '',
   });
   const [cv, setCv] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const jobCategories = [
     {
@@ -73,23 +85,36 @@ We welcome people from all backgrounds and value the different skills and perspe
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const body = new FormData();
+      body.append('fullName', formData.fullName);
+      body.append('email', formData.email);
+      body.append('phoneNumber', formData.phoneNumber);
+      body.append('positionOfInterest', formData.positionOfInterest);
+      body.append('coverLetter', formData.coverLetter);
+      if (cv) body.append('cv', cv);
+
+      await axiosInstance.post('/api/jobs/apply', body, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
       setSubmitSuccess(true);
-      // Reset form
       setFormData({
-        name: '',
+        fullName: '',
         email: '',
-        phone: '',
-        message: '',
-        position: '',
+        phoneNumber: '',
+        coverLetter: '',
+        positionOfInterest: '',
       });
       setCv(null);
-      // Reset success message after 5 seconds
       setTimeout(() => setSubmitSuccess(false), 5000);
-    }, 1500);
+    } catch (err) {
+      setSubmitError(err?.response?.data?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -206,16 +231,26 @@ We welcome people from all backgrounds and value the different skills and perspe
                 </div>
               )}
 
+              {submitError && (
+                <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+                  <AlertCircle className="h-5 w-5 shrink-0" />
+                  <p className="font-medium">{submitError}</p>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="fullName"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Full Name *
                   </label>
                   <input
                     type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
+                    id="fullName"
+                    name="fullName"
+                    value={formData.fullName}
                     onChange={handleInputChange}
                     required
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
@@ -241,14 +276,17 @@ We welcome people from all backgrounds and value the different skills and perspe
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="mb-2 block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="phoneNumber"
+                      className="mb-2 block text-sm font-medium text-gray-700"
+                    >
                       Phone Number *
                     </label>
                     <input
                       type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      value={formData.phoneNumber}
                       onChange={handleInputChange}
                       required
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
@@ -259,35 +297,38 @@ We welcome people from all backgrounds and value the different skills and perspe
 
                 <div>
                   <label
-                    htmlFor="position"
+                    htmlFor="positionOfInterest"
                     className="mb-2 block text-sm font-medium text-gray-700"
                   >
                     Position of Interest *
                   </label>
                   <select
-                    id="position"
-                    name="position"
-                    value={formData.position}
+                    id="positionOfInterest"
+                    name="positionOfInterest"
+                    value={formData.positionOfInterest}
                     onChange={handleInputChange}
                     required
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                   >
                     <option value="">Select a position</option>
-                    <option value="driver">Driver</option>
-                    <option value="operations">Operations</option>
-                    <option value="office">Office & Support</option>
-                    <option value="other">Other</option>
+                    <option value="Driver">Driver</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Office & Support">Office &amp; Support</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="coverLetter"
+                    className="mb-2 block text-sm font-medium text-gray-700"
+                  >
                     Message / Cover Letter *
                   </label>
                   <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
+                    id="coverLetter"
+                    name="coverLetter"
+                    value={formData.coverLetter}
                     onChange={handleInputChange}
                     required
                     rows={6}
