@@ -1,16 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Truck,
-  Settings,
-  Briefcase,
-  Phone,
-  Mail,
-  Upload,
-  Send,
-  CheckCircle,
-  AlertCircle,
-} from 'lucide-react';
+import { Truck, Settings, Briefcase, Phone, Mail, Upload, Send } from 'lucide-react';
+import { toast } from 'react-toastify';
 import axiosInstance from '../../../services/axiosInstance';
 
 const JobsView = () => {
@@ -23,8 +14,6 @@ const JobsView = () => {
   });
   const [cv, setCv] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState(null);
 
   const jobCategories = [
     {
@@ -85,7 +74,6 @@ We welcome people from all backgrounds and value the different skills and perspe
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitError(null);
 
     try {
       const body = new FormData();
@@ -100,7 +88,7 @@ We welcome people from all backgrounds and value the different skills and perspe
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setSubmitSuccess(true);
+      toast.success("Your application has been submitted successfully. We'll be in touch soon!");
       setFormData({
         fullName: '',
         email: '',
@@ -109,9 +97,8 @@ We welcome people from all backgrounds and value the different skills and perspe
         positionOfInterest: '',
       });
       setCv(null);
-      setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (err) {
-      setSubmitError(err?.response?.data?.message || 'Something went wrong. Please try again.');
+      toast.error(err?.response?.data?.message || 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -221,23 +208,6 @@ We welcome people from all backgrounds and value the different skills and perspe
 
             {/* Application Form */}
             <div className="rounded-2xl bg-linear-to-br from-gray-50 to-white p-8 shadow-lg">
-              {submitSuccess && (
-                <div className="mb-6 flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-4 text-green-800">
-                  <CheckCircle className="h-5 w-5 shrink-0" />
-                  <p className="font-medium">
-                    Thank you! Your application has been submitted successfully. We'll be in touch
-                    soon.
-                  </p>
-                </div>
-              )}
-
-              {submitError && (
-                <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
-                  <AlertCircle className="h-5 w-5 shrink-0" />
-                  <p className="font-medium">{submitError}</p>
-                </div>
-              )}
-
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
