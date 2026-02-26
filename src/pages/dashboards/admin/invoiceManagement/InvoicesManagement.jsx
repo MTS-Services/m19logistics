@@ -53,8 +53,8 @@ export default function InvoicesManagement() {
   const handleViewInvoice = async (invoice) => {
     try {
       setLoading(true);
-      const full = await getAdminInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
-      setSelectedInvoice(full);
+      const resp = await getAdminInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
+      setSelectedInvoice(resp?.data || resp);
       setShowViewModal(true);
     } catch {
       toast.error('Failed to load invoice');
