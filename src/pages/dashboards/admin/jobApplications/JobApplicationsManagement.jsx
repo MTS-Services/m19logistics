@@ -368,49 +368,20 @@ const JobApplicationsManagement = () => {
 
           {/* Search & Filter */}
           <div className="mb-4 rounded-lg border border-gray-200 bg-white p-3 shadow-sm sm:p-4">
-            {/* Search */}
-            <div className="mb-3 flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
-              <Search className="h-4 w-4 shrink-0 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search name, email, phone..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full bg-transparent text-base text-gray-700 outline-none placeholder:text-gray-400"
-              />
-            </div>
-
-            {/* Status Filter Tabs + Export */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                {filterTabs.map((tab) => (
-                  <button
-                    key={tab.value}
-                    onClick={() => handleFilterChange(tab.value)}
-                    className={`rounded-full px-3 py-1 text-base font-medium transition-all sm:px-4 sm:py-1.5 ${
-                      filterStatus === tab.value
-                        ? 'bg-teal-600 text-white shadow-sm'
-                        : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {tab.label}
-                    {tab.value !== 'ALL' &&
-                      stats?.byStatus?.[tab.value.toLowerCase()]?.count > 0 && (
-                        <span
-                          className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${
-                            filterStatus === tab.value
-                              ? 'bg-white/20 text-white'
-                              : 'bg-gray-100 text-gray-600'
-                          }`}
-                        >
-                          {stats.byStatus[tab.value.toLowerCase()].count}
-                        </span>
-                      )}
-                  </button>
-                ))}{' '}
+            {/* Search + Export row */}
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex flex-1 items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1.5">
+                <Search className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search name, email, phone..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                />
               </div>
               <button
                 onClick={handleExportXL}
@@ -419,8 +390,36 @@ const JobApplicationsManagement = () => {
                 className="flex shrink-0 items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <FileSpreadsheet className="h-4 w-4" />
-                <span className="hidden sm:inline">Export XL</span>
-              </button>{' '}
+                <span>Export XL</span>
+              </button>
+            </div>
+
+            {/* Status Filter Tabs */}
+            <div className="flex flex-wrap gap-1.5">
+              {filterTabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => handleFilterChange(tab.value)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all ${
+                    filterStatus === tab.value
+                      ? 'bg-teal-600 text-white shadow-sm'
+                      : 'border border-gray-200 bg-white text-gray-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700'
+                  }`}
+                >
+                  {tab.label}
+                  {tab.value !== 'ALL' && stats?.byStatus?.[tab.value.toLowerCase()]?.count > 0 && (
+                    <span
+                      className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${
+                        filterStatus === tab.value
+                          ? 'bg-white/25 text-white'
+                          : 'bg-gray-100 text-gray-500'
+                      }`}
+                    >
+                      {stats.byStatus[tab.value.toLowerCase()].count}
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 
