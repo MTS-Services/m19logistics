@@ -63,7 +63,7 @@ const JobApplicationsManagement = () => {
   const [selectedApp, setSelectedApp] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0, flipUp: false });
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [statusTarget, setStatusTarget] = useState({ app: null, newStatus: '' });
   const [adminNotes, setAdminNotes] = useState('');
@@ -144,9 +144,28 @@ const JobApplicationsManagement = () => {
       return;
     }
     const rect = e.currentTarget.getBoundingClientRect();
+    const DROPDOWN_HEIGHT = 220; // approx: header ~36px + 4 items ~46px each
+    const DROPDOWN_WIDTH = 192; // w-48
+    const GAP = 4;
+
+    // Flip upward if not enough space below
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const flipUp = spaceBelow < DROPDOWN_HEIGHT && rect.top >= DROPDOWN_HEIGHT;
+
+    // Align right edge of dropdown with right edge of button;
+    // if that would overflow left, clamp so it stays 8px from left edge
+    let right = window.innerWidth - rect.right;
+    if (rect.right - DROPDOWN_WIDTH < 8) {
+      right = window.innerWidth - Math.min(rect.right, window.innerWidth - 8) - DROPDOWN_WIDTH;
+      right = Math.max(right, 8);
+    }
+
     setDropdownPos({
-      top: rect.bottom + window.scrollY + 4,
-      right: window.innerWidth - rect.right,
+      // fixed is viewport-relative; getBoundingClientRect() is also viewport-relative
+      // — do NOT add window.scrollY here
+      top: flipUp ? rect.top - DROPDOWN_HEIGHT - GAP : rect.bottom + GAP,
+      right,
+      flipUp,
     });
     setOpenDropdownId(appId);
   };
@@ -518,7 +537,12 @@ const JobApplicationsManagement = () => {
           <div className="fixed inset-0 z-40" onClick={() => setOpenDropdownId(null)} />
           <div
             className="fixed z-50 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl"
-            style={{ top: dropdownPos.top, right: dropdownPos.right }}
+            style={{
+              top: dropdownPos.top,
+              right: dropdownPos.right,
+              maxHeight: 'calc(100vh - 16px)',
+              overflowY: 'auto',
+            }}
           >
             <p className="border-b border-gray-100 bg-gray-50 px-3 py-2 text-xs font-semibold tracking-wide text-gray-400 uppercase">
               Change Status
