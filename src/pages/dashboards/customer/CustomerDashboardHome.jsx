@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAllDeliveries, getDeliveryStats } from '../../../services/deliveryService';
 import {
   Package,
   FileText,
@@ -16,6 +17,7 @@ import {
   User,
   Weight,
   AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
@@ -28,480 +30,50 @@ const CustomerDashboardHome = () => {
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ pending: 0, allocated: 0, completed: 0, cancelled: 0 });
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
-  // Sample delivery data
-  const [deliveries, setDeliveries] = useState([
-    {
-      id: 1,
-      spoNumber: 'SPO013349',
-      date: '2026-01-20',
-      timeSlot: 'AM',
-      weight: 800,
-      address: '4 Bumpers Lane, Chester, CH1 4LY',
-      customerName: 'John Smith',
-      phone: '07123456789',
-      requestedBy: 'Sarah Williams',
-      instructions: 'Please call before arrival',
-      status: 'Received',
-      distance: 25,
-      estimatedCost: 45.0,
-      createdAt: '2026-01-15 10:30',
-      driver: null,
-    },
-    // {
-    //   id: 2,
-    //   spoNumber: 'SPO013348',
-    //   date: '2026-01-18',
-    //   timeSlot: 'PM',
-    //   weight: 1600,
-    //   address: 'Unit 4, Lyme Court, Newcastle, ST5 3TF',
-    //   customerName: 'Emma Johnson',
-    //   phone: '07987654321',
-    //   requestedBy: 'Michael Brown',
-    //   instructions: 'Deliver to rear entrance',
-    //   status: 'Allocated',
-    //   distance: 38,
-    //   estimatedCost: 100.0,
-    //   createdAt: '2026-01-14 14:20',
-    //   driver: 'BK',
-    // },
-    // {
-    //   id: 3,
-    //   spoNumber: 'SPO013347',
-    //   date: '2026-01-16',
-    //   timeSlot: 'AM',
-    //   weight: 800,
-    //   address: '152 Vale Road, Rhyl, LL18 2PD',
-    //   customerName: 'David Wilson',
-    //   phone: '07456789123',
-    //   requestedBy: 'Lisa Anderson',
-    //   instructions: 'Leave with reception',
-    //   status: 'Delivered',
-    //   distance: 42,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-10 09:15',
-    //   driver: 'BK',
-    //   deliveredAt: '2026-01-16 11:30',
-    //   receivedBy: 'Jane Roberts',
-    //   driverNotes: 'Delivered successfully to reception desk',
-    // },
-    // {
-    //   id: 4,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 5,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 6,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 7,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 8,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 9,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 10,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 11,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 12,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 13,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 14,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 15,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 16,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 17,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 18,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 19,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 20,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 21,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 22,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 23,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 24,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 25,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-    // {
-    //   id: 26,
-    //   spoNumber: 'SPO013346',
-    //   date: '2026-01-15',
-    //   timeSlot: 'PM',
-    //   weight: 800,
-    //   address: 'Wadebrook Retail Park, Northwich, CW9 5NN',
-    //   customerName: 'Robert Taylor',
-    //   phone: '07321654987',
-    //   requestedBy: 'Jennifer Clark',
-    //   instructions: 'Fragile items',
-    //   status: 'Cancelled',
-    //   distance: 35,
-    //   estimatedCost: 45.0,
-    //   createdAt: '2026-01-13 16:45',
-    //   cancelledAt: '2026-01-14 10:00',
-    //   cancelReason: 'Customer requested postponement',
-    // },
-  ]);
+  const [deliveries, setDeliveries] = useState([]);
+
+  const fetchStats = async () => {
+    try {
+      const res = await getDeliveryStats();
+      if (res?.data?.deliveries) {
+        const d = res.data.deliveries;
+        setStats({
+          pending: Array.isArray(d.pending) ? d.pending.length : 0,
+          allocated: Array.isArray(d.allocated) ? d.allocated.length : 0,
+          completed: Array.isArray(d.completed) ? d.completed.length : 0,
+          cancelled: Array.isArray(d.cancelled) ? d.cancelled.length : 0,
+        });
+      }
+    } catch {
+      toast.error('Failed to load stats');
+    }
+  };
+
+  const fetchDeliveries = async (status) => {
+    try {
+      setLoading(true);
+      const params = {};
+      if (status && status !== 'all') {
+        params.status = status.toUpperCase();
+      }
+      const res = await getAllDeliveries(params);
+      setDeliveries(Array.isArray(res?.data) ? res.data : []);
+    } catch {
+      toast.error('Failed to load deliveries');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    fetchDeliveries('all');
+  }, []);
 
   // New delivery request form
   const [newDelivery, setNewDelivery] = useState({
@@ -516,19 +88,8 @@ const CustomerDashboardHome = () => {
     instructions: '',
   });
 
-  // Calculate stats
-  const stats = {
-    pending: deliveries.filter((d) => d.status === 'Received').length,
-    allocated: deliveries.filter((d) => d.status === 'Allocated').length,
-    completed: deliveries.filter((d) => d.status === 'Delivered').length,
-    cancelled: deliveries.filter((d) => d.status === 'Cancelled').length,
-  };
-
-  // Filter deliveries
-  const filteredDeliveries = deliveries.filter((delivery) => {
-    if (filterStatus === 'all') return true;
-    return delivery.status.toLowerCase() === filterStatus.toLowerCase();
-  });
+  // Deliveries are already filtered by API; use directly
+  const filteredDeliveries = deliveries;
 
   // Pagination logic
   const totalPages = Math.ceil(filteredDeliveries.length / itemsPerPage);
@@ -545,19 +106,20 @@ const CustomerDashboardHome = () => {
   // Handle filter change with page reset
   const handleFilterChange = (status) => {
     setFilterStatus(status);
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
+    fetchDeliveries(status);
   };
 
   // Get status badge color
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Received':
+      case 'RECEIVED':
         return 'bg-red-100 text-red-600';
-      case 'Allocated':
+      case 'ALLOCATED':
         return 'bg-blue-100 text-blue-600';
-      case 'Delivered':
+      case 'DELIVERED':
         return 'bg-green-100 text-green-600';
-      case 'Cancelled':
+      case 'CANCELLED':
         return 'bg-gray-100 text-gray-600';
       default:
         return 'bg-gray-100 text-gray-600';
@@ -620,7 +182,7 @@ const CustomerDashboardHome = () => {
 
   // Handle edit delivery
   const handleEditDelivery = (delivery) => {
-    if (delivery.status === 'Allocated' || delivery.status === 'Delivered') {
+    if (delivery.status === 'ALLOCATED' || delivery.status === 'DELIVERED') {
       toast.error('Cannot edit delivery that has been allocated or delivered');
       return;
     }
@@ -638,13 +200,13 @@ const CustomerDashboardHome = () => {
 
   // Handle cancel delivery
   const handleCancelDelivery = (delivery) => {
-    if (delivery.status === 'Allocated') {
+    if (delivery.status === 'ALLOCATED') {
       toast.error(
         'Cannot cancel delivery that has been allocated to a driver. Please contact admin.'
       );
       return;
     }
-    if (delivery.status === 'Delivered') {
+    if (delivery.status === 'DELIVERED') {
       toast.error('Cannot cancel completed delivery');
       return;
     }
@@ -798,7 +360,12 @@ const CustomerDashboardHome = () => {
 
         {/* Deliveries List */}
         <div className="space-y-4">
-          {filteredDeliveries.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center gap-2 py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-teal-600" />
+              <span className="text-gray-600">Loading deliveries...</span>
+            </div>
+          ) : filteredDeliveries.length === 0 ? (
             <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
               <Package className="mx-auto mb-4 h-16 w-16 text-gray-400" />
               <h3 className="mb-2 text-xl font-semibold text-gray-900">No deliveries found</h3>
@@ -829,9 +396,9 @@ const CustomerDashboardHome = () => {
                         >
                           {delivery.status}
                         </span>
-                        {delivery.driver && (
+                        {delivery.driver?.fullName && (
                           <span className="rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-semibold text-teal-600 sm:px-3 sm:py-1">
-                            Driver: {delivery.driver}
+                            Driver: {delivery.driver.fullName}
                           </span>
                         )}
                       </div>
@@ -845,7 +412,7 @@ const CustomerDashboardHome = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        {delivery.status === 'Received' && (
+                        {delivery.status === 'RECEIVED' && (
                           <>
                             <button
                               onClick={() => handleEditDelivery(delivery)}
@@ -871,7 +438,9 @@ const CustomerDashboardHome = () => {
                         <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-600">Delivery Address</p>
-                          <p className="text-sm font-semibold text-gray-900">{delivery.address}</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {delivery.deliveryAddress}
+                          </p>
                         </div>
                       </div>
 
@@ -880,7 +449,10 @@ const CustomerDashboardHome = () => {
                         <div>
                           <p className="text-sm text-gray-600">Date & Time</p>
                           <p className="text-sm font-semibold text-gray-900">
-                            {delivery.date} - {delivery.timeSlot}
+                            {delivery.deliveryDate
+                              ? new Date(delivery.deliveryDate).toLocaleDateString('en-GB')
+                              : 'â€”'}{' '}
+                            - {delivery.timeSlot}
                           </p>
                         </div>
                       </div>
@@ -911,18 +483,15 @@ const CustomerDashboardHome = () => {
                       </div>
                     )}
 
-                    {delivery.status === 'Delivered' && (
+                    {delivery.status === 'DELIVERED' && delivery.deliveredAt && (
                       <div className="mt-3 rounded-lg bg-green-50 p-3">
                         <p className="mb-1 text-xs text-gray-600">
-                          Delivered by {delivery.receivedBy} on {delivery.deliveredAt}
+                          Delivered on {new Date(delivery.deliveredAt).toLocaleDateString('en-GB')}
                         </p>
-                        {delivery.driverNotes && (
-                          <p className="mt-1 text-sm text-gray-900">{delivery.driverNotes}</p>
-                        )}
                       </div>
                     )}
 
-                    {delivery.status === 'Cancelled' && delivery.cancelReason && (
+                    {delivery.status === 'CANCELLED' && delivery.cancelReason && (
                       <div className="mt-3 rounded-lg bg-gray-50 p-3">
                         <p className="mb-1 text-xs text-gray-600">Cancellation Reason:</p>
                         <p className="text-sm text-gray-900">{delivery.cancelReason}</p>
@@ -939,7 +508,7 @@ const CustomerDashboardHome = () => {
                     >
                       <Eye className="h-5 w-5" />
                     </button>
-                    {delivery.status === 'Received' && (
+                    {delivery.status === 'RECEIVED' && (
                       <>
                         <button
                           onClick={() => handleEditDelivery(delivery)}
@@ -1243,7 +812,7 @@ const CustomerDashboardHome = () => {
                 <div>
                   <p className="text-sm text-gray-600">Estimated Cost</p>
                   <p className="text-2xl font-bold text-teal-600">
-                    £{selectedDelivery.estimatedCost.toFixed(2)}
+                    Â£{selectedDelivery.estimatedCost.toFixed(2)}
                   </p>
                 </div>
 
