@@ -65,7 +65,7 @@ const AnalyticsDashboard = () => {
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
             Analytics Dashboard
           </h1>
-          <p className="mt-2 text-gray-600">Comprehensive performance metrics and reports</p>
+          <p className="mt-2 text-gray-600">Comprehensive performance metrics and reports</p> 
         </div>
       </div>
 
