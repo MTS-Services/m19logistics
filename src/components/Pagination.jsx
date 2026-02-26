@@ -1,7 +1,14 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, totalItems, compact = false }) => {
+const Pagination = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+  itemsPerPage,
+  totalItems,
+  compact = false,
+}) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
@@ -56,7 +63,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, total
   if (totalPages <= 1) return null;
 
   const containerClass = compact
-    ? 'flex items-center justify-between gap-4 w-full px-4 py-3 sm:px-6'
+    ? 'flex flex-col items-center justify-between gap-3 w-full sm:flex-row sm:gap-4'
     : 'flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:px-6';
 
   return (
@@ -74,10 +81,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, total
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${currentPage === 1
+          className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+            currentPage === 1
               ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
               : 'border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-gray-50 hover:text-teal-600'
-            }`}
+          }`}
           aria-label="Previous page"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -102,10 +110,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, total
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${currentPage === page
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${
+                  currentPage === page
                     ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
                     : 'border border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-teal-50 hover:text-teal-600'
-                  }`}
+                }`}
                 aria-label={`Go to page ${page}`}
                 aria-current={currentPage === page ? 'page' : undefined}
               >
@@ -119,10 +128,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange, itemsPerPage, total
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${currentPage === totalPages
+          className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
+            currentPage === totalPages
               ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
               : 'border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-gray-50 hover:text-teal-600'
-            }`}
+          }`}
           aria-label="Next page"
         >
           <span className="mr-1 hidden sm:inline">Next</span>

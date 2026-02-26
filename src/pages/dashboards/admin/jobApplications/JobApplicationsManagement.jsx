@@ -68,7 +68,7 @@ const JobApplicationsManagement = () => {
   const [statusTarget, setStatusTarget] = useState({ app: null, newStatus: '' });
   const [adminNotes, setAdminNotes] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
-  const itemsPerPage = 8;
+  const itemsPerPage = 5;
 
   const fetchStats = useCallback(async () => {
     setLoading(true);
@@ -516,12 +516,15 @@ const JobApplicationsManagement = () => {
                 </div>
 
                 {/* Pagination */}
-                {filtered.length > itemsPerPage && (
-                  <div className="border-t border-gray-100 p-4">
+                {totalPages > 1 && (
+                  <div className="border-t border-gray-100 px-4 py-3">
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
                       onPageChange={handlePageChange}
+                      itemsPerPage={itemsPerPage}
+                      totalItems={filtered.length}
+                      compact
                     />
                   </div>
                 )}
