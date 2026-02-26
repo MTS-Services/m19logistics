@@ -18,6 +18,7 @@ import {
   MoreVertical,
   MessageSquare,
   FileSpreadsheet,
+  Trash2,
 } from 'lucide-react';
 import Pagination from '../../../../components/Pagination';
 import axiosInstance from '../../../../services/axiosInstance';
@@ -69,6 +70,10 @@ const JobApplicationsManagement = () => {
   const [statusTarget, setStatusTarget] = useState({ app: null, newStatus: '' });
   const [adminNotes, setAdminNotes] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
   const itemsPerPage = 5;
 
   const fetchStats = useCallback(async () => {
@@ -145,7 +150,7 @@ const JobApplicationsManagement = () => {
       return;
     }
     const rect = e.currentTarget.getBoundingClientRect();
-    const DROPDOWN_HEIGHT = 220; // approx: header ~36px + 4 items ~46px each
+    const DROPDOWN_HEIGHT = 272; // approx: header ~36px + 4 status items ~46px + separator + delete btn ~50px
     const DROPDOWN_WIDTH = 192; // w-48
     const GAP = 4;
 
@@ -205,6 +210,38 @@ const JobApplicationsManagement = () => {
     setShowStatusModal(false);
     setStatusTarget({ app: null, newStatus: '' });
     setAdminNotes('');
+  };
+
+  const handleDeleteClick = (app) => {
+    setDeleteTarget(app);
+    setShowDeleteModal(true);
+    setOpenDropdownId(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await axiosInstance.delete(`/api/admin/job-applications/${deleteTarget.id}`);
+      setAllApplications((prev) => prev.filter((a) => a.id !== deleteTarget.id));
+      setShowDeleteModal(false);
+      setDeleteTarget(null);
+      // Refresh stats so counts update immediately
+      fetchStats();
+    } catch (err) {
+      setDeleteError(
+        err?.response?.data?.message || 'Failed to delete application. Please try again.'
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteClose = () => {
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+    setDeleteError(null);
   };
 
   const handleExportXL = () => {
@@ -609,8 +646,84 @@ const JobApplicationsManagement = () => {
                 </button>
               );
             })}
+            {/* Delete option */}
+            <div className="border-t border-gray-100">
+              <button
+                onClick={() => {
+                  const currentApp = allApplications.find((a) => a.id === openDropdownId);
+                  if (currentApp) handleDeleteClick(currentApp);
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete Application
+              </button>
+            </div>
           </div>
         </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl">
+            <div className="flex items-center justify-between rounded-t-2xl border-b border-gray-100 px-6 py-4">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">Delete Application</h2>
+                <p className="mt-0.5 text-xs text-gray-500">{deleteTarget.fullName}</p>
+              </div>
+              <button
+                onClick={handleDeleteClose}
+                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+              >
+                <XCircle className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="flex flex-col items-center gap-3 text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                  <Trash2 className="h-6 w-6 text-red-600" />
+                </div>
+                <p className="text-sm text-gray-700">
+                  Are you sure you want to delete the application from{' '}
+                  <span className="font-semibold text-gray-900">{deleteTarget.fullName}</span>? This
+                  action cannot be undone.
+                </p>
+              </div>
+              {deleteError && (
+                <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-xs text-red-600">
+                  {deleteError}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 border-t border-gray-100 px-6 py-4">
+              <button
+                onClick={handleDeleteClose}
+                disabled={isDeleting}
+                className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Status Update Confirmation Modal */}
