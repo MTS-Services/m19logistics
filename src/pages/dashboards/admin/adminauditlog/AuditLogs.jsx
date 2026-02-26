@@ -29,7 +29,7 @@ const AuditLogs = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [selectedLog, setSelectedLog] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
 
   const fetchAuditLogs = useCallback(async () => {
     try {
@@ -121,9 +121,10 @@ const AuditLogs = () => {
   };
 
   const formatActionText = (action) => {
-    return action.split('_').map(word =>
-      word.charAt(0) + word.slice(1).toLowerCase()
-    ).join(' ');
+    return action
+      .split('_')
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   const getStatusBadge = (status) => {
@@ -179,12 +180,13 @@ const AuditLogs = () => {
         <div className="mb-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Audit Logs</h1>
+              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+                Audit Logs
+              </h1>
               <p className="mt-2 text-base text-gray-600">
                 Track all system activities and changes
               </p>
             </div>
-
           </div>
         </div>
 
@@ -202,42 +204,44 @@ const AuditLogs = () => {
             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+                  <thead className="border-b border-gray-200 bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-700 uppercase">
                         ID
                       </th>
-                      <th className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-700 uppercase">
                         User
                       </th>
-                      <th className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-700 uppercase">
                         Description
                       </th>
 
-                      <th className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-700 uppercase">
                         status
                       </th>
-                      <th className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-700 uppercase">
                         Delivery ID
                       </th>
-                      <th className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-base font-semibold tracking-wider text-gray-700 uppercase">
                         Date & Time
                       </th>
-                      <th className="px-4 py-3 text-center text-base font-semibold text-gray-700 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-center text-base font-semibold tracking-wider text-gray-700 uppercase">
                         Action
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {auditLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={log.id} className="transition-colors hover:bg-gray-50">
                         <td className="px-4 py-4 whitespace-nowrap">
                           <span className="text-sm font-medium text-gray-900">#{log.id}</span>
                         </td>
                         <td className="px-4 py-4">
                           {log.user ? (
                             <div>
-                              <p className="text-sm font-medium text-gray-900">{log.user.fullName}</p>
+                              <p className="text-sm font-medium text-gray-900">
+                                {log.user.fullName}
+                              </p>
                               <p className="text-xs text-gray-500">{log.user.email}</p>
                             </div>
                           ) : (
@@ -245,7 +249,9 @@ const AuditLogs = () => {
                           )}
                         </td>
                         <td className="px-4 py-4">
-                          <p className="text-sm text-gray-900 max-w-xs truncate">{log.description}</p>
+                          <p className="max-w-xs truncate text-sm text-gray-900">
+                            {log.description}
+                          </p>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
                           <span
@@ -255,7 +261,6 @@ const AuditLogs = () => {
                             {formatActionText(log.action)}
                           </span>
                         </td>
-
 
                         <td className="px-4 py-4 whitespace-nowrap">
                           {log.deliveryId ? (
@@ -270,7 +275,7 @@ const AuditLogs = () => {
                             <p className="text-xs text-gray-500">{formatTime(log.createdAt)}</p>
                           </div>
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-center">
+                        <td className="px-4 py-4 text-center whitespace-nowrap">
                           <button
                             onClick={() => openModal(log)}
                             className="inline-flex items-center gap-1.5 rounded-lg border border-teal-600 bg-white px-3 py-1.5 text-sm font-medium text-teal-600 transition-all hover:bg-teal-50"
@@ -294,20 +299,18 @@ const AuditLogs = () => {
             </div>
 
             {/* Pagination */}
-
           </div>
-
         )}
       </div>
 
       {/* Modal */}
       {isModalOpen && selectedLog && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 bg-opacity-50 p-4 sm:items-center"
+          className="bg-opacity-50 fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:items-center"
           onClick={closeModal}
         >
           <div
-            className="relative w-full max-w-4xl rounded-lg bg-white shadow-xl transition-all my-8"
+            className="relative my-8 w-full max-w-4xl rounded-lg bg-white shadow-xl transition-all"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -331,7 +334,9 @@ const AuditLogs = () => {
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase">Action</label>
+                      <label className="text-xs font-semibold text-gray-500 uppercase">
+                        Action
+                      </label>
                       <div className="mt-1">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${getActionBadgeStyle(selectedLog.action)}`}
@@ -342,17 +347,27 @@ const AuditLogs = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-gray-500 uppercase">Description</label>
+                      <label className="text-xs font-semibold text-gray-500 uppercase">
+                        Description
+                      </label>
                       <p className="mt-1 text-sm text-gray-900">{selectedLog.description}</p>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Date</label>
-                        <p className="mt-1 text-sm text-gray-900">{formatDate(selectedLog.createdAt)}</p>
+                        <label className="text-xs font-semibold text-gray-500 uppercase">
+                          Date
+                        </label>
+                        <p className="mt-1 text-sm text-gray-900">
+                          {formatDate(selectedLog.createdAt)}
+                        </p>
                       </div>
                       <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Time</label>
-                        <p className="mt-1 text-sm text-gray-900">{formatTime(selectedLog.createdAt)}</p>
+                        <label className="text-xs font-semibold text-gray-500 uppercase">
+                          Time
+                        </label>
+                        <p className="mt-1 text-sm text-gray-900">
+                          {formatTime(selectedLog.createdAt)}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -408,7 +423,9 @@ const AuditLogs = () => {
                 {/* Delivery Information */}
                 {(selectedLog.delivery || selectedLog.afterData?.id) && (
                   <div>
-                    <h3 className="mb-3 text-sm font-semibold text-gray-900">Delivery Information</h3>
+                    <h3 className="mb-3 text-sm font-semibold text-gray-900">
+                      Delivery Information
+                    </h3>
                     <div className="rounded-lg border border-gray-200 bg-white p-4">
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div className="flex items-start gap-3">
@@ -425,7 +442,10 @@ const AuditLogs = () => {
                           <div>
                             <p className="text-xs text-gray-500">Delivery Date</p>
                             <p className="mt-1 text-sm font-medium text-gray-900">
-                              {formatDate(selectedLog.delivery?.deliveryDate || selectedLog.afterData?.deliveryDate)}
+                              {formatDate(
+                                selectedLog.delivery?.deliveryDate ||
+                                  selectedLog.afterData?.deliveryDate
+                              )}
                             </p>
                           </div>
                         </div>
@@ -434,7 +454,8 @@ const AuditLogs = () => {
                           <div>
                             <p className="text-xs text-gray-500">Address</p>
                             <p className="mt-1 text-sm font-medium text-gray-900">
-                              {selectedLog.delivery?.deliveryAddress || selectedLog.afterData?.deliveryAddress}
+                              {selectedLog.delivery?.deliveryAddress ||
+                                selectedLog.afterData?.deliveryAddress}
                             </p>
                           </div>
                         </div>
@@ -485,8 +506,6 @@ const AuditLogs = () => {
                     </div>
                   </div>
                 )}
-
-
 
                 {/* Customer Details */}
                 {selectedLog.afterData?.customer && (
