@@ -17,6 +17,7 @@ import {
   RefreshCw,
   MoreVertical,
   MessageSquare,
+  FileSpreadsheet,
 } from 'lucide-react';
 import Pagination from '../../../../components/Pagination';
 import axiosInstance from '../../../../services/axiosInstance';
@@ -206,6 +207,29 @@ const JobApplicationsManagement = () => {
     setAdminNotes('');
   };
 
+  const handleExportXL = () => {
+    if (filtered.length === 0) return;
+    const headers = ['Name', 'Email', 'Phone', 'Position', 'Status', 'Applied Date'];
+    const rows = filtered.map((app) => [
+      app.fullName || '',
+      app.email || '',
+      app.phoneNumber || '',
+      app.positionOfInterest || '',
+      app.status || '',
+      app.createdAt ? new Date(app.createdAt).toLocaleDateString('en-GB') : '',
+    ]);
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `job-applications-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const formatDate = (dateStr) => {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('en-GB', {
@@ -359,32 +383,44 @@ const JobApplicationsManagement = () => {
               />
             </div>
 
-            {/* Status Filter Tabs */}
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {filterTabs.map((tab) => (
-                <button
-                  key={tab.value}
-                  onClick={() => handleFilterChange(tab.value)}
-                  className={`rounded-full px-3 py-1 text-base font-medium transition-all sm:px-4 sm:py-1.5 ${
-                    filterStatus === tab.value
-                      ? 'bg-teal-600 text-white shadow-sm'
-                      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  {tab.label}
-                  {tab.value !== 'ALL' && stats?.byStatus?.[tab.value.toLowerCase()]?.count > 0 && (
-                    <span
-                      className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${
-                        filterStatus === tab.value
-                          ? 'bg-white/20 text-white'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {stats.byStatus[tab.value.toLowerCase()].count}
-                    </span>
-                  )}
-                </button>
-              ))}
+            {/* Status Filter Tabs + Export */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                {filterTabs.map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => handleFilterChange(tab.value)}
+                    className={`rounded-full px-3 py-1 text-base font-medium transition-all sm:px-4 sm:py-1.5 ${
+                      filterStatus === tab.value
+                        ? 'bg-teal-600 text-white shadow-sm'
+                        : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {tab.label}
+                    {tab.value !== 'ALL' &&
+                      stats?.byStatus?.[tab.value.toLowerCase()]?.count > 0 && (
+                        <span
+                          className={`ml-1.5 rounded-full px-1.5 py-0.5 text-xs ${
+                            filterStatus === tab.value
+                              ? 'bg-white/20 text-white'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {stats.byStatus[tab.value.toLowerCase()].count}
+                        </span>
+                      )}
+                  </button>
+                ))}{' '}
+              </div>
+              <button
+                onClick={handleExportXL}
+                disabled={filtered.length === 0}
+                title="Export to Excel / CSV"
+                className="flex shrink-0 items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span className="hidden sm:inline">Export XL</span>
+              </button>{' '}
             </div>
           </div>
 
