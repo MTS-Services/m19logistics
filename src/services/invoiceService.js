@@ -41,6 +41,15 @@ export const createAdminInvoice = async (invoiceData) => {
   return response.data;
 };
 
+// Generate invoices for all customers in a week range (Admin)
+export const generateAllAdminInvoices = async ({ weekStartDate, weekEndDate }) => {
+  const response = await axiosInstance.post(ENDPOINT.API.ADMIN_INVOICE.GENERATE_ALL, {
+    weekStartDate,
+    weekEndDate,
+  });
+  return response.data;
+};
+
 // Update invoice (Admin)
 export const updateAdminInvoice = async (id, invoiceData) => {
   const response = await axiosInstance.put(ENDPOINT.API.ADMIN_INVOICE.UPDATE(id), invoiceData);

@@ -45,6 +45,7 @@ export const ENDPOINT = {
       GET_ALL: '/api/admin/invoices',
       GET_BY_ID: (id) => `/api/admin/invoices/${id}`,
       CREATE: '/api/admin/invoices',
+      GENERATE_ALL: '/api/admin/invoices/generate-all',
       UPDATE: (id) => `/api/admin/invoices/${id}`,
       DELETE: (id) => `/api/admin/invoices/${id}`,
       EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Loader2, Plus, Download, Mail } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import InvoiceCard from './components/InvoiceCard';
 import ViewInvoiceModal from './components/ViewInvoiceModal';
-import EditInvoiceModal from './components/EditInvoiceModal';
+import GenerateInvoiceModal from './components/GenerateInvoiceModal';
 import {
   getAllAdminInvoices,
   getAdminInvoiceById,
   exportAdminInvoicePDF,
-  sendAdminInvoiceEmail,
-  updateAdminInvoiceStatus,
 } from '../../../../services/invoiceService';
 
 const statusConfig = {
@@ -21,11 +19,16 @@ const statusConfig = {
 
 export default function InvoicesManagement() {
   const [invoices, setInvoices] = useState([]);
+  const [summary, setSummary] = useState({
+    totalInvoices: 0,
+    totalPaid: '0.00',
+    totalUnpaid: '0.00',
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [showViewModal, setShowViewModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   useEffect(() => {
@@ -37,23 +40,10 @@ export default function InvoicesManagement() {
     setError(null);
     try {
       const data = await getAllAdminInvoices();
-      console.log('Raw API response:', data);
-      console.log('Type:', typeof data, 'Is array?', Array.isArray(data));
-
-      // Handle different response structures
-      let invoicesList = [];
-      if (Array.isArray(data)) {
-        invoicesList = data;
-      } else if (data && Array.isArray(data.data)) {
-        invoicesList = data.data;
-      } else if (data && data.invoices && Array.isArray(data.invoices)) {
-        invoicesList = data.invoices;
-      }
-
-      console.log('Processed invoices:', invoicesList);
-      setInvoices(invoicesList);
+      // API returns { success, data: [...], count, summary: { totalInvoices, totalPaid, totalUnpaid } }
+      setInvoices(Array.isArray(data?.data) ? data.data : []);
+      if (data?.summary) setSummary(data.summary);
     } catch (err) {
-      console.error('Fetch error:', err);
       setError(err.message || 'Failed to load invoices');
     } finally {
       setLoading(false);
@@ -66,16 +56,11 @@ export default function InvoicesManagement() {
       const full = await getAdminInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
       setSelectedInvoice(full);
       setShowViewModal(true);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load invoice');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEditInvoice = async (invoice) => {
-    setSelectedInvoice(invoice);
-    setShowEditModal(true);
   };
 
   const handleDownloadInvoice = async (invoice) => {
@@ -98,30 +83,13 @@ export default function InvoicesManagement() {
     }
   };
 
-  const handleEmailInvoice = async (invoice) => {
-    try {
-      const id = invoice.id || invoice._id || invoice.invoiceId;
-      await sendAdminInvoiceEmail(id);
-      toast.success('Invoice email sent successfully');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to send invoice email');
-    }
+  // Use summary from API; derive totalAmount from paid + unpaid
+  const stats = {
+    totalInvoices: summary.totalInvoices ?? invoices.length,
+    totalAmount: (Number(summary.totalPaid) + Number(summary.totalUnpaid)).toFixed(2),
+    totalPaid: Number(summary.totalPaid).toFixed(2),
+    totalUnpaid: Number(summary.totalUnpaid).toFixed(2),
   };
-
-  const calculateStats = () => {
-    const totalInvoices = invoices.length;
-    const totalAmount = invoices.reduce((s, inv) => s + (Number(inv.total) || 0), 0);
-    const totalPaid = invoices
-      .filter((inv) => inv.status === 'paid')
-      .reduce((s, inv) => s + (Number(inv.total) || 0), 0);
-    const totalUnpaid = invoices
-      .filter((inv) => inv.status !== 'paid')
-      .reduce((s, inv) => s + (Number(inv.total) || 0), 0);
-    return { totalInvoices, totalAmount, totalPaid, totalUnpaid };
-  };
-
-  const stats = calculateStats();
 
   return (
     <div className="p-2 sm:p-6">
@@ -136,7 +104,7 @@ export default function InvoicesManagement() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => toast.info('Generate flow not implemented')}
+            onClick={() => setShowGenerateModal(true)}
             className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow"
           >
             <Plus className="h-4 w-4" />
@@ -168,17 +136,14 @@ export default function InvoicesManagement() {
               <p className="text-xs text-gray-600">Total Invoices</p>
               <p className="text-lg font-bold">{stats.totalInvoices}</p>
             </div>
-            <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
-              <p className="text-xs text-gray-600">Total Amount</p>
-              <p className="text-lg font-bold">£{stats.totalAmount.toFixed(2)}</p>
-            </div>
+
             <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
               <p className="text-xs text-gray-600">Total Paid</p>
-              <p className="text-lg font-bold text-green-600">£{stats.totalPaid.toFixed(2)}</p>
+              <p className="text-lg font-bold text-green-600">£{stats.totalPaid}</p>
             </div>
             <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
               <p className="text-xs text-gray-600">Total Unpaid</p>
-              <p className="text-lg font-bold text-red-600">£{stats.totalUnpaid.toFixed(2)}</p>
+              <p className="text-lg font-bold text-red-600">£{stats.totalUnpaid}</p>
             </div>
           </div>
 
@@ -190,9 +155,7 @@ export default function InvoicesManagement() {
                 invoice={inv}
                 statusConfig={statusConfig}
                 onView={handleViewInvoice}
-                onEdit={handleEditInvoice}
                 onDownload={handleDownloadInvoice}
-                onEmail={handleEmailInvoice}
               />
             ))}
           </div>
@@ -207,17 +170,14 @@ export default function InvoicesManagement() {
             setSelectedInvoice(null);
           }}
           onDownload={() => handleDownloadInvoice(selectedInvoice)}
-          onEmail={() => handleEmailInvoice(selectedInvoice)}
         />
       )}
 
-      {showEditModal && selectedInvoice && (
-        <EditInvoiceModal
-          invoice={selectedInvoice}
-          customers={[]}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedInvoice(null);
+      {showGenerateModal && (
+        <GenerateInvoiceModal
+          onClose={() => setShowGenerateModal(false)}
+          onSuccess={() => {
+            fetchInvoices();
           }}
         />
       )}

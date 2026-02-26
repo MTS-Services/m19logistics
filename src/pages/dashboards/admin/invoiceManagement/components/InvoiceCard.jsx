@@ -1,31 +1,29 @@
 import React from 'react';
-import { Building, Calendar, Package, Eye, Edit, Download, Mail } from 'lucide-react';
+import { Building, Calendar, Package, Eye, Download } from 'lucide-react';
 
-const InvoiceCard = ({ invoice, statusConfig, onView, onEdit, onDownload, onEmail }) => {
-  // Safely access status icon with fallback
-  const status = invoice.status || 'draft';
+const InvoiceCard = ({ invoice, statusConfig, onView, onDownload }) => {
+  // Normalize status to lowercase for statusConfig lookup (API returns "Draft", config keys are "draft")
+  const status = (invoice.status || 'draft').toLowerCase();
   const StatusIcon = statusConfig[status]?.icon || (() => null);
 
-  // Handle different API response structures
-  const invoiceNumber = invoice.invoiceNumber || invoice.invoiceId || invoice.id || 'N/A';
+  const invoiceNumber = invoice.invoiceNumber || invoice.id || 'N/A';
 
-  // Handle customer as object or string
+  // customer is an object: { fullName, email, customerProfile }
   const customer =
     typeof invoice.customer === 'object' && invoice.customer !== null
-      ? invoice.customer.fullName || invoice.customer.name || invoice.customer.email || 'N/A'
-      : invoice.customer || invoice.customerName || 'N/A';
+      ? invoice.customer.fullName || invoice.customer.email || 'N/A'
+      : invoice.customer || 'N/A';
 
-  const customerUsername =
-    invoice.customerUsername ||
-    invoice.username ||
-    (typeof invoice.customer === 'object' ? invoice.customer.email : '');
+  const customerEmail = typeof invoice.customer === 'object' ? invoice.customer.email || '' : '';
 
   const invoiceDate = invoice.invoiceDate || invoice.createdAt || new Date();
-  const dueDate = invoice.dueDate || invoice.createdAt || new Date();
-  const deliveries = invoice.deliveries || [];
-  const total = invoice.total || 0;
-  const vat = invoice.vat || invoice.vatAmount || 0;
-  const paidDate = invoice.paidDate || null;
+  const dueDate = invoice.dueDate || null;
+  // items array (API: invoice.items)
+  const items = invoice.items || [];
+  // API uses grandTotal and vatTotal
+  const total = invoice.grandTotal || invoice.total || 0;
+  const vat = invoice.vatTotal || invoice.vat || 0;
+  const paidDate = invoice.paidAt || invoice.paidDate || null;
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
@@ -45,20 +43,20 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onEdit, onDownload, onEmai
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Building className="h-4 w-4 shrink-0" />
               <span className="wrap-break-word">
-                {customer} {customerUsername && `(${customerUsername})`}
+                {customer} {customerEmail && `(${customerEmail})`}
               </span>
             </div>
             <div className="flex items-start space-x-2 text-xs text-gray-500 sm:text-sm">
               <Calendar className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 Issued: {new Date(invoiceDate).toLocaleDateString('en-GB')} | Due:{' '}
-                {new Date(dueDate).toLocaleDateString('en-GB')}
+                {dueDate ? new Date(dueDate).toLocaleDateString('en-GB') : '—'}
               </span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-500">
               <Package className="h-4 w-4 shrink-0" />
               <span>
-                {deliveries.length} {deliveries.length === 1 ? 'delivery' : 'deliveries'}
+                {items.length} {items.length === 1 ? 'delivery' : 'deliveries'}
               </span>
             </div>
           </div>
@@ -84,25 +82,11 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onEdit, onDownload, onEmai
           <span>View</span>
         </button>
         <button
-          onClick={() => onEdit(invoice)}
-          className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:flex-initial"
-        >
-          <Edit className="h-4 w-4" />
-          <span>Edit</span>
-        </button>
-        <button
           onClick={() => onDownload(invoice)}
           className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:flex-initial"
         >
           <Download className="h-4 w-4" />
           <span>PDF</span>
-        </button>
-        <button
-          onClick={() => onEmail(invoice)}
-          className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:flex-initial"
-        >
-          <Mail className="h-4 w-4" />
-          <span>Email</span>
         </button>
       </div>
     </div>
