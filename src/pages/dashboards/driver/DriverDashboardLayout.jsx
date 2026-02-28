@@ -3,11 +3,9 @@ import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
   LayoutDashboard,
-  Package,
   CheckCircle,
   User,
   LogOut,
-  Truck,
   Menu,
   X,
   ChevronRight,
