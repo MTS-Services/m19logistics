@@ -419,7 +419,7 @@ const Profile = () => {
               {/* Profile Picture Section */}
               <div className="mb-6 flex items-center gap-6">
                 <div className="relative">
-                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-blue-500 text-2xl font-bold text-white">
+                  <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-linear-to-r from-blue-600 to-blue-500 text-2xl font-bold text-white">
                     {imagePreview && !imageLoadError ? (
                       <img
                         src={getImageSrc(imagePreview)}
@@ -586,7 +586,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -709,7 +709,7 @@ const Profile = () => {
               {/* Security Notice */}
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
                 <div className="flex items-start gap-3">
-                  <Shield className="h-5 w-5 flex-shrink-0 text-blue-600" />
+                  <Shield className="h-5 w-5 shrink-0 text-blue-600" />
                   <div className="text-sm text-blue-900">
                     <p className="font-semibold">Security Tips</p>
                     <ul className="mt-2 space-y-1 text-blue-800">
@@ -727,7 +727,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className="flex items-center gap-2 rounded-md bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-3 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {passwordLoading ? (
                     <>
