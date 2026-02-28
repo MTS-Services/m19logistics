@@ -1,6 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllDeliveries, getDeliveryStats } from '../../../services/deliveryService';
+import {
+  getAllDeliveries,
+  getDeliveryStats,
+  cancelDelivery,
+} from '../../../services/deliveryService';
 import {
   Package,
   FileText,
@@ -27,6 +31,7 @@ const CustomerDashboardHome = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
   const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -200,38 +205,30 @@ const CustomerDashboardHome = () => {
 
   // Handle cancel delivery
   const handleCancelDelivery = (delivery) => {
-    if (delivery.status === 'ALLOCATED') {
-      toast.error(
-        'Cannot cancel delivery that has been allocated to a driver. Please contact admin.'
-      );
-      return;
-    }
     if (delivery.status === 'DELIVERED') {
       toast.error('Cannot cancel completed delivery');
       return;
     }
 
     setSelectedDelivery(delivery);
+    setCancelReason('');
     setShowDeleteModal(true);
   };
 
   // Confirm delete delivery
-  const confirmDeleteDelivery = () => {
-    setDeliveries(
-      deliveries.map((d) =>
-        d.id === selectedDelivery.id
-          ? {
-              ...d,
-              status: 'Cancelled',
-              cancelledAt: new Date().toISOString(),
-              cancelReason: 'Cancelled by customer',
-            }
-          : d
-      )
-    );
-    setShowDeleteModal(false);
-    setSelectedDelivery(null);
-    toast.success('Delivery cancelled successfully');
+  const confirmDeleteDelivery = async () => {
+    try {
+      const id = selectedDelivery.id || selectedDelivery._id;
+      await cancelDelivery(id, cancelReason || 'Cancelled by customer');
+      toast.success('Delivery cancelled successfully');
+      setShowDeleteModal(false);
+      setSelectedDelivery(null);
+      setCancelReason('');
+      fetchStats();
+      fetchDeliveries(filterStatus);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to cancel delivery');
+    }
   };
 
   return (
@@ -346,6 +343,16 @@ const CustomerDashboardHome = () => {
               >
                 Delivered
               </button>
+              <button
+                onClick={() => handleFilterChange('cancelled')}
+                className={`rounded-lg px-3 py-2 text-sm font-medium transition-all sm:px-4 sm:text-base ${
+                  filterStatus === 'cancelled'
+                    ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Cancelled
+              </button>
             </div>
 
             <button
@@ -412,7 +419,7 @@ const CustomerDashboardHome = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        {delivery.status === 'RECEIVED' && (
+                        {(delivery.status === 'RECEIVED' || delivery.status === 'ALLOCATED') && (
                           <>
                             <button
                               onClick={() => handleEditDelivery(delivery)}
@@ -508,7 +515,7 @@ const CustomerDashboardHome = () => {
                     >
                       <Eye className="h-5 w-5" />
                     </button>
-                    {delivery.status === 'RECEIVED' && (
+                    {(delivery.status === 'RECEIVED' || delivery.status === 'ALLOCATED') && (
                       <>
                         <button
                           onClick={() => handleEditDelivery(delivery)}
@@ -1005,11 +1012,27 @@ const CustomerDashboardHome = () => {
                 <div className="rounded-lg bg-gray-50 p-4">
                   <p className="text-sm text-gray-600">Delivery Details:</p>
                   <p className="mt-1 text-sm font-semibold text-gray-900">
-                    {selectedDelivery.address}
+                    {selectedDelivery.deliveryAddress}
                   </p>
                   <p className="mt-1 text-sm text-gray-600">
-                    {selectedDelivery.date} - {selectedDelivery.timeSlot}
+                    {selectedDelivery.deliveryDate
+                      ? new Date(selectedDelivery.deliveryDate).toLocaleDateString('en-GB')
+                      : '—'}{' '}
+                    - {selectedDelivery.timeSlot}
                   </p>
+                </div>
+
+                <div className="mt-4">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Reason for cancellation
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    placeholder="Enter reason (optional)"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                  />
                 </div>
               </div>
 

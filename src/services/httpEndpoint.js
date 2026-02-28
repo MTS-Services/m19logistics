@@ -26,6 +26,7 @@ export const ENDPOINT = {
       GET_ALL: '/api/deliveries',
       GET_BY_ID: (id) => `/api/deliveries/${id}`,
       STATS: '/api/deliveries/stats',
+      CANCEL: (id) => `/api/deliveries/${id}/cancel`,
       AUDIT_LOGS: '/api/deliveries/audit-logs/me',
       AUDIT_LOG_BY_ID: (id) => `/api/deliveries/audit-logs/${id}`,
     },

@@ -24,3 +24,9 @@ export const getDeliveryStats = async () => {
   const response = await axiosInstance.get(ENDPOINT.API.DELIVERY.STATS);
   return response.data;
 };
+
+// Cancel a delivery
+export const cancelDelivery = async (id, reason) => {
+  const response = await axiosInstance.post(ENDPOINT.API.DELIVERY.CANCEL(id), { reason });
+  return response.data;
+};
