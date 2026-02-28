@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
-import { compressImage } from '../../../utils/imageCompression';
+// import { compressImage } from '../../../utils/imageCompression';
 
 const DriverProfile = () => {
   const { user } = useAuth();
@@ -158,9 +158,8 @@ const DriverProfile = () => {
       console.error('Profile update error:', error);
 
       if (error.response) {
-        const errorMessage = error.response.data?.message ||
-          error.response.data?.error ||
-          'Failed to update profile';
+        const errorMessage =
+          error.response.data?.message || error.response.data?.error || 'Failed to update profile';
         toast.error(errorMessage);
       } else if (error.request) {
         toast.error('Network error. Please check your connection.');
@@ -207,9 +206,8 @@ const DriverProfile = () => {
       console.error('Password change error:', error);
 
       if (error.response) {
-        const errorMessage = error.response.data?.message ||
-          error.response.data?.error ||
-          'Failed to change password';
+        const errorMessage =
+          error.response.data?.message || error.response.data?.error || 'Failed to change password';
         toast.error(errorMessage);
       } else if (error.request) {
         toast.error('Network error. Please check your connection.');
@@ -337,19 +335,21 @@ const DriverProfile = () => {
       <div className="mb-6 flex gap-2 border-b border-gray-200">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'profile'
-            ? 'border-b-2 border-teal-600 text-teal-600'
-            : 'text-gray-600 hover:text-gray-900'
-            }`}
+          className={`px-4 py-2 text-sm font-medium transition-colors ${
+            activeTab === 'profile'
+              ? 'border-b-2 border-teal-600 text-teal-600'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
         >
           Profile Information
         </button>
         <button
           onClick={() => setActiveTab('security')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'security'
-            ? 'border-b-2 border-teal-600 text-teal-600'
-            : 'text-gray-600 hover:text-gray-900'
-            }`}
+          className={`px-4 py-2 text-sm font-medium transition-colors ${
+            activeTab === 'security'
+              ? 'border-b-2 border-teal-600 text-teal-600'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
         >
           Security
         </button>
@@ -361,7 +361,7 @@ const DriverProfile = () => {
           <form onSubmit={handleProfileUpdate}>
             <div className="mb-6 flex items-center gap-6">
               <div className="relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white overflow-hidden">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-linear-to-r from-teal-600 to-teal-500 text-2xl font-bold text-white">
                   {imagePreview && !imageLoadError ? (
                     <img
                       src={getImageSrc(imagePreview)}
@@ -377,8 +377,10 @@ const DriverProfile = () => {
                         setImageLoadError(false);
                       }}
                     />
+                  ) : profileData.name ? (
+                    profileData.name.charAt(0).toUpperCase()
                   ) : (
-                    profileData.name ? profileData.name.charAt(0).toUpperCase() : 'D'
+                    'D'
                   )}
                 </div>
                 <input
@@ -401,7 +403,7 @@ const DriverProfile = () => {
                 <h3 className="text-lg font-bold text-gray-900">{profileData.name}</h3>
                 <p className="text-sm text-gray-600">Driver</p>
                 {profileImage && (
-                  <p className="mt-2 text-xs text-teal-600 font-medium">
+                  <p className="mt-2 text-xs font-medium text-teal-600">
                     Image selected. Click "Save Changes" to upload.
                   </p>
                 )}
@@ -410,9 +412,7 @@ const DriverProfile = () => {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Full Name</label>
                 <div className="relative">
                   <User className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
@@ -440,9 +440,7 @@ const DriverProfile = () => {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Phone Number
-                </label>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Phone Number</label>
                 <div className="relative">
                   <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
@@ -481,9 +479,7 @@ const DriverProfile = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Address
-                </label>
+                <label className="mb-2 block text-sm font-medium text-gray-700">Address</label>
                 <div className="relative">
                   <MapPin className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
                   <textarea
@@ -500,7 +496,7 @@ const DriverProfile = () => {
               <button
                 type="submit"
                 disabled={loading || !isDirty}
-                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -635,7 +631,7 @@ const DriverProfile = () => {
               <button
                 type="submit"
                 disabled={passwordLoading}
-                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {passwordLoading ? (
                   <>
