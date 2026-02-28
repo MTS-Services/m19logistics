@@ -9,7 +9,6 @@ import {
   Phone,
   X,
   CheckCircle,
-  Clock,
   Package,
   Star,
   Calendar,
