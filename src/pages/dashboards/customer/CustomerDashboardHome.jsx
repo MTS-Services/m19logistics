@@ -7,7 +7,6 @@ import {
 } from '../../../services/deliveryService';
 import {
   Package,
-  FileText,
   Clock,
   CheckCircle,
   XCircle,
@@ -17,7 +16,6 @@ import {
   Trash2,
   Calendar,
   MapPin,
-  Phone,
   User,
   Weight,
   AlertCircle,
