@@ -11,10 +11,7 @@ import {
   Search,
   Mail,
   Printer,
-  Filter,
   X,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
