@@ -9,14 +9,12 @@ import {
   Clock,
   XCircle,
   Search,
-  Mail,
-  Printer,
   X,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
 import Loading from '../../../components/Loading';
-import { getAllInvoices, getInvoiceById, exportInvoicePDF } from '../../../services/invoiceService';
+import { getAllInvoices } from '../../../services/invoiceService';
 
 const Invoices = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,7 +29,6 @@ const Invoices = () => {
   const [apiSummary, setApiSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [loadingInvoiceDetails, setLoadingInvoiceDetails] = useState(false);
   const [downloadingPDF, setDownloadingPDF] = useState({});
 
   // Helper function to calculate days from invoice date
@@ -248,134 +245,129 @@ const Invoices = () => {
     }
   };
 
-  // Handle view invoice
-  const handleViewInvoice = async (invoice) => {
-    try {
-      setLoadingInvoiceDetails(true);
-      setShowViewModal(true);
-      setSelectedInvoice(invoice); // Set initial data
-
-      // Fetch full invoice details from API
-      const response = await getInvoiceById(invoice.id);
-
-      if (response.success && response.data) {
-        // Map API response to component structure
-        const fullInvoice = {
-          id: response.data.id,
-          invoiceNumber: response.data.invoiceNumber,
-          date: new Date(response.data.invoiceDate).toISOString().split('T')[0],
-          weekEnding: new Date(response.data.weekEndDate).toISOString().split('T')[0],
-          status: response.data.isPaid
-            ? 'Paid'
-            : response.data.status === 'Draft'
-              ? 'Pending'
-              : response.data.status,
-          deliveries:
-            response.data.items?.map((item) => ({
-              spoNumber: item.delivery?.spoNumber || item.spoNumber || 'N/A',
-              date: item.delivery?.deliveryDate
-                ? new Date(item.delivery.deliveryDate).toISOString().split('T')[0]
-                : '',
-              address: item.delivery?.deliveryAddress || item.description || '',
-              basePrice: parseFloat(item.unitCost || 0),
-              distanceSurcharge: 0,
-              vat: parseFloat(item.vatAmount || 0),
-              total: parseFloat(item.total || 0),
-            })) || [],
-          additionalCharges:
-            response.data.items
-              ?.filter((item) => item.isAdditional)
-              .map((item) => ({
-                description: item.description,
-                amount: parseFloat(item.total || 0),
-              })) || [],
-          subtotal: parseFloat(response.data.subtotal || 0),
-          totalVAT: parseFloat(response.data.vatTotal || 0),
-          total: parseFloat(response.data.grandTotal || 0),
-          paidDate: response.data.paidAt
-            ? new Date(response.data.paidAt).toISOString().split('T')[0]
-            : null,
-        };
-
-        setSelectedInvoice(fullInvoice);
-      }
-    } catch (err) {
-      console.error('Error fetching invoice details:', err);
-      toast.error('Failed to load invoice details. Showing cached data.');
-      // Keep the initial invoice data if API fails
-    } finally {
-      setLoadingInvoiceDetails(false);
-    }
+  // Handle view invoice — list API already returns full items data, no second call needed
+  const handleViewInvoice = (invoice) => {
+    setSelectedInvoice(invoice);
+    setShowViewModal(true);
   };
 
-  // Handle download PDF
-  const handleDownloadExcel = async (invoice) => {
-    try {
-      setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: true }));
-      toast.info('Preparing invoice PDF...');
+  // Handle download PDF — client-side generation using browser print
+  const handleDownloadExcel = (invoice) => {
+    setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: true }));
 
-      const response = await exportInvoicePDF(invoice.id);
+    const additionalChargesRows =
+      invoice.additionalCharges.length > 0
+        ? `
+        <h3 style="font-size:14px;font-weight:700;margin:20px 0 8px;">Additional Charges</h3>
+        <table>
+          <thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;">Amount</th></tr></thead>
+          <tbody>
+            ${invoice.additionalCharges
+              .map(
+                (c) =>
+                  `<tr><td>${c.description}</td><td style="text-align:right;">£${c.amount.toFixed(2)}</td></tr>`
+              )
+              .join('')}
+          </tbody>
+        </table>`
+        : '';
 
-      // response.data is already a Blob (responseType: 'blob')
-      const blob = response.data;
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice #${invoice.invoiceNumber}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; font-size: 13px; color: #111; padding: 32px; }
+    .header { border-bottom: 2px solid #0d9488; padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .company-name { font-size: 20px; font-weight: 700; color: #0d9488; margin-bottom: 4px; }
+    .company-info { color: #555; font-size: 12px; line-height: 1.6; }
+    .invoice-meta { text-align: right; }
+    .invoice-number { font-size: 18px; font-weight: 700; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: ${invoice.status === 'Paid' ? '#dcfce7' : '#fef9c3'}; color: ${invoice.status === 'Paid' ? '#16a34a' : '#854d0e'}; margin-top: 4px; }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; }
+    .meta-label { font-size: 11px; color: #6b7280; }
+    .meta-value { font-weight: 600; }
+    h3 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+    thead tr { background: #f3f4f6; }
+    th { padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
+    td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; font-size: 12px; }
+    .summary { background: #f0fdfa; border: 2px solid #99f6e4; border-radius: 6px; padding: 14px 16px; margin-top: 20px; }
+    .summary-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; }
+    .summary-total { display: flex; justify-content: space-between; padding-top: 10px; margin-top: 8px; border-top: 2px solid #5eead4; font-size: 18px; font-weight: 700; color: #0d9488; }
+    @media print { body { padding: 16px; } button { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="company-name">M19 Logistics Limited</div>
+      <div class="company-info">
+        84 Acton Hall Walks, Wrexham, LL12 7YJ<br/>
+        Tel: 07971415430 / WhatsApp 07577574676<br/>
+        VAT Number: 447 5918 54
+      </div>
+    </div>
+    <div class="invoice-meta">
+      <div class="invoice-number">Invoice #${invoice.invoiceNumber}</div>
+      <div class="badge">${invoice.status}</div>
+    </div>
+  </div>
 
-      // Check if the response is actually a PDF or an error JSON blob
-      const contentType = response.headers?.['content-type'] || '';
-      if (!contentType.includes('pdf') && !contentType.includes('octet-stream')) {
-        // API returned an error wrapped in a blob — read and display it
-        const text = await blob.text();
-        let msg = 'Failed to download invoice.';
-        try {
-          const json = JSON.parse(text);
-          msg = json.message || json.error || msg;
-        } catch {
-          msg = text || msg;
-        }
-        toast.error(msg);
-        return;
-      }
+  <div class="meta-grid">
+    <div><div class="meta-label">Invoice Date</div><div class="meta-value">${invoice.date}</div></div>
+    <div><div class="meta-label">Week Ending</div><div class="meta-value">${invoice.weekEnding}</div></div>
+  </div>
 
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Invoice_${invoice.invoiceNumber}_${invoice.date}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+  <h3>Delivery Items</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:left;">SPO Number</th>
+        <th style="text-align:left;">Date</th>
+        <th style="text-align:left;">Address</th>
+        <th style="text-align:right;">Unit Price</th>
+        <th style="text-align:right;">VAT</th>
+        <th style="text-align:right;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${invoice.deliveries
+        .map(
+          (d) =>
+            `<tr>
+              <td>${d.spoNumber}</td>
+              <td>${d.date}</td>
+              <td>${d.address}</td>
+              <td style="text-align:right;">£${d.basePrice.toFixed(2)}</td>
+              <td style="text-align:right;">£${d.vat.toFixed(2)}</td>
+              <td style="text-align:right;"><strong>£${d.total.toFixed(2)}</strong></td>
+            </tr>`
+        )
+        .join('')}
+    </tbody>
+  </table>
 
-      toast.success(`Invoice ${invoice.invoiceNumber} downloaded successfully!`);
-    } catch (err) {
-      console.error('Error downloading invoice PDF:', err);
-      // If error response is a blob, read the actual message
-      if (err?.response?.data instanceof Blob) {
-        try {
-          const text = await err.response.data.text();
-          const json = JSON.parse(text);
-          toast.error(json.message || json.error || 'Failed to download invoice.');
-        } catch {
-          toast.error('Failed to download invoice. Please try again.');
-        }
-      } else {
-        toast.error(
-          err?.response?.data?.message || 'Failed to download invoice. Please try again.'
-        );
-      }
-    } finally {
+  ${additionalChargesRows}
+
+  <div class="summary">
+    <div class="summary-row"><span>Subtotal:</span><span>£${invoice.subtotal.toFixed(2)}</span></div>
+    <div class="summary-row"><span>VAT (20%):</span><span>£${invoice.totalVAT.toFixed(2)}</span></div>
+    <div class="summary-total"><span>Total:</span><span>£${invoice.total.toFixed(2)}</span></div>
+  </div>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => {
+      win.print();
       setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: false }));
-    }
-  };
-
-  // Handle email invoice
-  const handleEmailInvoice = (invoice) => {
-    toast.success(`Invoice ${invoice.invoiceNumber} sent to your email`);
-    // Email logic would go here
-  };
-
-  // Handle print invoice
-  const handlePrintInvoice = (invoice) => {
-    toast.info(`Preparing to print invoice ${invoice.invoiceNumber}...`);
-    // Print logic would go here
+    }, 500);
   };
 
   return (
@@ -691,191 +683,150 @@ const Invoices = () => {
 
               {/* Modal Content */}
               <div className="max-h-[70vh] overflow-y-auto p-6">
-                {/* Loading State for Invoice Details */}
-                {loadingInvoiceDetails ? (
-                  <div className="flex flex-col items-center justify-center py-16">
-                    <div className="relative mb-6">
-                      {/* Spinning ring */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="h-16 w-16 animate-spin rounded-full border-4 border-transparent border-t-teal-500 border-r-teal-400"></div>
-                      </div>
-                      {/* Logo */}
-                      <div className="relative flex items-center justify-center">
-                        <div className="flex h-16 w-16 items-center justify-center">
-                          <img
-                            src="/images/logo.png"
-                            alt="M19 Logistics"
-                            className="h-12 w-12 animate-pulse object-contain drop-shadow-lg"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-base font-semibold text-gray-700">
-                      Loading invoice details...
-                    </p>
-                    <p className="mt-2 text-sm text-gray-500">Please wait</p>
+                {/* Invoice Header */}
+                <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <div className="mb-4">
+                    <h4 className="text-lg font-bold text-gray-900">M19 Logistics Limited</h4>
+                    <p className="text-sm text-gray-600">84 Acton Hall Walks</p>
+                    <p className="text-sm text-gray-600">Wrexham, LL12 7YJ</p>
+                    <p className="text-sm text-gray-600">Tel: 07971415430 / WhatsApp 07577574676</p>
+                    <p className="text-sm text-gray-600">VAT Number: 447 5918 54</p>
                   </div>
-                ) : (
-                  <>
-                    {/* Invoice Header */}
-                    <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                      <div className="mb-4">
-                        <h4 className="text-lg font-bold text-gray-900">M19 Logistics Limited</h4>
-                        <p className="text-sm text-gray-600">84 Acton Hall Walks</p>
-                        <p className="text-sm text-gray-600">Wrexham, LL12 7YJ</p>
-                        <p className="text-sm text-gray-600">
-                          Tel: 07971415430 / WhatsApp 07577574676
-                        </p>
-                        <p className="text-sm text-gray-600">VAT Number: 447 5918 54</p>
+                  <div className="border-t border-gray-300 pt-4">
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <div>
+                        <p className="text-sm text-gray-600">Invoice Date</p>
+                        <p className="font-semibold text-gray-900">{selectedInvoice.date}</p>
                       </div>
-                      <div className="border-t border-gray-300 pt-4">
-                        <div className="grid gap-2 md:grid-cols-2">
-                          <div>
-                            <p className="text-sm text-gray-600">Invoice Date</p>
-                            <p className="font-semibold text-gray-900">{selectedInvoice.date}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Week Ending</p>
-                            <p className="font-semibold text-gray-900">
-                              {selectedInvoice.weekEnding}
-                            </p>
-                          </div>
-                        </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Week Ending</p>
+                        <p className="font-semibold text-gray-900">{selectedInvoice.weekEnding}</p>
                       </div>
                     </div>
+                  </div>
+                </div>
 
-                    {/* Delivery Line Items */}
-                    <div className="mb-6">
-                      <h4 className="mb-3 font-bold text-gray-900">Delivery Items</h4>
-                      <div className="overflow-x-auto rounded-lg border border-gray-200">
-                        <table className="w-full">
-                          <thead className="border-b border-gray-200 bg-gray-50">
-                            <tr>
-                              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                                SPO Number
-                              </th>
-                              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                                Date
-                              </th>
-                              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                                Address
-                              </th>
-                              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                                Unit Price
-                              </th>
-                              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                                VAT
-                              </th>
-                              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                                Amount
-                              </th>
+                {/* Delivery Line Items */}
+                <div className="mb-6">
+                  <h4 className="mb-3 font-bold text-gray-900">Delivery Items</h4>
+                  <div className="overflow-x-auto rounded-lg border border-gray-200">
+                    <table className="w-full">
+                      <thead className="border-b border-gray-200 bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            SPO Number
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Date
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Address
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                            Unit Price
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                            VAT
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                            Amount
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {selectedInvoice.deliveries.map((delivery, index) => (
+                          <tr key={index}>
+                            <td className="px-4 py-3 text-sm font-medium whitespace-nowrap text-gray-900">
+                              {delivery.spoNumber}
+                            </td>
+                            <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600">
+                              {delivery.date}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">{delivery.address}</td>
+                            <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                              £{delivery.basePrice.toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
+                              £{delivery.vat.toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
+                              £{delivery.total.toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Additional Charges */}
+                {selectedInvoice.additionalCharges.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="mb-3 font-bold text-gray-900">Additional Charges</h4>
+                    <div className="overflow-x-auto rounded-lg border border-gray-200">
+                      <table className="w-full">
+                        <thead className="border-b border-gray-200 bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                              Description
+                            </th>
+                            <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
+                              Amount
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200 bg-white">
+                          {selectedInvoice.additionalCharges.map((charge, index) => (
+                            <tr key={index}>
+                              <td className="px-4 py-3 text-sm text-gray-900">
+                                {charge.description}
+                              </td>
+                              <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
+                                £{charge.amount.toFixed(2)}
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-200 bg-white">
-                            {selectedInvoice.deliveries.map((delivery, index) => (
-                              <tr key={index}>
-                                <td className="px-4 py-3 text-sm font-medium whitespace-nowrap text-gray-900">
-                                  {delivery.spoNumber}
-                                </td>
-                                <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600">
-                                  {delivery.date}
-                                </td>
-                                <td className="px-4 py-3 text-sm text-gray-600">
-                                  {delivery.address}
-                                </td>
-                                <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
-                                  £{delivery.basePrice.toFixed(2)}
-                                </td>
-                                <td className="px-4 py-3 text-right text-sm whitespace-nowrap text-gray-900">
-                                  £{delivery.vat.toFixed(2)}
-                                </td>
-                                <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
-                                  £{delivery.total.toFixed(2)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-
-                    {/* Additional Charges */}
-                    {selectedInvoice.additionalCharges.length > 0 && (
-                      <div className="mb-6">
-                        <h4 className="mb-3 font-bold text-gray-900">Additional Charges</h4>
-                        <div className="overflow-x-auto rounded-lg border border-gray-200">
-                          <table className="w-full">
-                            <thead className="border-b border-gray-200 bg-gray-50">
-                              <tr>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                                  Description
-                                </th>
-                                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">
-                                  Amount
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 bg-white">
-                              {selectedInvoice.additionalCharges.map((charge, index) => (
-                                <tr key={index}>
-                                  <td className="px-4 py-3 text-sm text-gray-900">
-                                    {charge.description}
-                                  </td>
-                                  <td className="px-4 py-3 text-right text-sm font-semibold whitespace-nowrap text-gray-900">
-                                    £{charge.amount.toFixed(2)}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Invoice Summary */}
-                    <div className="rounded-lg border-2 border-teal-200 bg-teal-50 p-4">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-700">Subtotal:</span>
-                          <span className="font-semibold text-gray-900">
-                            £{selectedInvoice.subtotal.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-700">VAT (20%):</span>
-                          <span className="font-semibold text-gray-900">
-                            £{selectedInvoice.totalVAT.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="border-t-2 border-teal-300 pt-2">
-                          <div className="flex justify-between">
-                            <span className="text-lg font-bold text-gray-900">Total:</span>
-                            <span className="text-2xl font-bold text-teal-600">
-                              £{selectedInvoice.total.toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </>
+                  </div>
                 )}
+
+                {/* Invoice Summary */}
+                <div className="rounded-lg border-2 border-teal-200 bg-teal-50 p-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-700">Subtotal:</span>
+                      <span className="font-semibold text-gray-900">
+                        £{selectedInvoice.subtotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-700">VAT (20%):</span>
+                      <span className="font-semibold text-gray-900">
+                        £{selectedInvoice.totalVAT.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="border-t-2 border-teal-300 pt-2">
+                      <div className="flex justify-between">
+                        <span className="text-lg font-bold text-gray-900">Total:</span>
+                        <span className="text-2xl font-bold text-teal-600">
+                          £{selectedInvoice.total.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-between gap-3 border-t border-gray-200 px-6 py-4">
                 <button
-                  onClick={() => handlePrintInvoice(selectedInvoice)}
+                  onClick={() => setShowViewModal(false)}
                   className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50"
                 >
-                  <Printer className="h-4 w-4" />
-                  Print
-                </button>
-                <button
-                  onClick={() => handleEmailInvoice(selectedInvoice)}
-                  className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50"
-                >
-                  <Mail className="h-4 w-4" />
-                  Email
+                  <X className="h-4 w-4" />
+                  Cancel
                 </button>
                 <button
                   onClick={() => handleDownloadExcel(selectedInvoice)}
