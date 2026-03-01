@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Mail, Phone, EllipsisVertical, Edit, Trash2 } from 'lucide-react';
 
 const UsersTable = ({
@@ -9,8 +9,22 @@ const UsersTable = ({
   handleEditUser,
   handleDeleteUser,
 }) => {
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowActionDropdown(null);
+      }
+    };
+    if (showActionDropdown !== null) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showActionDropdown, setShowActionDropdown]);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-visible">
       <table className="w-full text-left">
         <thead className="border-b border-gray-200 bg-gray-50">
           <tr>
@@ -22,8 +36,10 @@ const UsersTable = ({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {users.map((user) => {
+          {users.map((user, index) => {
             const RoleIcon = roleConfig[user.role]?.icon || null;
+            // Open upward for last 2 rows to avoid clipping
+            const openUpward = index >= users.length - 2;
             return (
               <tr key={user.id} className="transition-colors hover:bg-gray-50">
                 <td className="px-6 py-4">
@@ -63,29 +79,41 @@ const UsersTable = ({
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="relative">
+                  <div
+                    className="relative"
+                    ref={showActionDropdown === user.id ? dropdownRef : null}
+                  >
                     <button
                       onClick={() =>
                         setShowActionDropdown(showActionDropdown === user.id ? null : user.id)
                       }
-                      className="rounded-lg p-2 hover:bg-gray-100"
+                      className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
                     >
-                      <EllipsisVertical className="h-4 w-4" />
+                      <EllipsisVertical className="h-5 w-5" />
                     </button>
                     {showActionDropdown === user.id && (
-                      <div className="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-gray-100 bg-white py-1 shadow-xl">
-                        <button
-                          onClick={() => handleEditUser(user)}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        >
-                          <Edit className="h-4 w-4" /> Edit User
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user)}
-                          className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" /> Delete User
-                        </button>
+                      <div
+                        className={`absolute right-0 z-50 w-44 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-200 ${
+                          openUpward ? 'bottom-full mb-1' : 'top-full mt-1'
+                        }`}
+                      >
+                        <div className="py-1">
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                          >
+                            <Edit className="h-4 w-4 text-gray-500" />
+                            Edit User
+                          </button>
+                          <div className="mx-3 border-t border-gray-100" />
+                          <button
+                            onClick={() => handleDeleteUser(user)}
+                            className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Delete User
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>

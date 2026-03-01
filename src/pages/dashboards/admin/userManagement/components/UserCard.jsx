@@ -4,7 +4,7 @@ import { Mail, Phone, Edit, Trash2 } from 'lucide-react';
 const UserCard = ({ user, roleConfig, onEdit, onDelete }) => {
   const RoleIcon = roleConfig[user.role]?.icon;
   return (
-    <div className="overflow-hidden rounded-lg border bg-white p-3 text-base shadow-sm sm:p-4">
+    <div className="overflow-hidden rounded-lg bg-white p-3 text-base shadow-md sm:p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal-500 font-bold text-white">

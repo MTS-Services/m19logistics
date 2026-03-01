@@ -176,11 +176,13 @@ const UsersManagement = () => {
     try {
       const response = await axiosInstance.delete(`/api/admin/users/${selectedUser.id}`);
 
-      if (response.data?.success) {
-        // Show success toast with backend message
-        toast.success(response.data.message || 'User deleted successfully');
-        // Remove user from list
-        setUsers(users.filter((u) => u.id !== selectedUser.id));
+      // 204 = no body; 200 must have success:true
+      const isSuccess =
+        response.status === 204 || (response.status === 200 && response.data?.success === true);
+
+      if (isSuccess) {
+        toast.success(response.data?.message || 'User deleted successfully');
+        setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
         setShowDeleteModal(false);
         setSelectedUser(null);
       } else {
