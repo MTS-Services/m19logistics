@@ -28,20 +28,11 @@ const Invoices = () => {
 
   // API states
   const [invoices, setInvoices] = useState([]);
+  const [apiSummary, setApiSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loadingInvoiceDetails, setLoadingInvoiceDetails] = useState(false);
   const [downloadingPDF, setDownloadingPDF] = useState({});
-
-  // Date range for filtering (default to current month)
-  const [startDate] = useState(() => {
-    const date = new Date();
-    return new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
-  });
-  const [endDate] = useState(() => {
-    const date = new Date();
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).toISOString().split('T')[0];
-  });
 
   // Helper function to calculate days from invoice date
   const getDaysFromInvoice = (dateString) => {
@@ -112,10 +103,7 @@ const Invoices = () => {
       setLoading(true);
       setError(null);
 
-      const params = {
-        startDate,
-        endDate,
-      };
+      const params = {};
 
       // Add isPaid filter based on status
       if (filterStatus === 'paid') {
@@ -127,10 +115,15 @@ const Invoices = () => {
       const response = await getAllInvoices(params);
 
       if (response.success && response.data) {
-        // Map and filter invoices efficiently
+        // Store API summary for stats cards
+        if (response.summary) {
+          setApiSummary(response.summary);
+        }
+
+        // Map all invoices
         const mappedInvoices = response.data.map(mapInvoiceData);
 
-        // Filter by status if needed
+        // Filter by status if needed (client-side)
         const filteredData =
           filterStatus === 'all'
             ? mappedInvoices
@@ -150,8 +143,19 @@ const Invoices = () => {
     }
   };
 
-  // Calculate statistics from all invoices (memoized for performance)
+  // Calculate statistics — use API summary when available
   const stats = useMemo(() => {
+    if (apiSummary) {
+      return {
+        total: apiSummary.totalInvoices || 0,
+        paid: invoices.filter((i) => i.status === 'Paid').length,
+        pending: invoices.filter((i) => i.status === 'Pending').length,
+        overdue: invoices.filter((i) => i.status === 'Overdue').length,
+        totalAmount: Number(apiSummary.totalAmount || 0),
+        paidAmount: Number(apiSummary.totalPaid || 0),
+        unpaidAmount: Number(apiSummary.totalUnpaid || 0),
+      };
+    }
     return {
       total: invoices.length,
       paid: invoices.filter((i) => i.status === 'Paid').length,
@@ -165,7 +169,7 @@ const Invoices = () => {
         .filter((i) => i.status !== 'Paid')
         .reduce((sum, inv) => sum + (inv.total || 0), 0),
     };
-  }, [invoices]);
+  }, [invoices, apiSummary]);
 
   // Filter invoices (memoized for performance)
   const filteredInvoices = useMemo(() => {
@@ -304,40 +308,60 @@ const Invoices = () => {
     }
   };
 
-  // Handle download Excel/PDF
+  // Handle download PDF
   const handleDownloadExcel = async (invoice) => {
     try {
-      // Set loading state for this specific invoice
       setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: true }));
-
       toast.info('Preparing invoice PDF...');
 
-      // Call API to export PDF
       const response = await exportInvoicePDF(invoice.id);
 
-      // Create blob from response
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+      // response.data is already a Blob (responseType: 'blob')
+      const blob = response.data;
 
-      // Create download link
+      // Check if the response is actually a PDF or an error JSON blob
+      const contentType = response.headers?.['content-type'] || '';
+      if (!contentType.includes('pdf') && !contentType.includes('octet-stream')) {
+        // API returned an error wrapped in a blob — read and display it
+        const text = await blob.text();
+        let msg = 'Failed to download invoice.';
+        try {
+          const json = JSON.parse(text);
+          msg = json.message || json.error || msg;
+        } catch {
+          msg = text || msg;
+        }
+        toast.error(msg);
+        return;
+      }
+
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `Invoice_${invoice.invoiceNumber}_${invoice.date}.pdf`);
-
-      // Trigger download
       document.body.appendChild(link);
       link.click();
-
-      // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
       toast.success(`Invoice ${invoice.invoiceNumber} downloaded successfully!`);
     } catch (err) {
       console.error('Error downloading invoice PDF:', err);
-      toast.error('Failed to download invoice. Please try again.');
+      // If error response is a blob, read the actual message
+      if (err?.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          toast.error(json.message || json.error || 'Failed to download invoice.');
+        } catch {
+          toast.error('Failed to download invoice. Please try again.');
+        }
+      } else {
+        toast.error(
+          err?.response?.data?.message || 'Failed to download invoice. Please try again.'
+        );
+      }
     } finally {
-      // Remove loading state
       setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: false }));
     }
   };
@@ -609,7 +633,7 @@ const Invoices = () => {
                             ) : (
                               <>
                                 <Download className="h-4 w-4" />
-                                Excel
+                                PDF
                               </>
                             )}
                           </button>
@@ -870,7 +894,7 @@ const Invoices = () => {
                   ) : (
                     <>
                       <Download className="h-4 w-4" />
-                      Download Excel
+                      Download PDF
                     </>
                   )}
                 </button>
