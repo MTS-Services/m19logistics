@@ -6,7 +6,6 @@ import {
   User,
   Calendar,
   FileText,
-  Navigation,
   CheckCircle,
   XCircle,
   Camera,
@@ -93,7 +92,9 @@ const AssignedDeliveries = () => {
     try {
       const response = await respondToDelivery(delivery.id, 'accept');
       if (response && response.success) {
-        setDeliveries(deliveries.map((d) => (d.id === delivery.id ? { ...d, status: 'Accepted' } : d)));
+        setDeliveries(
+          deliveries.map((d) => (d.id === delivery.id ? { ...d, status: 'Accepted' } : d))
+        );
         toast.success(`Delivery ${delivery.spoNumber} accepted`);
       }
     } catch (error) {
@@ -216,13 +217,6 @@ const AssignedDeliveries = () => {
     });
   };
 
-  // Handle navigate
-  const handleNavigate = (address) => {
-    const encodedAddress = encodeURIComponent(address);
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`, '_blank');
-    toast.success('Opening navigation...');
-  };
-
   // Handle call
   const handleCall = (phone) => {
     window.location.href = `tel:${phone}`;
@@ -332,13 +326,6 @@ const AssignedDeliveries = () => {
 
                   {/* Actions */}
                   <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-45">
-                    <button
-                      onClick={() => handleNavigate(delivery.deliveryAddress)}
-                      className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
-                    >
-                      <Navigation className="h-4 w-4" />
-                      Navigate
-                    </button>
                     <button
                       onClick={() => handleCall(delivery.customerPhone)}
                       className="flex items-center justify-center gap-2 rounded-md border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
