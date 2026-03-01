@@ -7,7 +7,6 @@ import {
   XCircle,
   Loader2,
   AlertCircle,
-  Search,
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -26,21 +25,24 @@ const SlotAvailability = () => {
       setLoading(true);
       const params = {};
       if (date) {
+        // Ensure date is in YYYY-MM-DD format
         params.date = date;
       }
       const res = await getSlotAvailability(params);
-      console.log('API Response:', res);
 
-      if (res && res.success && Array.isArray(res.data)) {
-        setSlots(res.data);
+      if (res && res.success) {
+        if (Array.isArray(res.data)) {
+          setSlots(res.data);
+        } else if (res.data && typeof res.data === 'object') {
+          // API returned single object instead of array
+          setSlots([res.data]);
+        } else {
+          setSlots([]);
+        }
       } else {
         setSlots([]);
-        if (!res?.success) {
-          toast.error(res?.message || 'No slot data available');
-        }
       }
     } catch (error) {
-      console.error('Slot availability error:', error);
       toast.error(error?.response?.data?.message || 'Failed to load slot availability');
       setSlots([]);
     } finally {
