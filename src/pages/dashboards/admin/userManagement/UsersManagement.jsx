@@ -172,21 +172,57 @@ const UsersManagement = () => {
   const confirmDelete = async () => {
     if (!selectedUser) return;
 
+    const deletingUserId = selectedUser.id;
     setIsDeleting(true);
     try {
-      const response = await axiosInstance.delete(`/api/admin/users/${selectedUser.id}`);
+      console.log('Deleting user ID:', deletingUserId);
+      const response = await axiosInstance.delete(`/api/admin/users/${deletingUserId}`);
+      console.log('Delete response status:', response.status);
+      console.log('Delete response data:', JSON.stringify(response.data));
 
-      // 204 = no body; 200 must have success:true
-      const isSuccess =
-        response.status === 204 || (response.status === 200 && response.data?.success === true);
+      setShowDeleteModal(false);
+      setSelectedUser(null);
 
-      if (isSuccess) {
-        toast.success(response.data?.message || 'User deleted successfully');
-        setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
-        setShowDeleteModal(false);
-        setSelectedUser(null);
-      } else {
-        throw new Error(response.data?.message || 'Failed to delete user');
+      // Always re-fetch to see the real server state
+      const res = await axiosInstance.get('/api/admin/users');
+      if (res.data?.success && Array.isArray(res.data.data)) {
+        const mapped = res.data.data.map((u) => ({
+          id: u.id,
+          name: u.fullName || u.username || u.email,
+          email: u.email,
+          phone: u.phone,
+          username: u.username,
+          role:
+            u.role === 'ADMIN'
+              ? 'admin'
+              : u.role === 'DRIVER'
+                ? 'driver'
+                : u.role === 'MANAGER'
+                  ? 'area_manager'
+                  : 'customer',
+          depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
+          pricingTier: u.customerProfile?.pricingTier?.name || null,
+          status: u.isActive ? 'active' : 'inactive',
+          passwordReset: !!u.requirePasswordReset,
+          profilePhoto: u.profilePicture || null,
+        }));
+
+        // Check if user still exists in the refreshed list
+        const stillExists = mapped.some((u) => u.id === deletingUserId);
+        setUsers(mapped);
+
+        if (stillExists) {
+          toast.error(
+            'Backend returned success but user was NOT deleted. This is a backend/server issue.'
+          );
+          console.error(
+            'DELETE API BUG: Server said success but user ID',
+            deletingUserId,
+            'still exists in GET /api/admin/users response'
+          );
+        } else {
+          toast.success('User deleted successfully');
+        }
       }
     } catch (err) {
       console.error('Error deleting user:', err);
