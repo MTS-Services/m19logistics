@@ -12,6 +12,7 @@ import {
   Clock,
   Home,
   ChevronDown,
+  CalendarCheck,
 } from 'lucide-react';
 
 const DriverDashboardLayout = () => {
@@ -36,6 +37,7 @@ const DriverDashboardLayout = () => {
       items: [
         { name: 'Assigned Deliveries', href: '/driver/assigned', icon: Clock },
         { name: 'Completed Deliveries', href: '/driver/completed', icon: CheckCircle },
+        { name: 'Slots Available', href: '/driver/slots', icon: CalendarCheck },
       ],
     },
     {

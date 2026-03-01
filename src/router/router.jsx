@@ -46,6 +46,7 @@ import DriverDashboardHome from '../pages/dashboards/driver/DriverDashboardHome'
 import AssignedDeliveries from '../pages/dashboards/driver/AssignedDeliveries';
 import CompletedDeliveries from '../pages/dashboards/driver/CompletedDeliveries';
 import DriverProfile from '../pages/dashboards/driver/DriverProfile';
+import DriverSlotAvailability from '../pages/dashboards/customer/SlotAvailability';
 
 // Dashboard pages - Area Manager
 import AreaManagerDashboardLayout from '../pages/dashboards/area-manager/AreaManagerDashboardLayout';
@@ -139,6 +140,7 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<DriverDashboardHome />} />
         <Route path="assigned" element={<AssignedDeliveries />} />
         <Route path="completed" element={<CompletedDeliveries />} />
+        <Route path="slots" element={<DriverSlotAvailability />} />
         <Route path="profile" element={<DriverProfile />} />
       </Route>
 
