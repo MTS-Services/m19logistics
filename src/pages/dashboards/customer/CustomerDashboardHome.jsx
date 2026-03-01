@@ -4,6 +4,7 @@ import {
   getAllDeliveries,
   getDeliveryStats,
   cancelDelivery,
+  getDeliveryById,
 } from '../../../services/deliveryService';
 import {
   Package,
@@ -20,6 +21,14 @@ import {
   Weight,
   AlertCircle,
   Loader2,
+  Phone,
+  Mail,
+  FileText,
+  TrendingUp,
+  DollarSign,
+  Truck,
+  Image as ImageIcon,
+  PenTool,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
@@ -31,6 +40,8 @@ const CustomerDashboardHome = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [selectedDelivery, setSelectedDelivery] = useState(null);
+  const [detailedDelivery, setDetailedDelivery] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -178,9 +189,23 @@ const CustomerDashboardHome = () => {
   };
 
   // Handle view delivery
-  const handleViewDelivery = (delivery) => {
-    setSelectedDelivery(delivery);
-    setShowViewModal(true);
+  const handleViewDelivery = async (delivery) => {
+    try {
+      setLoadingDetails(true);
+      setShowViewModal(true);
+      const id = delivery.id || delivery._id;
+      const res = await getDeliveryById(id);
+      if (res?.data) {
+        setDetailedDelivery(res.data);
+      } else {
+        setDetailedDelivery(delivery);
+      }
+    } catch {
+      toast.error('Failed to load delivery details');
+      setDetailedDelivery(delivery);
+    } finally {
+      setLoadingDetails(false);
+    }
   };
 
   // Handle edit delivery
@@ -724,136 +749,301 @@ const CustomerDashboardHome = () => {
         )}
 
         {/* View Delivery Modal */}
-        {showViewModal && selectedDelivery && (
+        {showViewModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
+            <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
               <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
                 <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
                   Delivery Details
                 </h2>
                 <button
-                  onClick={() => setShowViewModal(false)}
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setDetailedDelivery(null);
+                  }}
                   className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
                 >
                   <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                 </button>
               </div>
 
-              <div className="space-y-4 p-4 sm:p-6">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="text-xl font-bold text-gray-900">
-                    {selectedDelivery.spoNumber}
-                  </span>
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${getStatusColor(selectedDelivery.status)}`}
-                  >
-                    {selectedDelivery.status}
-                  </span>
+              {loadingDetails ? (
+                <div className="flex items-center justify-center gap-3 p-12">
+                  <Loader2 className="h-6 w-6 animate-spin text-teal-600" />
+                  <span className="text-gray-600">Loading delivery details...</span>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Date</p>
-                    <p className="text-base font-semibold text-gray-900">{selectedDelivery.date}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Time Slot</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.timeSlot}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Weight</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.weight}kg
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Distance</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.distance} miles
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-600">Delivery Address</p>
-                  <p className="text-base font-semibold text-gray-900">
-                    {selectedDelivery.address}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Customer Name</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.customerName}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.phone}
-                    </p>
-                  </div>
-                </div>
-
-                {selectedDelivery.requestedBy && (
-                  <div>
-                    <p className="text-sm text-gray-600">Requested By</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.requestedBy}
-                    </p>
-                  </div>
-                )}
-
-                {selectedDelivery.instructions && (
-                  <div className="rounded-lg bg-teal-50 p-4">
-                    <p className="mb-1 text-sm text-gray-600">Special Instructions</p>
-                    <p className="text-base text-gray-900">{selectedDelivery.instructions}</p>
-                  </div>
-                )}
-
-                <div>
-                  <p className="text-sm text-gray-600">Estimated Cost</p>
-                  <p className="text-2xl font-bold text-teal-600">
-                    Â£{selectedDelivery.estimatedCost.toFixed(2)}
-                  </p>
-                </div>
-
-                {selectedDelivery.driver && (
-                  <div className="rounded-lg bg-blue-50 p-4">
-                    <p className="mb-1 text-sm text-gray-600">Assigned Driver</p>
-                    <p className="text-base font-semibold text-gray-900">
-                      {selectedDelivery.driver}
-                    </p>
-                  </div>
-                )}
-
-                {selectedDelivery.status === 'Delivered' && (
-                  <div className="rounded-lg bg-green-50 p-4">
-                    <p className="mb-2 text-sm text-gray-600">Delivery Confirmation</p>
-                    <p className="text-sm text-gray-900">
-                      <span className="font-semibold">Received By:</span>{' '}
-                      {selectedDelivery.receivedBy}
-                    </p>
-                    <p className="text-sm text-gray-900">
-                      <span className="font-semibold">Delivered At:</span>{' '}
-                      {selectedDelivery.deliveredAt}
-                    </p>
-                    {selectedDelivery.driverNotes && (
-                      <p className="mt-2 text-sm text-gray-900">
-                        <span className="font-semibold">Driver Notes:</span>{' '}
-                        {selectedDelivery.driverNotes}
+              ) : detailedDelivery ? (
+                <div className="space-y-4 p-4 sm:p-6">
+                  {/* Header with SPO Number and Status */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-teal-200 bg-teal-50 p-4">
+                    <div>
+                      <p className="text-sm text-gray-600">SPO Number</p>
+                      <p className="text-xl font-bold text-gray-900">
+                        {detailedDelivery.spoNumber}
                       </p>
+                    </div>
+                    <span
+                      className={`rounded-full px-4 py-1.5 text-sm font-semibold ${getStatusColor(detailedDelivery.status)}`}
+                    >
+                      {detailedDelivery.status}
+                    </span>
+                  </div>
+
+                  {/* Delivery Information */}
+                  <div className="rounded-lg border border-gray-200 bg-white p-4">
+                    <h3 className="mb-3 text-base font-bold text-gray-900">Delivery Information</h3>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                      <div>
+                        <p className="text-xs text-gray-600">Delivery Date</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.deliveryDate
+                            ? new Date(detailedDelivery.deliveryDate).toLocaleDateString('en-GB')
+                            : '—'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Time Slot</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.timeSlot}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Weight</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.weight}kg
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Distance from Depot</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.distanceFromDepot} miles
+                        </p>
+                      </div>
+                      <div className="col-span-1 md:col-span-2">
+                        <p className="text-xs text-gray-600">Delivery Address</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.deliveryAddress}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Customer Name</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.customerName}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Customer Phone</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.customerPhone}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Requested By</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {detailedDelivery.requestedBy || '—'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {detailedDelivery.specialInstructions && (
+                      <div className="mt-3 rounded-lg bg-teal-50 p-3">
+                        <p className="text-xs font-semibold text-gray-700">Special Instructions</p>
+                        <p className="mt-1 text-sm text-gray-900">
+                          {detailedDelivery.specialInstructions}
+                        </p>
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
+
+                  {/* Customer Information */}
+                  {detailedDelivery.customer && (
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <h3 className="mb-3 text-base font-bold text-gray-900">Customer Account</h3>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div>
+                          <p className="text-xs text-gray-600">Full Name</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {detailedDelivery.customer.fullName}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">Email</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {detailedDelivery.customer.email}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-600">Phone</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {detailedDelivery.customer.phone}
+                          </p>
+                        </div>
+                        {detailedDelivery.customer.customerProfile?.depotAddress && (
+                          <div>
+                            <p className="text-xs text-gray-600">Depot Address</p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {detailedDelivery.customer.customerProfile.depotAddress}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pricing */}
+                  <div className="rounded-lg border border-teal-200 bg-teal-50 p-4">
+                    <h3 className="mb-3 text-base font-bold text-gray-900">Pricing</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Base Price</span>
+                        <span className="font-semibold text-gray-900">
+                          £{parseFloat(detailedDelivery.calculatedBasePrice || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Distance Surcharge</span>
+                        <span className="font-semibold text-gray-900">
+                          £{parseFloat(detailedDelivery.distanceSurcharge || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="font-semibold text-gray-900">
+                          £{parseFloat(detailedDelivery.subtotal || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">VAT</span>
+                        <span className="font-semibold text-gray-900">
+                          £{parseFloat(detailedDelivery.vatAmount || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-t border-teal-300 pt-2">
+                        <span className="font-bold text-gray-900">Total Price</span>
+                        <span className="text-lg font-bold text-teal-600">
+                          £{parseFloat(detailedDelivery.totalPrice || 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Driver (if allocated) */}
+                  {detailedDelivery.driver && (
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                      <h3 className="mb-3 text-base font-bold text-gray-900">Driver</h3>
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-900">
+                          <span className="font-semibold">Name:</span>{' '}
+                          {detailedDelivery.driver.fullName || detailedDelivery.driver.name || '—'}
+                        </p>
+                        {detailedDelivery.acceptedAt && (
+                          <p className="text-sm text-gray-900">
+                            <span className="font-semibold">Accepted At:</span>{' '}
+                            {new Date(detailedDelivery.acceptedAt).toLocaleString('en-GB')}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Delivery Status Details */}
+                  {detailedDelivery.deliveredAt && (
+                    <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                      <h3 className="mb-3 text-base font-bold text-gray-900">Delivery Complete</h3>
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-900">
+                          <span className="font-semibold">Delivered At:</span>{' '}
+                          {new Date(detailedDelivery.deliveredAt).toLocaleString('en-GB')}
+                        </p>
+                        {detailedDelivery.receivedBy && (
+                          <p className="text-sm text-gray-900">
+                            <span className="font-semibold">Received By:</span>{' '}
+                            {detailedDelivery.receivedBy}
+                          </p>
+                        )}
+                        {detailedDelivery.signatureUrl && (
+                          <p className="text-sm">
+                            <a
+                              href={detailedDelivery.signatureUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-green-700 underline hover:text-green-800"
+                            >
+                              View Signature
+                            </a>
+                          </p>
+                        )}
+                        {detailedDelivery.photoUrl && (
+                          <p className="text-sm">
+                            <a
+                              href={detailedDelivery.photoUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-green-700 underline hover:text-green-800"
+                            >
+                              View Photo
+                            </a>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {detailedDelivery.cancelledAt && (
+                    <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
+                      <h3 className="mb-3 text-base font-bold text-gray-900">Cancelled</h3>
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-900">
+                          <span className="font-semibold">Cancelled At:</span>{' '}
+                          {new Date(detailedDelivery.cancelledAt).toLocaleString('en-GB')}
+                        </p>
+                        {detailedDelivery.cancelledBy && (
+                          <p className="text-sm text-gray-900">
+                            <span className="font-semibold">Cancelled By:</span>{' '}
+                            {detailedDelivery.cancelledBy}
+                          </p>
+                        )}
+                        {detailedDelivery.cancellationReason && (
+                          <p className="text-sm text-gray-900">
+                            <span className="font-semibold">Reason:</span>{' '}
+                            {detailedDelivery.cancellationReason}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {detailedDelivery.rejectedAt && (
+                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
+                      <h3 className="mb-3 text-base font-bold text-gray-900">Rejected</h3>
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-900">
+                          <span className="font-semibold">Rejected At:</span>{' '}
+                          {new Date(detailedDelivery.rejectedAt).toLocaleString('en-GB')}
+                        </p>
+                        {detailedDelivery.rejectionReason && (
+                          <p className="text-sm text-gray-900">
+                            <span className="font-semibold">Reason:</span>{' '}
+                            {detailedDelivery.rejectionReason}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-12 text-center">
+                  <AlertCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                  <p className="text-gray-600">No delivery details available</p>
+                </div>
+              )}
 
               <div className="sticky bottom-0 z-10 flex justify-end border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
                 <button
-                  onClick={() => setShowViewModal(false)}
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setDetailedDelivery(null);
+                  }}
                   className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
                 >
                   Close
