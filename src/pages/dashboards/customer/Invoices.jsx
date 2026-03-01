@@ -820,7 +820,7 @@ const Invoices = () => {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-between gap-3 border-t border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
                 <button
                   onClick={() => setShowViewModal(false)}
                   className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50"
