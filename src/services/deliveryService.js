@@ -19,6 +19,12 @@ export const getDeliveryById = async (id) => {
   return response.data;
 };
 
+// Update delivery
+export const updateDelivery = async (id, deliveryData) => {
+  const response = await axiosInstance.put(ENDPOINT.API.DELIVERY.UPDATE(id), deliveryData);
+  return response.data;
+};
+
 // Get delivery dashboard stats
 export const getDeliveryStats = async () => {
   const response = await axiosInstance.get(ENDPOINT.API.DELIVERY.STATS);

@@ -5,6 +5,7 @@ import {
   getDeliveryStats,
   cancelDelivery,
   getDeliveryById,
+  updateDelivery,
 } from '../../../services/deliveryService';
 import {
   Package,
@@ -219,11 +220,27 @@ const CustomerDashboardHome = () => {
   };
 
   // Handle save edit
-  const handleSaveEdit = () => {
-    setDeliveries(deliveries.map((d) => (d.id === selectedDelivery.id ? selectedDelivery : d)));
-    setShowEditModal(false);
-    setSelectedDelivery(null);
-    toast.success('Delivery updated successfully!');
+  const handleSaveEdit = async () => {
+    try {
+      const id = selectedDelivery.id || selectedDelivery._id;
+      const updateData = {
+        timeSlot: selectedDelivery.timeSlot,
+        weight: parseInt(selectedDelivery.weight),
+        deliveryAddress: selectedDelivery.deliveryAddress,
+        customerName: selectedDelivery.customerName,
+        customerPhone: selectedDelivery.customerPhone,
+        spoNumber: selectedDelivery.spoNumber,
+        specialInstructions: selectedDelivery.specialInstructions || '',
+      };
+      await updateDelivery(id, updateData);
+      toast.success('Delivery updated successfully!');
+      setShowEditModal(false);
+      setSelectedDelivery(null);
+      fetchStats();
+      fetchDeliveries(filterStatus);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to update delivery');
+    }
   };
 
   // Handle cancel delivery
@@ -1073,21 +1090,24 @@ const CustomerDashboardHome = () => {
               </div>
 
               <div className="space-y-4 p-4 sm:p-6">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    SPO Number *
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedDelivery.spoNumber}
+                    onChange={(e) =>
+                      setSelectedDelivery({ ...selectedDelivery, spoNumber: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">Date</label>
-                    <input
-                      type="date"
-                      value={selectedDelivery.date}
-                      onChange={(e) =>
-                        setSelectedDelivery({ ...selectedDelivery, date: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                  <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Time Slot
+                      Time Slot *
                     </label>
                     <select
                       value={selectedDelivery.timeSlot}
@@ -1100,20 +1120,62 @@ const CustomerDashboardHome = () => {
                       <option value="PM">PM</option>
                     </select>
                   </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                      Weight (kg) *
+                    </label>
+                    <input
+                      type="number"
+                      value={selectedDelivery.weight}
+                      onChange={(e) =>
+                        setSelectedDelivery({ ...selectedDelivery, weight: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Delivery Address
+                    Delivery Address *
                   </label>
                   <input
                     type="text"
-                    value={selectedDelivery.address}
+                    value={selectedDelivery.deliveryAddress}
                     onChange={(e) =>
-                      setSelectedDelivery({ ...selectedDelivery, address: e.target.value })
+                      setSelectedDelivery({ ...selectedDelivery, deliveryAddress: e.target.value })
                     }
                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                      Customer Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedDelivery.customerName}
+                      onChange={(e) =>
+                        setSelectedDelivery({ ...selectedDelivery, customerName: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                      Customer Phone *
+                    </label>
+                    <input
+                      type="tel"
+                      value={selectedDelivery.customerPhone}
+                      onChange={(e) =>
+                        setSelectedDelivery({ ...selectedDelivery, customerPhone: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -1121,9 +1183,12 @@ const CustomerDashboardHome = () => {
                     Special Instructions
                   </label>
                   <textarea
-                    value={selectedDelivery.instructions}
+                    value={selectedDelivery.specialInstructions || ''}
                     onChange={(e) =>
-                      setSelectedDelivery({ ...selectedDelivery, instructions: e.target.value })
+                      setSelectedDelivery({
+                        ...selectedDelivery,
+                        specialInstructions: e.target.value,
+                      })
                     }
                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
                     rows="3"
