@@ -512,6 +512,16 @@ const DeliveryHistory = () => {
               Delivered
             </button>
             <button
+              onClick={() => handleFilterChange('cancelled')}
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
+                filterStatus === 'cancelled'
+                  ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                  : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              Cancelled
+            </button>
+            <button
               onClick={handleExportCSV}
               className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 sm:gap-2 sm:px-4 sm:text-sm"
             >
