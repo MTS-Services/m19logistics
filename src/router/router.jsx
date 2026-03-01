@@ -35,6 +35,7 @@ import CustomerDashboard from '../pages/dashboards/customer/CustomerDashboard';
 import CustomerDashboardHome from '../pages/dashboards/customer/CustomerDashboardHome';
 import NewDelivery from '../pages/dashboards/customer/NewDelivery';
 import DeliveryHistory from '../pages/dashboards/customer/DeliveryHistory';
+import SlotAvailability from '../pages/dashboards/customer/SlotAvailability';
 import CustomerInvoices from '../pages/dashboards/customer/Invoices';
 import CustomerProfile from '../pages/dashboards/customer/Profile';
 import AuditLogs from '../pages/dashboards/customer/auditLogs/AuditLogs';
@@ -119,6 +120,7 @@ const router = createBrowserRouter(
         <Route index element={<CustomerDashboardHome />} />
         <Route path="new-delivery" element={<NewDelivery />} />
         <Route path="deliveries" element={<DeliveryHistory />} />
+        <Route path="slot-available" element={<SlotAvailability />} />
         <Route path="invoices" element={<CustomerInvoices />} />
         <Route path="audit-logs" element={<AuditLogs />} />
         <Route path="profile" element={<CustomerProfile />} />

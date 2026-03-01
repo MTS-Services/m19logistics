@@ -76,5 +76,8 @@ export const ENDPOINT = {
       UPDATE_SYSTEM: '/api/admin/settings/system',
       INVOICE_GEN_CONFIG: '/api/admin/settings/invoice-generation',
     },
+    SLOT: {
+      AVAILABILITY: '/api/public/slots/availability',
+    },
   },
 };
