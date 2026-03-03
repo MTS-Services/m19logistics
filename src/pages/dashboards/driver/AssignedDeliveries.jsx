@@ -417,7 +417,7 @@ const AssignedDeliveries = () => {
 
         {/* Complete Delivery Modal */}
         {showCompleteModal && (
-          <div className="bg-opacity-50 fixed inset-0 z-50 overflow-y-auto bg-black p-4">
+          <div className="bg-opacity-50 fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4">
             <div className="mx-auto my-8 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-gray-900">Complete Delivery</h2>

@@ -209,6 +209,25 @@ const DriverManagement = () => {
     setSelectedDriver(null);
   };
 
+  const handleToggleStatus = async (driver) => {
+    try {
+      const action = driver.status === 'inactive' ? 'activate' : 'deactivate';
+      const response = await axiosInstance.post(`/api/admin/users/${driver.id}/toggle-status`);
+
+      if (response.data.success) {
+        toast.success(`Driver ${action}d successfully!`);
+        fetchDrivers(); // Refresh the driver list
+      } else {
+        toast.error(`Failed to ${action} driver`);
+      }
+    } catch (err) {
+      console.error('Error toggling driver status:', err);
+      toast.error(err.response?.data?.message || 'Failed to update driver status');
+    } finally {
+      setShowActionDropdown(null);
+    }
+  };
+
   return (
     <div className="p-2 sm:p-6">
       <div className="space-y-6">
@@ -382,9 +401,8 @@ const DriverManagement = () => {
                                     </div>
                                   )}
                                   <div
-                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${
-                                      driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                    }`}
+                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                      }`}
                                   ></div>
                                 </div>
                                 <div>
@@ -471,6 +489,7 @@ const DriverManagement = () => {
                                     onEdit={handleEditDriver}
                                     onResetPassword={handleResetPassword}
                                     onDelete={handleDeleteDriver}
+                                    onToggleStatus={handleToggleStatus}
                                   />
                                 )}
                               </div>
@@ -501,9 +520,8 @@ const DriverManagement = () => {
                                 </div>
                               )}
                               <div
-                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${
-                                  driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                }`}
+                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                  }`}
                               ></div>
                             </div>
                             <div>
@@ -589,6 +607,7 @@ const DriverManagement = () => {
                                 onEdit={handleEditDriver}
                                 onResetPassword={handleResetPassword}
                                 onDelete={handleDeleteDriver}
+                                onToggleStatus={handleToggleStatus}
                               />
                             )}
                           </div>

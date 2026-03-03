@@ -784,6 +784,13 @@ const DropdownMenu = ({
     if (delivery) handleDeleteDelivery(delivery);
   };
 
+  // Get current delivery to check its status
+  const currentDelivery = filteredDeliveries.find((d) => d.id === showActionDropdown);
+  // Don't show "Allocate" option if status is Allocated or Delivered
+  const shouldShowAllocate =
+    currentDelivery?.status !== 'Allocated' &&
+    currentDelivery?.status !== 'Delivered';
+
   return (
     <div
       ref={dropdownRef}
@@ -806,16 +813,18 @@ const DropdownMenu = ({
           <Eye className="h-4 w-4" />
           View Details
         </button>
-        <button
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
-          onClick={handleAllocate}
-          className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-teal-50"
-        >
-          <UserCheck className="h-4 w-4" />
-          Allocate
-        </button>
+        {shouldShowAllocate && (
+          <button
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
+            onClick={handleAllocate}
+            className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-teal-50"
+          >
+            <UserCheck className="h-4 w-4" />
+            Allocate
+          </button>
+        )}
         <button
           onMouseDown={(e) => {
             e.stopPropagation();

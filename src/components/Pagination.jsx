@@ -63,43 +63,42 @@ const Pagination = ({
   if (totalPages <= 1) return null;
 
   const containerClass = compact
-    ? 'flex flex-col items-center justify-between gap-3 w-full sm:flex-row sm:gap-4'
-    : 'flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:px-6';
+    ? 'flex flex-col items-center justify-center gap-3 w-full sm:flex-row sm:justify-between sm:gap-4'
+    : 'flex flex-col items-center justify-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 shadow-sm sm:flex-row sm:justify-between sm:gap-4 sm:px-6';
 
   return (
     <div className={containerClass}>
       {/* Items count */}
-      <div className="text-sm text-gray-600">
+      <div className="text-center text-xs text-gray-600 sm:text-left sm:text-sm">
         Showing <span className="font-semibold text-gray-900">{startItem}</span> to{' '}
         <span className="font-semibold text-gray-900">{endItem}</span> of{' '}
         <span className="font-semibold text-gray-900">{totalItems}</span> results
       </div>
 
       {/* Pagination controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         {/* Previous button */}
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
-            currentPage === 1
+          className={`inline-flex items-center justify-center rounded-lg border px-2 py-1.5 text-xs font-medium transition-all sm:px-3 sm:py-2 sm:text-sm ${currentPage === 1
               ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
               : 'border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-gray-50 hover:text-teal-600'
-          }`}
+            }`}
           aria-label="Previous page"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
           <span className="ml-1 hidden sm:inline">Previous</span>
         </button>
 
         {/* Page numbers */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           {getPageNumbers().map((page, index) => {
             if (page === '...') {
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-2 py-2 text-sm font-medium text-gray-400"
+                  className="px-1 py-1 text-xs font-medium text-gray-400 sm:px-2 sm:py-2 sm:text-sm"
                 >
                   ...
                 </span>
@@ -110,11 +109,10 @@ const Pagination = ({
               <button
                 key={page}
                 onClick={() => onPageChange(page)}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${
-                  currentPage === page
-                    ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md'
+                className={`inline-flex h-7 w-7 items-center justify-center rounded-lg text-xs font-semibold transition-all sm:h-9 sm:w-9 sm:text-sm ${currentPage === page
+                    ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                     : 'border border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-teal-50 hover:text-teal-600'
-                }`}
+                  }`}
                 aria-label={`Go to page ${page}`}
                 aria-current={currentPage === page ? 'page' : undefined}
               >
@@ -128,15 +126,14 @@ const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
-            currentPage === totalPages
+          className={`inline-flex items-center justify-center rounded-lg border px-2 py-1.5 text-xs font-medium transition-all sm:px-3 sm:py-2 sm:text-sm ${currentPage === totalPages
               ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
               : 'border-gray-300 bg-white text-gray-700 hover:border-teal-500 hover:bg-gray-50 hover:text-teal-600'
-          }`}
+            }`}
           aria-label="Next page"
         >
           <span className="mr-1 hidden sm:inline">Next</span>
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
         </button>
       </div>
     </div>

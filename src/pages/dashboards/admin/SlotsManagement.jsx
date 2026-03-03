@@ -244,15 +244,14 @@ const SlotsManagement = () => {
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-200 sm:h-3">
             <div
-              className={`h-full transition-all ${
-                utilization >= 90
-                  ? 'bg-red-600'
-                  : utilization >= 70
-                    ? 'bg-orange-500'
-                    : utilization >= 50
-                      ? 'bg-yellow-500'
-                      : 'bg-green-500'
-              }`}
+              className={`h-full transition-all ${utilization >= 90
+                ? 'bg-red-600'
+                : utilization >= 70
+                  ? 'bg-orange-500'
+                  : utilization >= 50
+                    ? 'bg-yellow-500'
+                    : 'bg-green-500'
+                }`}
               style={{ width: `${utilization}%` }}
             ></div>
           </div>
@@ -276,7 +275,7 @@ const SlotsManagement = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6">
+    <div className="p-3 sm:p-6">
       <ToastContainer position="top-right" autoClose={3000} />
 
       <div className="space-y-4 sm:space-y-6">
@@ -384,7 +383,7 @@ const SlotsManagement = () => {
           <>
             {/* Mobile Card View */}
             <div className="block lg:hidden">
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {paginatedSlots.map((slot) => {
                   const available = slot.maxCapacity - slot.booked;
                   const utilization = ((slot.booked / slot.maxCapacity) * 100).toFixed(0);
@@ -406,11 +405,10 @@ const SlotsManagement = () => {
                           </span>
                         </div>
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            slot.timeSlot === 'AM'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-purple-100 text-purple-800'
-                          }`}
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${slot.timeSlot === 'AM'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-purple-100 text-purple-800'
+                            }`}
                         >
                           {slot.timeSlot}
                         </span>
@@ -444,15 +442,14 @@ const SlotsManagement = () => {
                           </div>
                           <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-200">
                             <div
-                              className={`h-full transition-all ${
-                                utilization > 75
-                                  ? 'bg-red-500'
-                                  : utilization > 50
-                                    ? 'bg-orange-500'
-                                    : utilization > 25
-                                      ? 'bg-yellow-500'
-                                      : 'bg-green-500'
-                              }`}
+                              className={`h-full transition-all ${utilization > 75
+                                ? 'bg-red-500'
+                                : utilization > 50
+                                  ? 'bg-orange-500'
+                                  : utilization > 25
+                                    ? 'bg-yellow-500'
+                                    : 'bg-green-500'
+                                }`}
                               style={{ width: `${utilization}%` }}
                             />
                           </div>
@@ -461,11 +458,10 @@ const SlotsManagement = () => {
                         {/* Status and Action */}
                         <div className="flex items-center justify-between pt-2">
                           <span
-                            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                              slot.isFull
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-green-100 text-green-800'
-                            }`}
+                            className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${slot.isFull
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-green-100 text-green-800'
+                              }`}
                           >
                             {slot.isFull ? 'FULL' : 'AVAILABLE'}
                           </span>
@@ -485,7 +481,7 @@ const SlotsManagement = () => {
 
               {/* Mobile Pagination */}
               {totalPages > 1 && (
-                <div className="mt-4">
+                <div className="mt-4 sm:mt-6">
                   <Pagination
                     currentPage={validCurrentPage}
                     totalPages={totalPages}
@@ -594,11 +590,10 @@ const SlotsManagement = () => {
                               </td>
                               <td className="px-4 py-4 whitespace-nowrap sm:px-6">
                                 <span
-                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                                    slot.timeSlot === 'AM'
-                                      ? 'bg-blue-100 text-blue-800'
-                                      : 'bg-purple-100 text-purple-800'
-                                  }`}
+                                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${slot.timeSlot === 'AM'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-purple-100 text-purple-800'
+                                    }`}
                                 >
                                   {slot.timeSlot}
                                 </span>
@@ -619,15 +614,14 @@ const SlotsManagement = () => {
                                   </span>
                                   <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-200">
                                     <div
-                                      className={`h-full transition-all ${
-                                        utilization > 75
-                                          ? 'bg-red-500'
-                                          : utilization > 50
-                                            ? 'bg-orange-500'
-                                            : utilization > 25
-                                              ? 'bg-yellow-500'
-                                              : 'bg-green-500'
-                                      }`}
+                                      className={`h-full transition-all ${utilization > 75
+                                        ? 'bg-red-500'
+                                        : utilization > 50
+                                          ? 'bg-orange-500'
+                                          : utilization > 25
+                                            ? 'bg-yellow-500'
+                                            : 'bg-green-500'
+                                        }`}
                                       style={{ width: `${utilization}%` }}
                                     />
                                   </div>
@@ -635,11 +629,10 @@ const SlotsManagement = () => {
                               </td>
                               <td className="px-4 py-4 text-center whitespace-nowrap sm:px-6">
                                 <span
-                                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                    slot.isFull
-                                      ? 'bg-red-100 text-red-800'
-                                      : 'bg-green-100 text-green-800'
-                                  }`}
+                                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${slot.isFull
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-green-100 text-green-800'
+                                    }`}
                                 >
                                   {slot.isFull ? 'FULL' : 'AVAILABLE'}
                                 </span>
@@ -662,7 +655,7 @@ const SlotsManagement = () => {
 
                   {/* Pagination inside table container */}
                   {totalPages > 1 && (
-                    <div className="border-t border-gray-200 px-0 py-0">
+                    <div className="border-t border-gray-200 bg-gray-50 px-4 py-4 sm:px-6">
                       <Pagination
                         currentPage={validCurrentPage}
                         totalPages={totalPages}
