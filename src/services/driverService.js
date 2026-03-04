@@ -41,3 +41,22 @@ export const respondToDelivery = async (deliveryId, action, reason = null) => {
   const response = await axiosInstance.post(`/api/driver/deliveries/${deliveryId}/respond`, body);
   return response.data;
 };
+
+/**
+ * Upload delivery proof (photo, signature, and notes)
+ * @param {number} deliveryId - Delivery ID
+ * @param {FormData} formData - FormData containing photo, signature, receivedBy, and driverNotes
+ * @returns {Promise} Promise with upload response data
+ */
+export const uploadDeliveryProof = async (deliveryId, formData) => {
+  const response = await axiosInstance.post(
+    `/api/driver/deliveries/${deliveryId}/upload-proof`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
+  );
+  return response.data;
+};

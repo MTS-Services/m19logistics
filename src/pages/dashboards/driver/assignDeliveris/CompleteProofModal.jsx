@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Camera } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { getToken } from '../../../../utils/storage';
+import { uploadDeliveryProof } from '../../../../services/driverService';
 
 const CompleteProofModal = ({
     isOpen,
@@ -63,52 +63,27 @@ const CompleteProofModal = ({
             formData.append('receivedBy', completionData.receivedBy);
             formData.append('driverNotes', completionData.driverNotes);
 
-            // Call API to upload proof
-            const token = getToken();
-            const response = await fetch(
-                `/api/driver/deliveries/${selectedDelivery.id}/upload-proof`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: formData,
-                }
-            );
+            // Call API to upload proof using driverService
+            const result = await uploadDeliveryProof(selectedDelivery.id, formData);
+            console.log('Upload successful:', result);
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Upload successful:', result);
+            // Show success toast from backend
+            toast.success(result.message || 'Proof uploaded successfully');
 
-                // Show success toast from backend
-                toast.success(result.message || 'Proof uploaded successfully');
+            // Call onSuccess callback with response data
+            onSuccess(result.data);
 
-                // Call onSuccess callback with response data
-                onSuccess(result.data);
-
-                // Reset modal data
-                onCompletionDataChange({
-                    photo: null,
-                    signature: null,
-                    receivedBy: '',
-                    driverNotes: '',
-                });
-            } else {
-                // Try to parse error message, fallback if not JSON
-                let errorMessage = 'Failed to upload proof';
-                try {
-                    const error = await response.json();
-                    errorMessage = error.message || errorMessage;
-                } catch {
-                    // Response is not JSON, use status text
-                    errorMessage = response.statusText || errorMessage;
-                }
-                console.error('Upload failed:', response.status, errorMessage);
-                toast.error(errorMessage);
-            }
+            // Reset modal data
+            onCompletionDataChange({
+                photo: null,
+                signature: null,
+                receivedBy: '',
+                driverNotes: '',
+            });
         } catch (error) {
             console.error('Error uploading proof:', error);
-            toast.error('Error uploading proof. Please try again.');
+            const errorMessage = error.response?.data?.message || error.message || 'Error uploading proof. Please try again.';
+            toast.error(errorMessage);
         }
     };
 
