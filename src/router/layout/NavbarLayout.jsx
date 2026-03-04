@@ -36,8 +36,8 @@ const NavbarLayout = () => {
   return (
     <nav
       className={`fixed top-0 right-0 left-0 z-20 border-b transition-all duration-300 ${isScrolled
-          ? 'border-gray-400/5 bg-white/40 shadow-lg backdrop-blur-md'
-          : 'border-gray-200 bg-white shadow-sm'
+        ? 'border-gray-400/5 bg-white/40 shadow-lg backdrop-blur-md'
+        : 'border-gray-200 bg-white shadow-sm'
         }`}
     >
       <div className="container mx-auto px-4">
@@ -55,10 +55,10 @@ const NavbarLayout = () => {
                   key={item.name}
                   to={item.href}
                   className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${isActive(item.href)
-                      ? ' text-[#31A2A2]'
-                      : isScrolled
-                        ? 'text-gray-800 hover:text-[#31A2A2]'
-                        : 'text-gray-500 hover:text-[#31A2A2]'
+                    ? ' text-[#31A2A2]'
+                    : isScrolled
+                      ? 'text-gray-800 hover:text-[#31A2A2]'
+                      : 'text-gray-500 hover:text-[#31A2A2]'
                     }`}
                 >
                   {item.name}
@@ -82,8 +82,8 @@ const NavbarLayout = () => {
                             : '/customer'
                   }
                   className={`rounded-md px-4 py-2.5 text-base font-[500] transition-all ${isScrolled
-                      ? 'text-gray-800 hover:text-[#31A2A2]'
-                      : 'text-gray-500 hover:text-[#31A2A2]'
+                    ? 'text-gray-800 hover:text-[#31A2A2]'
+                    : 'text-gray-500 hover:text-[#31A2A2]'
                     }`}
                 >
                   <span>Dashboard</span>
@@ -132,8 +132,8 @@ const NavbarLayout = () => {
                   to={item.href}
                   onClick={() => setIsOpen(false)}
                   className={`group flex items-center space-x-3 rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ${isActive(item.href)
-                      ? 'bg-teal-50 text-teal-600 shadow-sm'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-teal-600'
+                    ? 'bg-teal-50 text-teal-600 shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-teal-600'
                     }`}
                   style={{
                     animation: isOpen ? `slideIn 0.3s ease-out ${index * 0.05}s forwards` : 'none',
@@ -143,8 +143,8 @@ const NavbarLayout = () => {
                 >
                   <Icon
                     className={`h-5 w-5 transition-colors ${isActive(item.href)
-                        ? 'text-teal-600'
-                        : 'text-gray-400 group-hover:text-teal-500'
+                      ? 'text-teal-600'
+                      : 'text-gray-400 group-hover:text-teal-500'
                       }`}
                   />
                   <span>{item.name}</span>
