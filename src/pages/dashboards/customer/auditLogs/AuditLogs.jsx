@@ -50,7 +50,7 @@ const AuditLogs = () => {
     const [selectedLog, setSelectedLog] = useState(null);
     const [isViewLoading, setIsViewLoading] = useState(false);
 
-    const itemsPerPage = 8;
+    const itemsPerPage = 4;
 
     // Fetch audit logs
     useEffect(() => {
@@ -188,8 +188,9 @@ const AuditLogs = () => {
             {/* Audit Logs List */}
             <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
                 {/* Table Header */}
-                <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                <div className="border-b border-gray-200 bg-linear-to-r from-gray-50 to-gray-100 px-6 py-5">
                     <h2 className="text-lg font-bold text-gray-900">Activity History</h2>
+                    <p className="mt-1 text-sm text-gray-600">Track all your delivery activities and changes</p>
                 </div>
 
                 {/* Loading State */}
@@ -224,7 +225,6 @@ const AuditLogs = () => {
                             onPageChange={handlePageChange}
                             itemsPerPage={itemsPerPage}
                             totalItems={filteredLogs.length}
-                            compact={true}
                         />
                     </>
                 )}
