@@ -230,21 +230,6 @@ const AssignedDeliveries = () => {
     console.log('Signature cleared');
   };
 
-  const saveSignature = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const signatureData = canvas.toDataURL('image/png');
-    setCompletionData({ ...completionData, signature: signatureData });
-
-    // Console log signature data
-    console.log('Signature saved!');
-    console.log('Signature data URL:', signatureData);
-    console.log('Signature data length:', signatureData.length);
-
-    toast.success('Signature saved successfully');
-  };
-
   // Initialize canvas when modal opens
   useEffect(() => {
     if (showCompleteModal && canvasRef.current) {
@@ -604,7 +589,6 @@ const AssignedDeliveries = () => {
           onDraw={draw}
           onStopDrawing={stopDrawing}
           onClearSignature={clearSignature}
-          onSaveSignature={saveSignature}
           initializeCanvas={initializeCanvasCallback}
         />
 

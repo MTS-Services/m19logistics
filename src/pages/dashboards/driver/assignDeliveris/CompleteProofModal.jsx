@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, Camera, PenTool } from 'lucide-react';
+import { X, Camera } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getToken } from '../../../../utils/storage';
 
@@ -18,7 +18,6 @@ const CompleteProofModal = ({
     onDraw,
     onStopDrawing,
     onClearSignature,
-    onSaveSignature,
     initializeCanvas,
 }) => {
     const submitCompletion = async () => {
@@ -26,7 +25,25 @@ const CompleteProofModal = ({
             toast.error('Please upload a delivery photo');
             return;
         }
-        if (!completionData.signature) {
+
+        // Get signature directly from canvas
+        const canvas = canvasRef.current;
+        if (!canvas) {
+            toast.error('Please provide a signature');
+            return;
+        }
+
+        const signatureData = canvas.toDataURL('image/png');
+
+        // Check if canvas is blank (empty white)
+        const emptyCanvas = document.createElement('canvas');
+        emptyCanvas.width = canvas.width;
+        emptyCanvas.height = canvas.height;
+        const emptyCtx = emptyCanvas.getContext('2d');
+        emptyCtx.fillStyle = '#FFFFFF';
+        emptyCtx.fillRect(0, 0, emptyCanvas.width, emptyCanvas.height);
+
+        if (signatureData === emptyCanvas.toDataURL('image/png')) {
             toast.error('Please provide a signature');
             return;
         }
@@ -36,8 +53,7 @@ const CompleteProofModal = ({
             const formData = new FormData();
 
             // Convert signature (base64) to blob
-            const signatureBase64 = completionData.signature;
-            const signatureBlob = await fetch(signatureBase64).then(res => res.blob());
+            const signatureBlob = await fetch(signatureData).then(res => res.blob());
             formData.append('signature', signatureBlob, 'signature.png');
 
             // Add photo file
@@ -182,18 +198,11 @@ const CompleteProofModal = ({
                             >
                                 Clear
                             </button>
-                            <button
-                                type="button"
-                                onClick={onSaveSignature}
-                                className="rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-3 py-1 text-sm text-white transition-all hover:from-teal-700 hover:to-teal-600"
-                            >
-                                <PenTool className="inline h-3 w-3" /> Save Signature
-                            </button>
                         </div>
                     </div>
 
                     {/* Driver Notes */}
-                    <div>
+                    {/* <div>
                         <label className="mb-2 block text-sm font-medium text-gray-700">
                             Driver Notes / Feedback
                         </label>
@@ -206,7 +215,7 @@ const CompleteProofModal = ({
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                             placeholder="Any additional notes or feedback..."
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="mt-6 flex gap-3">
