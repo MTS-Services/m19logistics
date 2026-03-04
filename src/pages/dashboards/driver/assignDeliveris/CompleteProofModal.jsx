@@ -127,8 +127,8 @@ const CompleteProofModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="bg-opacity-50 fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4">
-            <div className="mx-auto my-8 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-900">Complete Delivery</h2>
                     <button
@@ -139,7 +139,7 @@ const CompleteProofModal = ({
                     </button>
                 </div>
 
-                <p className="mb-6 text-sm text-gray-600">
+                <p className="mb-6 text-base text-gray-600">
                     SPO: <span className="font-semibold">{selectedDelivery?.spoNumber}</span>
                 </p>
 

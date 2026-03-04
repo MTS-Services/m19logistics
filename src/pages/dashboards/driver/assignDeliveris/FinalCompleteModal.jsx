@@ -72,8 +72,8 @@ const FinalCompleteModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="bg-opacity-50 fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4">
-            <div className="mx-auto my-8 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-900">Complete Delivery</h2>
                     <button
@@ -84,14 +84,14 @@ const FinalCompleteModal = ({
                     </button>
                 </div>
 
-                <p className="mb-6 text-sm text-gray-600">
+                <p className="mb-6 text-base text-gray-600">
                     SPO: <span className="font-semibold">{selectedDelivery?.spoNumber}</span>
                 </p>
 
                 <div className="space-y-6">
                     {/* Signature URL from backend */}
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 block text-base font-medium text-gray-700">
                             Signature URL
                         </label>
                         <input
@@ -104,7 +104,7 @@ const FinalCompleteModal = ({
 
                     {/* Photo URL from backend */}
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 block text-base font-medium text-gray-700">
                             Photo URL
                         </label>
                         <input
@@ -117,7 +117,7 @@ const FinalCompleteModal = ({
 
                     {/* Received By */}
                     <div>
-                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                        <label className="mb-2 block text-base font-medium text-gray-700">
                             Received By <span className="text-red-600">*</span>
                         </label>
                         <input
@@ -141,9 +141,9 @@ const FinalCompleteModal = ({
                     </button>
                     <button
                         onClick={submitFinalCompletion}
-                        className="flex-1 rounded-md bg-linear-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-green-700 hover:to-green-600"
+                        className="flex-1 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
                     >
-                        Complete Delivery
+                        Complete 
                     </button>
                 </div>
             </div>
