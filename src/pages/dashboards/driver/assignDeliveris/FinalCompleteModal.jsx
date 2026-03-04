@@ -1,0 +1,154 @@
+import React from 'react';
+import { X } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { getToken } from '../../../../utils/storage';
+
+const FinalCompleteModal = ({
+    isOpen,
+    selectedDelivery,
+    proofUploadResponse,
+    finalCompletionData,
+    onFinalCompletionDataChange,
+    onClose,
+    onSuccess,
+}) => {
+    const submitFinalCompletion = async () => {
+        if (!finalCompletionData.receivedBy.trim()) {
+            toast.error('Please enter who received the delivery');
+            return;
+        }
+
+        try {
+            // Create FormData with receivedBy
+            const formData = new FormData();
+            formData.append('receivedBy', finalCompletionData.receivedBy);
+
+            // Call API to complete delivery
+            const token = getToken();
+            const response = await fetch(
+                `/api/driver/deliveries/${selectedDelivery.id}/complete`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                }
+            );
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Delivery completed:', result);
+
+                // Show success message from backend
+                toast.success(result.message || 'Delivery completed successfully');
+
+                // Call onSuccess callback
+                onSuccess();
+
+                // Reset modal data
+                onFinalCompletionDataChange({
+                    receivedBy: '',
+                });
+            } else {
+                // Try to parse error message, fallback if not JSON
+                let errorMessage = 'Failed to complete delivery';
+                try {
+                    const error = await response.json();
+                    errorMessage = error.message || errorMessage;
+                } catch {
+                    // Response is not JSON, use status text
+                    errorMessage = response.statusText || errorMessage;
+                }
+                console.error('Completion failed:', response.status, errorMessage);
+                toast.error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error completing delivery:', error);
+            toast.error('Error completing delivery. Please try again.');
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="bg-opacity-50 fixed inset-0 z-50 overflow-y-auto bg-black/50 p-4">
+            <div className="mx-auto my-8 w-full max-w-3xl rounded-lg bg-white p-6 shadow-xl">
+                <div className="mb-6 flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-gray-900">Complete Delivery</h2>
+                    <button
+                        onClick={onClose}
+                        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
+                </div>
+
+                <p className="mb-6 text-sm text-gray-600">
+                    SPO: <span className="font-semibold">{selectedDelivery?.spoNumber}</span>
+                </p>
+
+                <div className="space-y-6">
+                    {/* Signature URL from backend */}
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                            Signature URL
+                        </label>
+                        <input
+                            type="text"
+                            value={proofUploadResponse?.signatureUrl || ''}
+                            readOnly
+                            className="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600"
+                        />
+                    </div>
+
+                    {/* Photo URL from backend */}
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                            Photo URL
+                        </label>
+                        <input
+                            type="text"
+                            value={proofUploadResponse?.photoUrl || ''}
+                            readOnly
+                            className="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600"
+                        />
+                    </div>
+
+                    {/* Received By */}
+                    <div>
+                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                            Received By <span className="text-red-600">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={finalCompletionData.receivedBy}
+                            onChange={(e) =>
+                                onFinalCompletionDataChange({ ...finalCompletionData, receivedBy: e.target.value })
+                            }
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                            placeholder="Enter name of person who received delivery"
+                        />
+                    </div>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                    <button
+                        onClick={onClose}
+                        className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={submitFinalCompletion}
+                        className="flex-1 rounded-md bg-linear-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-green-700 hover:to-green-600"
+                    >
+                        Complete Delivery
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default FinalCompleteModal;

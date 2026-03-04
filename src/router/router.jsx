@@ -43,7 +43,7 @@ import AuditLogs from '../pages/dashboards/customer/auditLogs/AuditLogs';
 // Dashboard pages - Driver
 import DriverDashboardLayout from '../pages/dashboards/driver/DriverDashboardLayout';
 import DriverDashboardHome from '../pages/dashboards/driver/DriverDashboardHome';
-import AssignedDeliveries from '../pages/dashboards/driver/AssignedDeliveries';
+import AssignedDeliveries from '../pages/dashboards/driver/assignDeliveris/AssignedDeliveries';
 import CompletedDeliveries from '../pages/dashboards/driver/CompletedDeliveries';
 import DriverProfile from '../pages/dashboards/driver/DriverProfile';
 import DriverSlotAvailability from '../pages/dashboards/customer/SlotAvailability';
