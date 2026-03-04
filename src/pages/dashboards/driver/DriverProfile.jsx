@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../../../context/AuthContext';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
+import Loading from '../../../components/Loading';
 // import { compressImage } from '../../../utils/imageCompression';
 
 const DriverProfile = () => {
@@ -259,11 +260,8 @@ const DriverProfile = () => {
   // Show loading state while fetching profile
   if (fetchingProfile) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-teal-600"></div>
-          <p className="mt-4 text-gray-600">Loading profile...</p>
-        </div>
+      <div className="flex h-screen items-center justify-center p-4">
+        <Loading message="Loading Profile" submessage="Retrieving your profile information..." size="large" />
       </div>
     );
   }
@@ -335,21 +333,19 @@ const DriverProfile = () => {
       <div className="mb-6 flex gap-2 border-b border-gray-200">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
-            activeTab === 'profile'
+          className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'profile'
               ? 'border-b-2 border-teal-600 text-teal-600'
               : 'text-gray-600 hover:text-gray-900'
-          }`}
+            }`}
         >
           Profile Information
         </button>
         <button
           onClick={() => setActiveTab('security')}
-          className={`px-4 py-2 text-sm font-medium transition-colors ${
-            activeTab === 'security'
+          className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'security'
               ? 'border-b-2 border-teal-600 text-teal-600'
               : 'text-gray-600 hover:text-gray-900'
-          }`}
+            }`}
         >
           Security
         </button>

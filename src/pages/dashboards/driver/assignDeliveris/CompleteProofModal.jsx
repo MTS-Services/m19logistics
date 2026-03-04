@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Camera } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { uploadDeliveryProof } from '../../../../services/driverService';
@@ -20,6 +20,7 @@ const CompleteProofModal = ({
     onClearSignature,
     initializeCanvas,
 }) => {
+    const [submitting, setSubmitting] = useState(false);
     const submitCompletion = async () => {
         if (!completionData.photo) {
             toast.error('Please upload a delivery photo');
@@ -48,6 +49,7 @@ const CompleteProofModal = ({
             return;
         }
 
+        setSubmitting(true);
         try {
             // Create FormData with signature and photo
             const formData = new FormData();
@@ -84,6 +86,8 @@ const CompleteProofModal = ({
             console.error('Error uploading proof:', error);
             const errorMessage = error.response?.data?.message || error.message || 'Error uploading proof. Please try again.';
             toast.error(errorMessage);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -108,7 +112,8 @@ const CompleteProofModal = ({
                     <h2 className="text-xl font-bold text-gray-900">Complete Delivery</h2>
                     <button
                         onClick={onClose}
-                        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                        disabled={submitting}
+                        className={`rounded-lg p-2 text-gray-400 transition-colors ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-100 hover:text-gray-600'}`}
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -202,9 +207,17 @@ const CompleteProofModal = ({
                     </button>
                     <button
                         onClick={submitCompletion}
-                        className="flex-1 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                        disabled={submitting}
+                        className={`flex-1 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all ${submitting ? 'opacity-70 cursor-not-allowed' : 'hover:from-teal-700 hover:to-teal-600'}`}
                     >
-                        upload proof
+                        {submitting ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-transparent border-t-teal-200" />
+                                <span>Uploading...</span>
+                            </div>
+                        ) : (
+                            'upload proof'
+                        )}
                     </button>
                 </div>
             </div>

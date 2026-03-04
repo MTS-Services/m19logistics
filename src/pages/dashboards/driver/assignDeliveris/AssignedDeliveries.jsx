@@ -13,6 +13,7 @@ import {
 import { toast } from 'react-toastify';
 import { getDriverDeliveries, respondToDelivery } from '../../../../services/driverService';
 import Pagination from '../../../../components/Pagination';
+import Loading from '../../../../components/Loading';
 import DeclineModal from './DeclineModal';
 import CompleteProofModal from './CompleteProofModal';
 import FinalCompleteModal from './FinalCompleteModal';
@@ -20,6 +21,7 @@ import FinalCompleteModal from './FinalCompleteModal';
 const AssignedDeliveries = () => {
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [acceptingId, setAcceptingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -100,6 +102,7 @@ const AssignedDeliveries = () => {
 
   // Handle Accept Delivery
   const handleAccept = async (delivery) => {
+    setAcceptingId(delivery.id);
     try {
       const response = await respondToDelivery(delivery.id, 'accept');
       if (response && response.success) {
@@ -115,6 +118,8 @@ const AssignedDeliveries = () => {
     } catch (error) {
       console.error('Error accepting delivery:', error);
       toast.error('Failed to accept delivery');
+    } finally {
+      setAcceptingId(null);
     }
   };
 
@@ -427,10 +432,7 @@ const AssignedDeliveries = () => {
         {/* Deliveries List */}
         <div className="space-y-4">
           {loading ? (
-            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
-              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-teal-600"></div>
-              <p className="mt-4 text-sm text-gray-600">Loading assigned deliveries...</p>
-            </div>
+            <Loading message="Loading Deliveries" submessage="Fetching your assigned deliveries..." size="medium" />
           ) : deliveries.length === 0 ? (
             <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
               <Package className="mx-auto h-12 w-12 text-gray-400" />
@@ -528,10 +530,20 @@ const AssignedDeliveries = () => {
                           <>
                             <button
                               onClick={() => handleAccept(delivery)}
-                              className="flex items-center justify-center gap-2 rounded-md border border-green-300 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-all hover:bg-green-100"
+                              disabled={acceptingId === delivery.id}
+                              className={`flex items-center justify-center gap-2 rounded-md border border-green-300 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-all ${acceptingId === delivery.id ? 'opacity-70 cursor-not-allowed' : 'hover:bg-green-100'}`}
                             >
-                              <CheckCircle className="h-4 w-4" />
-                              Accept
+                              {acceptingId === delivery.id ? (
+                                <>
+                                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-transparent border-t-green-600" />
+                                  <span>Accepting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="h-4 w-4" />
+                                  Accept
+                                </>
+                              )}
                             </button>
                             <button
                               onClick={() => handleDecline(delivery)}

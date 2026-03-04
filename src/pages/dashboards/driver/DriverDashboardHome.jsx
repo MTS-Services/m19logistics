@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getDriverDashboard, getDriverDeliveries } from '../../../services/driverService';
+import Loading from '../../../components/Loading';
 
 const DriverDashboardHome = () => {
   const [deliveries, setDeliveries] = useState([]);
@@ -187,9 +188,8 @@ const DriverDashboardHome = () => {
           </div>
 
           {loadingDeliveries ? (
-            <div className="p-12 text-center">
-              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-teal-600"></div>
-              <p className="mt-4 text-sm text-gray-600">Loading deliveries...</p>
+            <div className="p-12">
+              <Loading message="Loading Today's Deliveries" submessage="Fetching your delivery schedule..." size="medium" />
             </div>
           ) : deliveries.length === 0 ? (
             <div className="p-12 text-center">

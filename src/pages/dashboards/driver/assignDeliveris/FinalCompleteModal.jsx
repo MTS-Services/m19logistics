@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getToken } from '../../../../utils/storage';
@@ -12,12 +12,13 @@ const FinalCompleteModal = ({
     onClose,
     onSuccess,
 }) => {
+    const [submitting, setSubmitting] = useState(false);
     const submitFinalCompletion = async () => {
         if (!finalCompletionData.receivedBy.trim()) {
             toast.error('Please enter who received the delivery');
             return;
         }
-
+        setSubmitting(true);
         try {
             // Create FormData with receivedBy
             const formData = new FormData();
@@ -66,6 +67,8 @@ const FinalCompleteModal = ({
         } catch (error) {
             console.error('Error completing delivery:', error);
             toast.error('Error completing delivery. Please try again.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -135,15 +138,24 @@ const FinalCompleteModal = ({
                 <div className="mt-6 flex gap-3">
                     <button
                         onClick={onClose}
-                        className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
+                        disabled={submitting}
+                        className={`flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                     >
                         Cancel
                     </button>
                     <button
                         onClick={submitFinalCompletion}
-                        className="flex-1 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600"
+                        disabled={submitting}
+                        className={`flex-1 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all ${submitting ? 'opacity-70 cursor-not-allowed' : 'hover:from-teal-700 hover:to-teal-600'}`}
                     >
-                        Complete 
+                        {submitting ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-transparent border-t-teal-200" />
+                                <span>Completing...</span>
+                            </div>
+                        ) : (
+                            'Complete'
+                        )}
                     </button>
                 </div>
             </div>

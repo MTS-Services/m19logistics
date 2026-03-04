@@ -15,6 +15,7 @@ import {
 import { toast } from 'react-toastify';
 import { getDriverDeliveries } from '../../../services/driverService';
 import Pagination from '../../../components/Pagination';
+import Loading from '../../../components/Loading';
 
 const CompletedDeliveries = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -113,10 +114,7 @@ const CompletedDeliveries = () => {
         {/* Deliveries List */}
         <div className="space-y-4">
           {loading ? (
-            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
-              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-green-600"></div>
-              <p className="mt-4 text-sm text-gray-600">Loading completed deliveries...</p>
-            </div>
+            <Loading message="Loading Completed Deliveries" submessage="Retrieving your delivery history..." size="medium" />
           ) : filteredDeliveries.length === 0 ? (
             <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
               <Package className="mx-auto h-12 w-12 text-gray-400" />
