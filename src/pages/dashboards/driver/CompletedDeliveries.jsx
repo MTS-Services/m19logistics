@@ -314,11 +314,19 @@ const CompletedDeliveries = () => {
                       <PenTool className="h-4 w-4" />
                       Customer Signature
                     </label>
-                    <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
-                      <div className="flex h-32 items-center justify-center text-sm text-gray-500">
-                        Signature Image
+                    {selectedDelivery.signatureUrl ? (
+                      <img
+                        src={selectedDelivery.signatureUrl}
+                        alt="Signature"
+                        className="h-40 w-full rounded-md border border-gray-200 bg-white object-contain"
+                      />
+                    ) : (
+                      <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
+                        <div className="flex h-32 items-center justify-center text-sm text-gray-500">
+                          No signature available
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   {/* Driver Notes */}
