@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getDriverDeliveries, respondToDelivery } from '../../../../services/driverService';
+import Pagination from '../../../../components/Pagination';
 import DeclineModal from './DeclineModal';
 import CompleteProofModal from './CompleteProofModal';
 import FinalCompleteModal from './FinalCompleteModal';
@@ -19,6 +20,8 @@ import FinalCompleteModal from './FinalCompleteModal';
 const AssignedDeliveries = () => {
   const [deliveries, setDeliveries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
 
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
@@ -437,117 +440,130 @@ const AssignedDeliveries = () => {
               </p>
             </div>
           ) : (
-            deliveries.map((delivery) => (
-              <div
-                key={delivery.id}
-                className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
-              >
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  {/* Delivery Info */}
-                  <div className="flex-1">
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                      <div className="rounded-lg bg-teal-50 p-3 shrink-0">
-                        <Package className="h-6 w-6 text-teal-600" />
-                      </div>
-                      <div className="flex-1 w-full">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                          <h3 className="text-lg font-bold text-gray-900">
-                            SPO: {delivery.spoNumber}
-                          </h3>
-                          <span
-                            className={`w-fit inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${delivery.status === 'Accepted'
-                              ? 'bg-green-100 text-green-600'
-                              : 'bg-blue-100 text-blue-600'
-                              }`}
-                          >
-                            {delivery.status}
-                          </span>
-                        </div>
+            <>
+              {deliveries
+                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                .map((delivery) => (
+                  <div
+                    key={delivery.id}
+                    className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+                  >
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                      {/* Delivery Info */}
+                      <div className="flex-1">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                          <div className="rounded-lg bg-teal-50 p-3 shrink-0">
+                            <Package className="h-6 w-6 text-teal-600" />
+                          </div>
+                          <div className="flex-1 w-full">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                              <h3 className="text-lg font-bold text-gray-900">
+                                SPO: {delivery.spoNumber}
+                              </h3>
+                              <span
+                                className={`w-fit inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${delivery.status === 'Accepted'
+                                  ? 'bg-green-100 text-green-600'
+                                  : 'bg-blue-100 text-blue-600'
+                                  }`}
+                              >
+                                {delivery.status}
+                              </span>
+                            </div>
 
-                        <div className="mt-3 space-y-2">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <User className="h-4 w-4 shrink-0" />
-                            <span className="font-medium">{delivery.customerName}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Phone className="h-4 w-4 shrink-0" />
-                            <a
-                              href={`tel:${delivery.customerPhone}`}
-                              className="font-medium text-teal-600 hover:text-teal-700"
-                            >
-                              {delivery.customerPhone}
-                            </a>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:items-start gap-2 text-sm text-gray-600">
-                            <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
-                            <div>
-                              <p className="font-medium">Depot:</p>
-                              <p>{delivery.depotAddress}</p>
+                            <div className="mt-3 space-y-2">
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <User className="h-4 w-4 shrink-0" />
+                                <span className="font-medium">{delivery.customerName}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Phone className="h-4 w-4 shrink-0" />
+                                <a
+                                  href={`tel:${delivery.customerPhone}`}
+                                  className="font-medium text-teal-600 hover:text-teal-700"
+                                >
+                                  {delivery.customerPhone}
+                                </a>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:items-start gap-2 text-sm text-gray-600">
+                                <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="font-medium">Depot:</p>
+                                  <p>{delivery.depotAddress}</p>
+                                </div>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:items-start gap-2 text-sm text-gray-600">
+                                <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="font-medium">Delivery:</p>
+                                  <p>{delivery.deliveryAddress}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Calendar className="h-4 w-4 shrink-0" />
+                                <span>
+                                  {delivery.date} - {delivery.timeSlot}
+                                </span>
+                              </div>
+                              {delivery.instructions && (
+                                <div className="flex flex-col sm:flex-row sm:items-start gap-2 text-sm text-gray-600">
+                                  <FileText className="h-4 w-4 shrink-0 mt-0.5" />
+                                  <span className="italic">{delivery.instructions}</span>
+                                </div>
+                              )}
                             </div>
                           </div>
-                          <div className="flex flex-col sm:flex-row sm:items-start gap-2 text-sm text-gray-600">
-                            <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
-                            <div>
-                              <p className="font-medium">Delivery:</p>
-                              <p>{delivery.deliveryAddress}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Calendar className="h-4 w-4 shrink-0" />
-                            <span>
-                              {delivery.date} - {delivery.timeSlot}
-                            </span>
-                          </div>
-                          {delivery.instructions && (
-                            <div className="flex flex-col sm:flex-row sm:items-start gap-2 text-sm text-gray-600">
-                              <FileText className="h-4 w-4 shrink-0 mt-0.5" />
-                              <span className="italic">{delivery.instructions}</span>
-                            </div>
-                          )}
                         </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-45">
+                        <button
+                          onClick={() => handleCall(delivery.customerPhone)}
+                          className="flex items-center justify-center gap-2 rounded-md border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
+                        >
+                          <Phone className="h-4 w-4" />
+                          Call
+                        </button>
+                        {!delivery.acceptedAt ? (
+                          <>
+                            <button
+                              onClick={() => handleAccept(delivery)}
+                              className="flex items-center justify-center gap-2 rounded-md border border-green-300 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-all hover:bg-green-100"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                              Accept
+                            </button>
+                            <button
+                              onClick={() => handleDecline(delivery)}
+                              className="flex items-center justify-center gap-2 rounded-md border border-red-300 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-all hover:bg-red-100"
+                            >
+                              <XCircle className="h-4 w-4" />
+                              Decline
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => handleComplete(delivery)}
+                            className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-green-700 hover:to-green-600"
+                          >
+                            <Check className="h-4 w-4" />
+                            Complete
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
+                ))}
 
-                  {/* Actions */}
-                  <div className="flex flex-col gap-2 lg:ml-6 lg:min-w-45">
-                    <button
-                      onClick={() => handleCall(delivery.customerPhone)}
-                      className="flex items-center justify-center gap-2 rounded-md border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
-                    >
-                      <Phone className="h-4 w-4" />
-                      Call
-                    </button>
-                    {!delivery.acceptedAt ? (
-                      <>
-                        <button
-                          onClick={() => handleAccept(delivery)}
-                          className="flex items-center justify-center gap-2 rounded-md border border-green-300 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-all hover:bg-green-100"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          Accept
-                        </button>
-                        <button
-                          onClick={() => handleDecline(delivery)}
-                          className="flex items-center justify-center gap-2 rounded-md border border-red-300 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-all hover:bg-red-100"
-                        >
-                          <XCircle className="h-4 w-4" />
-                          Decline
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => handleComplete(delivery)}
-                        className="flex items-center justify-center gap-2 rounded-md bg-linear-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:from-green-700 hover:to-green-600"
-                      >
-                        <Check className="h-4 w-4" />
-                        Complete
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(deliveries.length / itemsPerPage)}
+                onPageChange={setCurrentPage}
+                itemsPerPage={itemsPerPage}
+                totalItems={deliveries.length}
+              />
+            </>
           )}
         </div>
 
