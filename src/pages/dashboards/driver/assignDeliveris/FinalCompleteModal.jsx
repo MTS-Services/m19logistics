@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { getToken } from '../../../../utils/storage';
+import { completeDelivery } from '../../../../services/driverService';
 
 const FinalCompleteModal = ({
     isOpen,
@@ -20,53 +20,28 @@ const FinalCompleteModal = ({
         }
         setSubmitting(true);
         try {
-            // Create FormData with receivedBy
-            const formData = new FormData();
-            formData.append('receivedBy', finalCompletionData.receivedBy);
-
-            // Call API to complete delivery
-            const token = getToken();
-            const response = await fetch(
-                `/api/driver/deliveries/${selectedDelivery.id}/complete`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: formData,
-                }
+            // Call API to complete delivery using POST to /complete endpoint
+            const result = await completeDelivery(
+                selectedDelivery.id,
+                finalCompletionData.receivedBy
             );
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Delivery completed:', result);
+            console.log('Delivery completed:', result);
 
-                // Show success message from backend
-                toast.success(result.message || 'Delivery completed successfully');
+            // Show success message from backend
+            toast.success(result.message || 'Delivery completed successfully');
 
-                // Call onSuccess callback
-                onSuccess();
+            // Call onSuccess callback
+            onSuccess();
 
-                // Reset modal data
-                onFinalCompletionDataChange({
-                    receivedBy: '',
-                });
-            } else {
-                // Try to parse error message, fallback if not JSON
-                let errorMessage = 'Failed to complete delivery';
-                try {
-                    const error = await response.json();
-                    errorMessage = error.message || errorMessage;
-                } catch {
-                    // Response is not JSON, use status text
-                    errorMessage = response.statusText || errorMessage;
-                }
-                console.error('Completion failed:', response.status, errorMessage);
-                toast.error(errorMessage);
-            }
+            // Reset modal data
+            onFinalCompletionDataChange({
+                receivedBy: '',
+            });
         } catch (error) {
             console.error('Error completing delivery:', error);
-            toast.error('Error completing delivery. Please try again.');
+            const errorMessage = error.response?.data?.message || 'Failed to complete delivery';
+            toast.error(errorMessage);
         } finally {
             setSubmitting(false);
         }

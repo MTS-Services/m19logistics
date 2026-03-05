@@ -60,3 +60,16 @@ export const uploadDeliveryProof = async (deliveryId, formData) => {
   );
   return response.data;
 };
+
+/**
+ * Complete a delivery
+ * @param {number} deliveryId - Delivery ID
+ * @param {string} receivedBy - Name of person who received the delivery
+ * @returns {Promise} Promise with completion response data
+ */
+export const completeDelivery = async (deliveryId, receivedBy) => {
+  const response = await axiosInstance.post(`/api/driver/deliveries/${deliveryId}/complete`, {
+    receivedBy: receivedBy,
+  });
+  return response.data;
+};
