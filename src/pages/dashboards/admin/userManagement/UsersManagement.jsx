@@ -28,6 +28,7 @@ import UsersTable from './components/UsersTable';
 import AddEditModal from './components/AddEditModal';
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
 // import ResetPasswordModal from './components/ResetPasswordModal';
+import Loading from '../../../../components/Loading';
 
 const UsersManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -247,205 +248,213 @@ const UsersManagement = () => {
   return (
     <div className="p-2 text-base sm:p-6">
       <div className="space-y-6">
-        <div className="mb-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
-                User Management
-              </h1>
-              <p className="mt-1 text-sm text-gray-600 sm:mt-2">
-                Manage admins, drivers, customers, and area managers
-              </p>
-            </div>
-            <button
-              onClick={handleAddUser}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-teal-700"
-            >
-              <UserPlus className="h-5 w-5" />
-              <span>Add User</span>
-            </button>
+        {loadingUsers ? (
+          <div className="flex items-center justify-center p-6">
+            <Loading size="large" message="Loading users..." />
           </div>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">{totalUsersCount}</p>
+        ) : (
+          <>
+            <div className="mb-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+                    User Management
+                  </h1>
+                  <p className="mt-1 text-sm text-gray-600 sm:mt-2">
+                    Manage admins, drivers, customers, and area managers
+                  </p>
+                </div>
+                <button
+                  onClick={handleAddUser}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:bg-teal-700"
+                >
+                  <UserPlus className="h-5 w-5" />
+                  <span>Add User</span>
+                </button>
               </div>
-              <Users className="h-10 w-10 text-gray-400" />
             </div>
-          </div>
 
-          <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Customers</p>
-                <p className="text-2xl font-bold text-gray-900">{customersCount}</p>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Total Users</p>
+                    <p className="text-2xl font-bold text-gray-900">{totalUsersCount}</p>
+                  </div>
+                  <Users className="h-10 w-10 text-gray-400" />
+                </div>
               </div>
-              <Building className="h-10 w-10 text-teal-600" />
-            </div>
-          </div>
 
-          <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Drivers</p>
-                <p className="text-2xl font-bold text-gray-900">{driversCount}</p>
+              <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Customers</p>
+                    <p className="text-2xl font-bold text-gray-900">{customersCount}</p>
+                  </div>
+                  <Building className="h-10 w-10 text-teal-600" />
+                </div>
               </div>
-              <Truck className="h-10 w-10 text-teal-600" />
+
+              <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600">Drivers</p>
+                    <p className="text-2xl font-bold text-gray-900">{driversCount}</p>
+                  </div>
+                  <Truck className="h-10 w-10 text-teal-600" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
-          <div className="relative flex-1 md:max-w-md">
-            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 outline-none focus:border-teal-500"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Filter className="h-5 w-5 text-gray-400" />
-            <select
-              value={filterRole}
-              onChange={(e) => handleFilterChange(e.target.value)}
-              className="rounded-lg border border-gray-300 px-4 py-2 outline-none"
-            >
-              <option value="all">All Roles</option>
-              <option value="customer">Customers</option>
-              <option value="driver">Drivers</option>
-              <option value="area_manager">Area Managers</option>
-            </select>
-          </div>
-        </div>
+            <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between md:space-y-0">
+              <div className="relative flex-1 md:max-w-md">
+                <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 outline-none focus:border-teal-500"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Filter className="h-5 w-5 text-gray-400" />
+                <select
+                  value={filterRole}
+                  onChange={(e) => handleFilterChange(e.target.value)}
+                  className="rounded-lg border border-gray-300 px-4 py-2 outline-none"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="customer">Customers</option>
+                  <option value="driver">Drivers</option>
+                  <option value="area_manager">Area Managers</option>
+                </select>
+              </div>
+            </div>
 
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-200 bg-white px-6 py-4">
-            <h2 className="text-lg font-bold text-gray-900">User Records</h2>
-          </div>
+            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+              <div className="border-b border-gray-200 bg-white px-6 py-4">
+                <h2 className="text-lg font-bold text-gray-900">User Records</h2>
+              </div>
 
-          {/* Mobile: show card list */}
-          <div className="space-y-3 p-4 md:hidden">
-            {paginatedUsers.map((user) => (
-              <UserCard
-                key={user.id}
-                user={user}
-                roleConfig={roleConfig}
-                onEdit={handleEditUser}
-                onDelete={handleDeleteUser}
+              {/* Mobile: show card list */}
+              <div className="space-y-3 p-4 md:hidden">
+                {paginatedUsers.map((user) => (
+                  <UserCard
+                    key={user.id}
+                    user={user}
+                    roleConfig={roleConfig}
+                    onEdit={handleEditUser}
+                    onDelete={handleDeleteUser}
+                  />
+                ))}
+              </div>
+
+              {/* Desktop/table */}
+              <div className="hidden md:block">
+                <UsersTable
+                  users={paginatedUsers}
+                  roleConfig={roleConfig}
+                  showActionDropdown={showActionDropdown}
+                  setShowActionDropdown={setShowActionDropdown}
+                  handleEditUser={handleEditUser}
+                  handleDeleteUser={handleDeleteUser}
+                />
+              </div>
+
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                totalItems={filteredUsers.length}
               />
-            ))}
-          </div>
+            </div>
 
-          {/* Desktop/table */}
-          <div className="hidden md:block">
-            <UsersTable
-              users={paginatedUsers}
-              roleConfig={roleConfig}
-              showActionDropdown={showActionDropdown}
-              setShowActionDropdown={setShowActionDropdown}
-              handleEditUser={handleEditUser}
-              handleDeleteUser={handleDeleteUser}
-            />
-          </div>
+            {/* MODAL RENDERING AREA */}
+            {showAddModal && (
+              <AddEditModal
+                onClose={() => setShowAddModal(false)}
+                onSuccess={(newUser) => {
+                  // Map the new user to our format and add to list
+                  const mapped = {
+                    id: newUser.id,
+                    name: newUser.fullName || newUser.username || newUser.email,
+                    email: newUser.email,
+                    phone: newUser.phone,
+                    username: newUser.username,
+                    role:
+                      newUser.role === 'ADMIN'
+                        ? 'admin'
+                        : newUser.role === 'DRIVER'
+                          ? 'driver'
+                          : newUser.role === 'MANAGER'
+                            ? 'area_manager'
+                            : 'customer',
+                    depot: newUser.customerProfile?.depotAddress || '',
+                    pricingTier: newUser.customerProfile?.pricingTier?.name || null,
+                    status: newUser.isActive ? 'active' : 'inactive',
+                    passwordReset: !!newUser.requirePasswordReset,
+                    profilePhoto: newUser.profilePicture || null,
+                  };
+                  setUsers((prev) => [mapped, ...prev]);
+                }}
+              />
+            )}
 
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            totalItems={filteredUsers.length}
-          />
-        </div>
+            {showEditModal && selectedUser && (
+              <AddEditModal
+                isEdit
+                user={selectedUser}
+                onClose={() => {
+                  setShowEditModal(false);
+                  setSelectedUser(null);
+                }}
+                onSuccess={(updatedUser) => {
+                  // Update the user in the list
+                  const mapped = {
+                    id: updatedUser.id,
+                    name: updatedUser.fullName || updatedUser.username || updatedUser.email,
+                    email: updatedUser.email,
+                    phone: updatedUser.phone,
+                    username: updatedUser.username,
+                    role:
+                      updatedUser.role === 'ADMIN'
+                        ? 'admin'
+                        : updatedUser.role === 'DRIVER'
+                          ? 'driver'
+                          : updatedUser.role === 'MANAGER'
+                            ? 'area_manager'
+                            : 'customer',
+                    depot: updatedUser.customerProfile?.depotAddress || '',
+                    pricingTier: updatedUser.customerProfile?.pricingTier?.name || null,
+                    status: updatedUser.isActive ? 'active' : 'inactive',
+                    passwordReset: !!updatedUser.requirePasswordReset,
+                    profilePhoto: updatedUser.profilePicture || null,
+                  };
+                  setUsers((prev) => prev.map((u) => (u.id === mapped.id ? mapped : u)));
+                }}
+              />
+            )}
 
-        {/* MODAL RENDERING AREA */}
-        {showAddModal && (
-          <AddEditModal
-            onClose={() => setShowAddModal(false)}
-            onSuccess={(newUser) => {
-              // Map the new user to our format and add to list
-              const mapped = {
-                id: newUser.id,
-                name: newUser.fullName || newUser.username || newUser.email,
-                email: newUser.email,
-                phone: newUser.phone,
-                username: newUser.username,
-                role:
-                  newUser.role === 'ADMIN'
-                    ? 'admin'
-                    : newUser.role === 'DRIVER'
-                      ? 'driver'
-                      : newUser.role === 'MANAGER'
-                        ? 'area_manager'
-                        : 'customer',
-                depot: newUser.customerProfile?.depotAddress || '',
-                pricingTier: newUser.customerProfile?.pricingTier?.name || null,
-                status: newUser.isActive ? 'active' : 'inactive',
-                passwordReset: !!newUser.requirePasswordReset,
-                profilePhoto: newUser.profilePicture || null,
-              };
-              setUsers((prev) => [mapped, ...prev]);
-            }}
-          />
+            {showDeleteModal && selectedUser && (
+              <ConfirmDeleteModal
+                user={selectedUser}
+                onCancel={() => setShowDeleteModal(false)}
+                onConfirm={confirmDelete}
+                isDeleting={isDeleting}
+              />
+            )}
+
+            {/* {showResetPasswordModal && selectedUser && (
+              <ResetPasswordModal
+                user={selectedUser}
+                onCancel={() => setShowResetPasswordModal(false)}
+                onConfirm={confirmResetPassword}
+              />
+            )} */}
+          </>
         )}
-
-        {showEditModal && selectedUser && (
-          <AddEditModal
-            isEdit
-            user={selectedUser}
-            onClose={() => {
-              setShowEditModal(false);
-              setSelectedUser(null);
-            }}
-            onSuccess={(updatedUser) => {
-              // Update the user in the list
-              const mapped = {
-                id: updatedUser.id,
-                name: updatedUser.fullName || updatedUser.username || updatedUser.email,
-                email: updatedUser.email,
-                phone: updatedUser.phone,
-                username: updatedUser.username,
-                role:
-                  updatedUser.role === 'ADMIN'
-                    ? 'admin'
-                    : updatedUser.role === 'DRIVER'
-                      ? 'driver'
-                      : updatedUser.role === 'MANAGER'
-                        ? 'area_manager'
-                        : 'customer',
-                depot: updatedUser.customerProfile?.depotAddress || '',
-                pricingTier: updatedUser.customerProfile?.pricingTier?.name || null,
-                status: updatedUser.isActive ? 'active' : 'inactive',
-                passwordReset: !!updatedUser.requirePasswordReset,
-                profilePhoto: updatedUser.profilePicture || null,
-              };
-              setUsers((prev) => prev.map((u) => (u.id === mapped.id ? mapped : u)));
-            }}
-          />
-        )}
-
-        {showDeleteModal && selectedUser && (
-          <ConfirmDeleteModal
-            user={selectedUser}
-            onCancel={() => setShowDeleteModal(false)}
-            onConfirm={confirmDelete}
-            isDeleting={isDeleting}
-          />
-        )}
-
-        {/* {showResetPasswordModal && selectedUser && (
-          <ResetPasswordModal
-            user={selectedUser}
-            onCancel={() => setShowResetPasswordModal(false)}
-            onConfirm={confirmResetPassword}
-          />
-        )} */}
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import {
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
+import Loading from '../../../components/Loading';
 
 const SettingsManagement = () => {
   // Company Settings
@@ -253,9 +254,8 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${
-                    statusSummary?.systemStatus === 'Active' ? 'text-green-600' : 'text-red-600'
-                  }`}
+                  className={`mt-1 text-2xl font-bold ${statusSummary?.systemStatus === 'Active' ? 'text-green-600' : 'text-red-600'
+                    }`}
                 >
                   {statusSummary?.systemStatus ?? '—'}
                 </p>
@@ -275,9 +275,8 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${
-                    statusSummary?.emailConfig === 'Enabled' ? 'text-gray-900' : 'text-red-600'
-                  }`}
+                  className={`mt-1 text-2xl font-bold ${statusSummary?.emailConfig === 'Enabled' ? 'text-gray-900' : 'text-red-600'
+                    }`}
                 >
                   {statusSummary?.emailConfig ?? '—'}
                 </p>
@@ -297,9 +296,8 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${
-                    statusSummary?.mapsApi === 'Active' ? 'text-gray-900' : 'text-red-600'
-                  }`}
+                  className={`mt-1 text-2xl font-bold ${statusSummary?.mapsApi === 'Active' ? 'text-gray-900' : 'text-red-600'
+                    }`}
                 >
                   {statusSummary?.mapsApi ?? '—'}
                 </p>
@@ -319,9 +317,8 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${
-                    statusSummary?.autoInvoicing === 'On' ? 'text-gray-900' : 'text-red-600'
-                  }`}
+                  className={`mt-1 text-2xl font-bold ${statusSummary?.autoInvoicing === 'On' ? 'text-gray-900' : 'text-red-600'
+                    }`}
                 >
                   {statusSummary?.autoInvoicing ?? '—'}
                 </p>
@@ -339,33 +336,30 @@ const SettingsManagement = () => {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('company')}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
-              activeTab === 'company'
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${activeTab === 'company'
                 ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <Building className="h-4 w-4" />
             Company
           </button>
           <button
             onClick={() => setActiveTab('banking')}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
-              activeTab === 'banking'
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${activeTab === 'banking'
                 ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <DollarSign className="h-4 w-4" />
             Banking
           </button>
           <button
             onClick={() => setActiveTab('system')}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
-              activeTab === 'system'
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${activeTab === 'system'
                 ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+              }`}
           >
             <Database className="h-4 w-4" />
             System
@@ -381,7 +375,7 @@ const SettingsManagement = () => {
               <Building className="h-6 w-6 text-teal-600" />
               Company Information
             </h2>
-            {settingsLoading && <Loader2 className="h-5 w-5 animate-spin text-teal-600" />}
+            {settingsLoading && <Loading message="Loading Settings" size="small" />}
           </div>
 
           <div
@@ -625,7 +619,7 @@ const SettingsManagement = () => {
               <Database className="h-6 w-6 text-teal-600" />
               System Configuration
             </h2>
-            {settingsLoading && <Loader2 className="h-5 w-5 animate-spin text-teal-600" />}
+            {settingsLoading && <Loading message="Loading Settings" size="small" />}
           </div>
 
           <div

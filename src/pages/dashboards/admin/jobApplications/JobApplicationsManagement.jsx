@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import Pagination from '../../../../components/Pagination';
 import axiosInstance from '../../../../services/axiosInstance';
+import Loading from '../../../../components/Loading';
 
 const STATUS_CONFIG = {
   PENDING: {
@@ -372,9 +373,8 @@ const JobApplicationsManagement = () => {
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-          <span className="ml-3 text-gray-600">Loading applications...</span>
+        <div className="py-16">
+          <Loading message="Loading Applications" submessage="Fetching job applications..." size="medium" />
         </div>
       )}
 
@@ -437,20 +437,18 @@ const JobApplicationsManagement = () => {
                 <button
                   key={tab.value}
                   onClick={() => handleFilterChange(tab.value)}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all ${
-                    filterStatus === tab.value
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-all ${filterStatus === tab.value
                       ? 'bg-teal-600 text-white shadow-sm'
                       : 'border border-gray-200 bg-white text-gray-600 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700'
-                  }`}
+                    }`}
                 >
                   {tab.label}
                   {tab.value !== 'ALL' && stats?.byStatus?.[tab.value.toLowerCase()]?.count > 0 && (
                     <span
-                      className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${
-                        filterStatus === tab.value
+                      className={`rounded-full px-1.5 py-0.5 text-xs font-semibold ${filterStatus === tab.value
                           ? 'bg-white/25 text-white'
                           : 'bg-gray-100 text-gray-500'
-                      }`}
+                        }`}
                     >
                       {stats.byStatus[tab.value.toLowerCase()].count}
                     </span>
@@ -632,9 +630,8 @@ const JobApplicationsManagement = () => {
                   key={s}
                   onClick={() => currentApp && handleStatusOptionClick(currentApp, s)}
                   disabled={isCurrent}
-                  className={`flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-medium transition-colors ${
-                    isCurrent ? 'cursor-default bg-gray-50' : 'hover:bg-gray-50'
-                  }`}
+                  className={`flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-medium transition-colors ${isCurrent ? 'cursor-default bg-gray-50' : 'hover:bg-gray-50'
+                    }`}
                 >
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${cfg.bg} ${cfg.text} ${cfg.border}`}

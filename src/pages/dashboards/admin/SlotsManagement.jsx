@@ -17,6 +17,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axiosInstance from '../../../services/axiosInstance';
 import Pagination from '../../../components/Pagination';
+import Loading from '../../../components/Loading';
 
 const SlotsManagement = () => {
   const [viewMode, setViewMode] = useState('all'); // 'all' or 'date'
@@ -353,9 +354,8 @@ const SlotsManagement = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex items-center justify-center rounded-lg bg-white p-12 shadow-sm">
-            <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-            <span className="ml-3 text-gray-600">Loading slots...</span>
+          <div className="py-12">
+            <Loading message="Loading Slots" submessage="Fetching slot availability..." size="medium" />
           </div>
         )}
 

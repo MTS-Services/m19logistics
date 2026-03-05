@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Loader2, Plus } from 'lucide-react';
+import Loading from '../../../../components/Loading';
 import InvoiceCard from './components/InvoiceCard';
 import ViewInvoiceModal from './components/ViewInvoiceModal';
 import GenerateInvoiceModal from './components/GenerateInvoiceModal';
@@ -114,9 +115,8 @@ export default function InvoicesManagement() {
       </div>
 
       {loading && (
-        <div className="flex items-center gap-2 py-6">
-          <Loader2 className="h-6 w-6 animate-spin text-teal-600" />
-          <span className="text-gray-600">Loading invoices...</span>
+        <div className="py-6">
+          <Loading message="Loading Invoices" submessage="Fetching invoices..." size="medium" />
         </div>
       )}
 

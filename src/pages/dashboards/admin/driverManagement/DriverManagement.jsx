@@ -31,6 +31,7 @@ import {
 import { toast } from 'react-toastify';
 import Pagination from '../../../../components/Pagination';
 import axiosInstance from '../../../../services/axiosInstance';
+import Loading from '../../../../components/Loading';
 
 import AddEditModal from './components/AddEditModal';
 import AnalyticsModal from './components/AnalyticsModal';
@@ -254,9 +255,8 @@ const DriverManagement = () => {
 
         {/* Loading State */}
         {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-            <span className="ml-2 text-gray-600">Loading drivers...</span>
+          <div className="py-12">
+            <Loading message="Loading Drivers" submessage="Fetching drivers list..." size="medium" />
           </div>
         )}
 

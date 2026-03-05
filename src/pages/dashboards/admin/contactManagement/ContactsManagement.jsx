@@ -19,6 +19,7 @@ import Pagination from '../../../../components/Pagination';
 import { getAllContacts, markContactAsRead, deleteContact } from '../../../../services/contactService';
 import ViewContactModal from './components/ViewContactModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
+import Loading from '../../../../components/Loading';
 
 const ContactsManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -179,8 +180,7 @@ const ContactsManagement = () => {
                 {/* Loading State */}
                 {loading && (
                     <div className="flex items-center justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-                        <span className="ml-2 text-gray-600">Loading contacts...</span>
+                        <Loading size="large" message="Loading contacts..." />
                     </div>
                 )}
 
@@ -289,7 +289,7 @@ const ContactsManagement = () => {
                                         <table className="w-full">
                                             <thead className="border-b border-gray-200 bg-gray-50">
                                                 <tr>
-                                                    
+
                                                     <th className="px-6 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
                                                         Name
                                                     </th>
@@ -317,7 +317,7 @@ const ContactsManagement = () => {
                                                         className={`transition-colors hover:bg-gray-50 ${!contact.isRead ? 'bg-blue-50/50' : ''
                                                             }`}
                                                     >
-                                                       
+
                                                         <td className="px-6 py-4">
                                                             <div className="flex items-center gap-2 font-semibold text-gray-900">
                                                                 <User className="h-4 w-4 text-gray-400" />
