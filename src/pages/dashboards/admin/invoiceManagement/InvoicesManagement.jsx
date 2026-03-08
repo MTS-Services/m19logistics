@@ -9,6 +9,7 @@ import {
   getAllAdminInvoices,
   getAdminInvoiceById,
   exportAdminInvoicePDF,
+  markAdminInvoicePaid,
 } from '../../../../services/invoiceService';
 
 const statusConfig = {
@@ -31,6 +32,7 @@ export default function InvoicesManagement() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [markingPaidId, setMarkingPaidId] = useState(null);
 
   useEffect(() => {
     fetchInvoices();
@@ -61,6 +63,20 @@ export default function InvoicesManagement() {
       toast.error('Failed to load invoice');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleMarkPaid = async (invoice) => {
+    const id = invoice.id || invoice._id || invoice.invoiceId;
+    setMarkingPaidId(id);
+    try {
+      await markAdminInvoicePaid(id, true);
+      toast.success(`Invoice ${invoice.invoiceNumber || id} marked as paid`);
+      fetchInvoices();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to mark invoice as paid');
+    } finally {
+      setMarkingPaidId(null);
     }
   };
 
@@ -156,6 +172,8 @@ export default function InvoicesManagement() {
                 statusConfig={statusConfig}
                 onView={handleViewInvoice}
                 onDownload={handleDownloadInvoice}
+                onMarkPaid={handleMarkPaid}
+                markingPaid={markingPaidId === (inv.id || inv._id || inv.invoiceId)}
               />
             ))}
           </div>

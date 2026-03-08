@@ -83,3 +83,9 @@ export const updateAdminInvoiceStatus = async (id, status) => {
   });
   return response.data;
 };
+
+// Mark invoice as paid (Admin)
+export const markAdminInvoicePaid = async (id, isPaid = true) => {
+  const response = await axiosInstance.post(ENDPOINT.API.ADMIN_INVOICE.MARK_PAID(id), { isPaid });
+  return response.data;
+};

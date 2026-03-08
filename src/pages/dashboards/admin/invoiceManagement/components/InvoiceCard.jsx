@@ -1,9 +1,11 @@
 import React from 'react';
-import { Building, Calendar, Package, Eye, Download } from 'lucide-react';
+import { Building, Calendar, Package, Eye, Download, CheckCircle } from 'lucide-react';
 
-const InvoiceCard = ({ invoice, statusConfig, onView, onDownload }) => {
-  // Normalize status to lowercase for statusConfig lookup (API returns "Draft", config keys are "draft")
-  const status = (invoice.status || 'draft').toLowerCase();
+const InvoiceCard = ({ invoice, statusConfig, onView, onDownload, onMarkPaid, markingPaid }) => {
+  // If invoice has a paidAt date, treat it as paid regardless of status field
+  const isPaid = !!(invoice.paidAt || invoice.paidDate || invoice.isPaid);
+  // Normalize status: paid takes priority
+  const status = isPaid ? 'paid' : (invoice.status || 'draft').toLowerCase();
   const StatusIcon = statusConfig[status]?.icon || (() => null);
 
   const invoiceNumber = invoice.invoiceNumber || invoice.id || 'N/A';
@@ -88,6 +90,30 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onDownload }) => {
           <Download className="h-4 w-4" />
           <span>PDF</span>
         </button>
+        {!isPaid && onMarkPaid && (
+          <button
+            onClick={() => onMarkPaid(invoice)}
+            disabled={markingPaid}
+            className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-teal-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-initial"
+          >
+            {markingPaid ? (
+              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+            ) : (
+              <CheckCircle className="h-4 w-4" />
+            )}
+            <span>{markingPaid ? 'Marking...' : 'Mark as Paid'}</span>
+          </button>
+        )}
       </div>
     </div>
   );

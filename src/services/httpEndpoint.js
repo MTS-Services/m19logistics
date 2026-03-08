@@ -53,6 +53,7 @@ export const ENDPOINT = {
       EXPORT_PDF: (id) => `/api/admin/invoices/${id}/export/pdf`,
       SEND_EMAIL: (id) => `/api/admin/invoices/${id}/send`,
       UPDATE_STATUS: (id) => `/api/admin/invoices/${id}/status`,
+      MARK_PAID: (id) => `/api/admin/invoices/${id}/mark-paid`,
     },
     ADMIN_AUDIT: {
       GET_ALL: '/api/admin/audit-logs',
