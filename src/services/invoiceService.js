@@ -89,3 +89,9 @@ export const markAdminInvoicePaid = async (id, isPaid = true) => {
   const response = await axiosInstance.post(ENDPOINT.API.ADMIN_INVOICE.MARK_PAID(id), { isPaid });
   return response.data;
 };
+
+// Send payment reminders to all unpaid invoice customers (Admin)
+export const sendAdminInvoiceReminders = async () => {
+  const response = await axiosInstance.post(ENDPOINT.API.ADMIN_INVOICE.SEND_REMINDERS);
+  return response.data;
+};

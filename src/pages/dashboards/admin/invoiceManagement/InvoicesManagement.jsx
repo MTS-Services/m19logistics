@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus, Bell } from 'lucide-react';
 import Loading from '../../../../components/Loading';
 import InvoiceCard from './components/InvoiceCard';
 import ViewInvoiceModal from './components/ViewInvoiceModal';
@@ -10,6 +10,7 @@ import {
   getAdminInvoiceById,
   exportAdminInvoicePDF,
   markAdminInvoicePaid,
+  sendAdminInvoiceReminders,
 } from '../../../../services/invoiceService';
 
 const statusConfig = {
@@ -33,6 +34,7 @@ export default function InvoicesManagement() {
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [markingPaidId, setMarkingPaidId] = useState(null);
+  const [sendingReminders, setSendingReminders] = useState(false);
 
   useEffect(() => {
     fetchInvoices();
@@ -63,6 +65,18 @@ export default function InvoicesManagement() {
       toast.error('Failed to load invoice');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendReminders = async () => {
+    setSendingReminders(true);
+    try {
+      const res = await sendAdminInvoiceReminders();
+      toast.success(res?.message || 'Payment reminders sent to customers');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to send reminders');
+    } finally {
+      setSendingReminders(false);
     }
   };
 
@@ -120,6 +134,18 @@ export default function InvoicesManagement() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleSendReminders}
+            disabled={sendingReminders}
+            className="inline-flex items-center gap-2 rounded-lg border border-teal-600 px-4 py-2 text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {sendingReminders ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Bell className="h-4 w-4" />
+            )}
+            <span>{sendingReminders ? 'Sending...' : 'Send Reminders'}</span>
+          </button>
           <button
             onClick={() => setShowGenerateModal(true)}
             className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow"

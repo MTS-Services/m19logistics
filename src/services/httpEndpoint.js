@@ -54,6 +54,7 @@ export const ENDPOINT = {
       SEND_EMAIL: (id) => `/api/admin/invoices/${id}/send`,
       UPDATE_STATUS: (id) => `/api/admin/invoices/${id}/status`,
       MARK_PAID: (id) => `/api/admin/invoices/${id}/mark-paid`,
+      SEND_REMINDERS: '/api/admin/invoices/send-reminders',
     },
     ADMIN_AUDIT: {
       GET_ALL: '/api/admin/audit-logs',
