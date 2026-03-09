@@ -167,18 +167,16 @@ const DriverAvailability = () => {
     <div className="p-3 sm:p-6 lg:p-8">
       <div className="space-y-5">
         {/* ── Page Header ── */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
-              Driver Availability
-            </h1>
-            <p className="mt-2 text-sm text-gray-600 sm:text-base">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Driver Availability</h1>
+            <p className="mt-1 text-sm text-gray-500">
               Set and manage your availability for delivery slots
             </p>
           </div>
           <button
             onClick={() => openAddForm()}
-            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-linear-to-r from-teal-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-700 active:bg-teal-800 sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             Set Availability
@@ -186,53 +184,56 @@ const DriverAvailability = () => {
         </div>
 
         {/* ── Stats Cards ── */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {/* Total Dates */}
-          <div className="relative overflow-hidden rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-            <div className="absolute inset-x-0 top-0 h-1 rounded-t-xl bg-linear-to-r from-teal-500 to-teal-400" />
-            <div className="flex items-center justify-between">
+          <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:shadow-md sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+                <p className="text-[10px] font-medium tracking-wide text-gray-400 uppercase sm:text-xs">
                   Total Dates
                 </p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalDates}</p>
-                <p className="mt-0.5 text-xs text-gray-400">scheduled entries</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900 sm:mt-2 sm:text-3xl">
+                  {stats.totalDates}
+                </p>
+                <p className="hidden text-xs text-gray-400 sm:block">scheduled entries</p>
               </div>
-              <div className="rounded-xl bg-teal-50 p-3">
+              <div className="hidden rounded-xl bg-teal-50 p-3 sm:block">
                 <Calendar className="h-6 w-6 text-teal-600" />
               </div>
             </div>
           </div>
 
           {/* AM Available */}
-          <div className="relative overflow-hidden rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-            <div className="absolute inset-x-0 top-0 h-1 rounded-t-xl bg-linear-to-r from-green-500 to-emerald-400" />
-            <div className="flex items-center justify-between">
+          <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:shadow-md sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+                <p className="text-[10px] font-medium tracking-wide text-gray-400 uppercase sm:text-xs">
                   AM Available
                 </p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.amAvailable}</p>
-                <p className="mt-0.5 text-xs text-gray-400">morning slots</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900 sm:mt-2 sm:text-3xl">
+                  {stats.amAvailable}
+                </p>
+                <p className="hidden text-xs text-gray-400 sm:block">morning slots</p>
               </div>
-              <div className="rounded-xl bg-green-50 p-3">
+              <div className="hidden rounded-xl bg-green-50 p-3 sm:block">
                 <CheckCircle className="h-6 w-6 text-green-500" />
               </div>
             </div>
           </div>
 
           {/* PM Available */}
-          <div className="relative overflow-hidden rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-            <div className="absolute inset-x-0 top-0 h-1 rounded-t-xl bg-linear-to-r from-blue-500 to-blue-400" />
-            <div className="flex items-center justify-between">
+          <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm transition-all hover:shadow-md sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+                <p className="text-[10px] font-medium tracking-wide text-gray-400 uppercase sm:text-xs">
                   PM Available
                 </p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.pmAvailable}</p>
-                <p className="mt-0.5 text-xs text-gray-400">afternoon slots</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900 sm:mt-2 sm:text-3xl">
+                  {stats.pmAvailable}
+                </p>
+                <p className="hidden text-xs text-gray-400 sm:block">afternoon slots</p>
               </div>
-              <div className="rounded-xl bg-blue-50 p-3">
+              <div className="hidden rounded-xl bg-blue-50 p-3 sm:block">
                 <Clock className="h-6 w-6 text-blue-500" />
               </div>
             </div>
@@ -240,34 +241,32 @@ const DriverAvailability = () => {
         </div>
 
         {/* ── Filter Bar ── */}
-        <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-1 items-center gap-2 sm:max-w-xs">
-              <div className="relative flex-1">
-                <Calendar className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pr-3 pl-9 text-sm text-gray-700 transition-all focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                />
-              </div>
-              {selectedDate && (
-                <button
-                  onClick={() => setSelectedDate('')}
-                  className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
-                >
-                  <X className="h-3 w-3" />
-                  Clear
-                </button>
-              )}
+        <div className="rounded-xl border border-gray-100 bg-white p-3 shadow-sm sm:p-4">
+          <div className="flex items-center gap-2">
+            <div className="relative min-w-0 flex-1">
+              <Calendar className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pr-3 pl-9 text-sm text-gray-700 transition-all focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+              />
             </div>
+            {selectedDate && (
+              <button
+                onClick={() => setSelectedDate('')}
+                className="flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
+              >
+                <X className="h-3 w-3" />
+                <span className="hidden sm:inline">Clear</span>
+              </button>
+            )}
             <button
               onClick={fetchAvailability}
-              className="flex items-center justify-center gap-2 rounded-lg border border-teal-200 bg-teal-50 px-4 py-2.5 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-medium text-teal-700 transition-all hover:bg-teal-100 sm:px-4"
             >
               <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
         </div>
@@ -275,23 +274,20 @@ const DriverAvailability = () => {
         {/* ── Add / Edit Modal ── */}
         {showForm && (
           <div
-            className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
             onClick={(e) => {
               if (e.target === e.currentTarget) setShowForm(false);
             }}
           >
-            <div className="w-full overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:max-w-md sm:rounded-2xl">
-              {/* Accent bar */}
-              <div className="h-1 bg-linear-to-r from-teal-600 to-teal-400" />
-
-              <div className="p-5 sm:p-6">
+            <div className="flex max-h-[90dvh] w-full flex-col overflow-hidden rounded-xl bg-white shadow-xl sm:max-w-lg">
+              <div className="overflow-y-auto p-5 sm:p-6">
                 {/* Modal Header */}
-                <div className="mb-5 flex items-start justify-between">
+                <div className="mb-6 flex items-start justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-900">
                       {editingEntry ? 'Edit Availability' : 'Set Availability'}
                     </h2>
-                    <p className="mt-0.5 text-xs text-gray-400">
+                    <p className="mt-1 text-sm text-gray-500">
                       {editingEntry
                         ? 'Update your availability status or notes'
                         : 'Add a new availability slot'}
@@ -305,12 +301,10 @@ const DriverAvailability = () => {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Date */}
                   <div>
-                    <label className="mb-1.5 block text-xs font-semibold tracking-wide text-gray-500 uppercase">
-                      Date
-                    </label>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">Date</label>
                     <input
                       type="date"
                       value={formData.date}
@@ -318,37 +312,34 @@ const DriverAvailability = () => {
                       disabled={!!editingEntry}
                       min={new Date().toISOString().split('T')[0]}
                       required
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 transition-all focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                      className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-700 transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400"
                     />
                   </div>
 
                   {/* Time Slot */}
                   <div>
-                    <label className="mb-1.5 block text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
                       Time Slot
                     </label>
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="flex overflow-hidden rounded-lg border border-gray-300">
                       {['AM', 'PM'].map((slot) => (
                         <button
                           key={slot}
                           type="button"
                           disabled={!!editingEntry}
                           onClick={() => setFormData((p) => ({ ...p, timeSlot: slot }))}
-                          className={`flex flex-col items-center gap-1 rounded-xl border-2 py-3 text-sm font-semibold transition-all ${
+                          className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${
                             formData.timeSlot === slot
-                              ? 'border-teal-500 bg-teal-50 text-teal-700 shadow-sm'
-                              : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'bg-teal-600 text-white'
+                              : 'bg-white text-gray-600 hover:bg-gray-50'
                           } disabled:cursor-not-allowed disabled:opacity-50`}
                         >
                           {slot === 'AM' ? (
-                            <Sunrise className="h-5 w-5" />
+                            <Sunrise className="h-4 w-4" />
                           ) : (
-                            <Sunset className="h-5 w-5" />
+                            <Sunset className="h-4 w-4" />
                           )}
-                          <span>{slot === 'AM' ? 'Morning' : 'Afternoon'}</span>
-                          <span className="text-xs font-normal opacity-60">
-                            {slot === 'AM' ? 'Before 12 PM' : 'After 12 PM'}
-                          </span>
+                          {slot === 'AM' ? 'Morning (AM)' : 'Afternoon (PM)'}
                         </button>
                       ))}
                     </div>
@@ -356,17 +347,17 @@ const DriverAvailability = () => {
 
                   {/* Availability Status */}
                   <div>
-                    <label className="mb-1.5 block text-xs font-semibold tracking-wide text-gray-500 uppercase">
-                      Status
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                      Availability
                     </label>
-                    <div className="grid grid-cols-2 gap-2.5">
+                    <div className="flex overflow-hidden rounded-lg border border-gray-300">
                       <button
                         type="button"
                         onClick={() => setFormData((p) => ({ ...p, isAvailable: true }))}
-                        className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-semibold transition-all ${
+                        className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${
                           formData.isAvailable
-                            ? 'border-green-500 bg-green-50 text-green-700 shadow-sm'
-                            : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-white text-gray-600 hover:bg-gray-50'
                         }`}
                       >
                         <CheckCircle className="h-4 w-4" />
@@ -375,10 +366,10 @@ const DriverAvailability = () => {
                       <button
                         type="button"
                         onClick={() => setFormData((p) => ({ ...p, isAvailable: false }))}
-                        className={`flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-semibold transition-all ${
+                        className={`flex flex-1 items-center justify-center gap-2 py-2.5 text-sm font-medium transition-colors ${
                           !formData.isAvailable
-                            ? 'border-red-400 bg-red-50 text-red-600 shadow-sm'
-                            : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-white text-gray-600 hover:bg-gray-50'
                         }`}
                       >
                         <XCircle className="h-4 w-4" />
@@ -389,18 +380,15 @@ const DriverAvailability = () => {
 
                   {/* Notes */}
                   <div>
-                    <label className="mb-1.5 flex items-center gap-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
-                      Notes
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-normal tracking-normal text-gray-400 normal-case">
-                        optional
-                      </span>
+                    <label className="mb-1.5 block text-sm font-medium text-gray-700">
+                      Notes <span className="font-normal text-gray-400">(optional)</span>
                     </label>
                     <textarea
                       value={formData.notes}
                       onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
                       placeholder="e.g. Personal appointment, available for all deliveries..."
                       rows={3}
-                      className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 transition-all focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                      className="w-full resize-none rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-700 placeholder-gray-400 transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
                     />
                   </div>
 
@@ -408,14 +396,14 @@ const DriverAvailability = () => {
                     <button
                       type="button"
                       onClick={() => setShowForm(false)}
-                      className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+                      className="flex-1 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r from-teal-600 to-teal-500 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-teal-600 py-2.5 text-sm font-semibold text-white transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
                       {submitting ? 'Saving...' : editingEntry ? 'Update' : 'Save'}
