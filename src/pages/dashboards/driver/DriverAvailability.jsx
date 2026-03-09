@@ -152,7 +152,7 @@ const DriverAvailability = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6 md:p-8">
+    <div className="p-2 sm:p-6 md:p-8 lg:p-8">
       <div className="space-y-6">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -174,7 +174,7 @@ const DriverAvailability = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
             <div className="flex items-center justify-between">
               <div>
