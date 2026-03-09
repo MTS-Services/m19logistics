@@ -647,11 +647,8 @@ const DriverAvailability = () => {
         {/* ── Info Box ── */}
         <div className="rounded-xl border border-teal-100 bg-linear-to-br from-teal-50 to-white p-5">
           <div className="flex items-start gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-100">
-              <AlertCircle className="h-4.5 w-4.5 text-teal-600" />
-            </div>
             <div>
-              <p className="mb-2.5 text-sm font-bold text-teal-900">Availability Guidelines</p>
+              <p className="mb-2.5 text-base font-bold text-teal-900">Availability Guidelines</p>
               <ul className="space-y-2">
                 {[
                   { label: 'Morning Slots (AM)', desc: 'Deliveries scheduled before 12:00 PM' },
@@ -665,7 +662,7 @@ const DriverAvailability = () => {
                     desc: 'You can edit or remove your availability entries at any time',
                   },
                 ].map(({ label, desc }) => (
-                  <li key={label} className="flex items-start gap-2 text-xs text-teal-700">
+                  <li key={label} className="flex items-start gap-2 text-base text-teal-700">
                     <span className="mt-1 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-teal-200">
                       <span className="h-1.5 w-1.5 rounded-full bg-teal-600" />
                     </span>
