@@ -386,7 +386,7 @@ const DriverManagement = () => {
               ) : (
                 <>
                   {/* Desktop Table View - Hidden on mobile */}
-                  <div className="hidden overflow-x-auto lg:block">
+                  <div className="hidden lg:block">
                     <table className="w-full text-left">
                       <thead className="border-b border-gray-200 bg-gray-50">
                         <tr>
@@ -516,7 +516,7 @@ const DriverManagement = () => {
                                     onDelete={handleDeleteDriver}
                                     onToggleStatus={handleToggleStatus}
                                     onViewAvailability={handleViewAvailability}
-                                    openUpward={index >= paginatedDrivers.length - 2}
+                                    openUpward={index >= paginatedDrivers.length - 3}
                                   />
                                 )}
                               </div>
@@ -637,7 +637,7 @@ const DriverManagement = () => {
                                 onDelete={handleDeleteDriver}
                                 onToggleStatus={handleToggleStatus}
                                 onViewAvailability={handleViewAvailability}
-                                openUpward={index >= paginatedDrivers.length - 2}
+                                openUpward={index >= paginatedDrivers.length - 3}
                               />
                             )}
                           </div>
