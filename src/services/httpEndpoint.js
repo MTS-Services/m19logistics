@@ -81,5 +81,11 @@ export const ENDPOINT = {
     SLOT: {
       AVAILABILITY: '/api/public/slots/availability',
     },
+    DRIVER_AVAILABILITY: {
+      GET_ALL: '/api/driver/availability',
+      CREATE: '/api/driver/availability',
+      UPDATE: (id) => `/api/driver/availability/${id}`,
+      DELETE: (id) => `/api/driver/availability/${id}`,
+    },
   },
 };

@@ -73,3 +73,24 @@ export const completeDelivery = async (deliveryId, receivedBy) => {
   });
   return response.data;
 };
+
+// Driver Availability
+export const getDriverAvailability = async () => {
+  const response = await axiosInstance.get('/api/driver/availability');
+  return response.data;
+};
+
+export const createDriverAvailability = async (data) => {
+  const response = await axiosInstance.post('/api/driver/availability', data);
+  return response.data;
+};
+
+export const updateDriverAvailability = async (id, data) => {
+  const response = await axiosInstance.put(`/api/driver/availability/${id}`, data);
+  return response.data;
+};
+
+export const deleteDriverAvailability = async (id) => {
+  const response = await axiosInstance.delete(`/api/driver/availability/${id}`);
+  return response.data;
+};
