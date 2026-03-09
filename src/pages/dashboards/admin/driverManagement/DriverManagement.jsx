@@ -516,7 +516,7 @@ const DriverManagement = () => {
                                     onDelete={handleDeleteDriver}
                                     onToggleStatus={handleToggleStatus}
                                     onViewAvailability={handleViewAvailability}
-                                    openUpward={index >= paginatedDrivers.length - 3}
+                                    openUpward={index >= Math.max(paginatedDrivers.length - 3, 1)}
                                   />
                                 )}
                               </div>
@@ -637,7 +637,7 @@ const DriverManagement = () => {
                                 onDelete={handleDeleteDriver}
                                 onToggleStatus={handleToggleStatus}
                                 onViewAvailability={handleViewAvailability}
-                                openUpward={index >= paginatedDrivers.length - 3}
+                                openUpward={index >= Math.max(paginatedDrivers.length - 3, 1)}
                               />
                             )}
                           </div>
