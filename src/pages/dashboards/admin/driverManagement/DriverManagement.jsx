@@ -408,7 +408,7 @@ const DriverManagement = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {paginatedDrivers.map((driver) => (
+                        {paginatedDrivers.map((driver, index) => (
                           <tr key={driver.id} className="transition-colors hover:bg-gray-50">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
@@ -516,6 +516,7 @@ const DriverManagement = () => {
                                     onDelete={handleDeleteDriver}
                                     onToggleStatus={handleToggleStatus}
                                     onViewAvailability={handleViewAvailability}
+                                    openUpward={index >= paginatedDrivers.length - 2}
                                   />
                                 )}
                               </div>
@@ -528,7 +529,7 @@ const DriverManagement = () => {
 
                   {/* Mobile Card View - Hidden on desktop */}
                   <div className="divide-y divide-gray-200 lg:hidden">
-                    {paginatedDrivers.map((driver) => (
+                    {paginatedDrivers.map((driver, index) => (
                       <div key={driver.id} className="p-4 transition-colors hover:bg-gray-50">
                         {/* Card Header */}
                         <div className="mb-3 flex items-start justify-between gap-2">
@@ -636,6 +637,7 @@ const DriverManagement = () => {
                                 onDelete={handleDeleteDriver}
                                 onToggleStatus={handleToggleStatus}
                                 onViewAvailability={handleViewAvailability}
+                                openUpward={index >= paginatedDrivers.length - 2}
                               />
                             )}
                           </div>

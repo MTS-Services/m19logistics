@@ -9,8 +9,13 @@ const ActionDropdown = ({
   onDelete,
   onToggleStatus,
   onViewAvailability,
+  openUpward = false,
 }) => (
-  <div className="absolute top-full right-0 z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-xl">
+  <div
+    className={`absolute right-0 z-50 w-44 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-200 ${
+      openUpward ? 'bottom-full mb-1' : 'top-full mt-1'
+    }`}
+  >
     <div className="py-1">
       {/* <button onClick={() => onViewAnalytics(driver)} className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50"><BarChart3 className="h-4 w-4" />View Analytics</button> */}
       <button
