@@ -94,3 +94,15 @@ export const deleteDriverAvailability = async (id) => {
   const response = await axiosInstance.delete(`/api/driver/availability/${id}`);
   return response.data;
 };
+
+// Admin: get all drivers' availability
+export const getAdminDriverAvailability = async () => {
+  const response = await axiosInstance.get('/api/admin/driver-availability');
+  return response.data;
+};
+
+// Admin: get a specific driver's availability
+export const getAdminDriverAvailabilityById = async (driverId) => {
+  const response = await axiosInstance.get(`/api/admin/drivers/${driverId}/availability`);
+  return response.data;
+};

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Truck,
   UserPlus,
@@ -39,6 +40,7 @@ import DeleteConfirmModal from './components/DeleteConfirmModal';
 import ActionDropdown from './components/ActionDropdown';
 
 const DriverManagement = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -198,6 +200,15 @@ const DriverManagement = () => {
     }
   };
 
+  const handleViewAvailability = (driver) => {
+    if (driver) {
+      navigate(`/admin/drivers/availability?driver=${driver.id}`);
+    } else {
+      navigate('/admin/drivers/availability');
+    }
+    setShowActionDropdown(null);
+  };
+
   const handleResetPassword = (driver) => {
     setSelectedDriver(driver);
     setShowResetPasswordModal(true);
@@ -243,20 +254,33 @@ const DriverManagement = () => {
                 Manage drivers, view performance, and track deliveries
               </p>
             </div>
-            <button
-              onClick={handleAddDriver}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6"
-            >
-              <UserPlus className="h-5 w-5" />
-              <span>Add Driver</span>
-            </button>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <button
+                onClick={() => handleViewAvailability(null)}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-teal-600 px-4 py-2.5 text-sm font-medium text-teal-700 transition-colors hover:bg-teal-50 sm:w-auto"
+              >
+                <Calendar className="h-4 w-4" />
+                <span>Driver Availability</span>
+              </button>
+              <button
+                onClick={handleAddDriver}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-teal-700 sm:w-auto"
+              >
+                <UserPlus className="h-5 w-5" />
+                <span>Add Driver</span>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Loading State */}
         {loading && (
           <div className="py-12">
-            <Loading message="Loading Drivers" submessage="Fetching drivers list..." size="medium" />
+            <Loading
+              message="Loading Drivers"
+              submessage="Fetching drivers list..."
+              size="medium"
+            />
           </div>
         )}
 
@@ -401,8 +425,9 @@ const DriverManagement = () => {
                                     </div>
                                   )}
                                   <div
-                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                      }`}
+                                    className={`absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-white ${
+                                      driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                    }`}
                                   ></div>
                                 </div>
                                 <div>
@@ -490,6 +515,7 @@ const DriverManagement = () => {
                                     onResetPassword={handleResetPassword}
                                     onDelete={handleDeleteDriver}
                                     onToggleStatus={handleToggleStatus}
+                                    onViewAvailability={handleViewAvailability}
                                   />
                                 )}
                               </div>
@@ -520,8 +546,9 @@ const DriverManagement = () => {
                                 </div>
                               )}
                               <div
-                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                                  }`}
+                                className={`absolute -right-0.5 -bottom-0.5 h-4 w-4 rounded-full border-2 border-white ${
+                                  driver.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                                }`}
                               ></div>
                             </div>
                             <div>
@@ -608,6 +635,7 @@ const DriverManagement = () => {
                                 onResetPassword={handleResetPassword}
                                 onDelete={handleDeleteDriver}
                                 onToggleStatus={handleToggleStatus}
+                                onViewAvailability={handleViewAvailability}
                               />
                             )}
                           </div>

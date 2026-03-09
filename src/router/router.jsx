@@ -20,6 +20,7 @@ import BookingsBoard from '../pages/dashboards/admin/bookings/BookingsBoard';
 import AllocateDriverPage from '../pages/dashboards/admin/bookings/AllocateDriverPage';
 import UsersManagement from '../pages/dashboards/admin/userManagement/UsersManagement';
 import DriverManagement from '../pages/dashboards/admin/driverManagement/DriverManagement';
+import AdminDriverAvailability from '../pages/dashboards/admin/driverManagement/AdminDriverAvailability';
 import InvoicesManagement from '../pages/dashboards/admin/invoiceManagement/InvoicesManagement';
 import PricingManagement from '../pages/dashboards/admin/PricingManagement';
 import AnalyticsDashboard from '../pages/dashboards/admin/AnalyticsDashboard';
@@ -98,6 +99,7 @@ const router = createBrowserRouter(
         <Route path="bookings/allocate" element={<AllocateDriverPage />} />
         <Route path="users" element={<UsersManagement />} />
         <Route path="drivers" element={<DriverManagement />} />
+        <Route path="drivers/availability" element={<AdminDriverAvailability />} />
         <Route path="contacts" element={<ContactsManagement />} />
         <Route path="enquiries" element={<EnquiriesManagement />} />
         <Route path="audit-logs" element={<AdminAuditLogs />} />
