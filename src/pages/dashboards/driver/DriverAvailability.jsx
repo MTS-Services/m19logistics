@@ -169,16 +169,10 @@ const DriverAvailability = () => {
         {/* ── Page Header ── */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="mb-1.5 flex items-center gap-2">
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-teal-100">
-                <Calendar className="h-3.5 w-3.5 text-teal-600" />
-              </span>
-              <span className="text-xs font-semibold tracking-widest text-teal-600 uppercase">
-                Schedule
-              </span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Driver Availability</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+              Driver Availability
+            </h1>
+            <p className="mt-2 text-sm text-gray-600 sm:text-base">
               Set and manage your availability for delivery slots
             </p>
           </div>
