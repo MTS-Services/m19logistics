@@ -14,7 +14,7 @@ import {
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
 import Loading from '../../../components/Loading';
-import { getAllInvoices } from '../../../services/invoiceService';
+import { getAllInvoices, exportInvoicePDF } from '../../../services/invoiceService';
 
 const Invoices = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -251,123 +251,26 @@ const Invoices = () => {
     setShowViewModal(true);
   };
 
-  // Handle download PDF — client-side generation using browser print
-  const handleDownloadExcel = (invoice) => {
+  // Handle download PDF — backend returns designed PDF blob
+  const handleDownloadExcel = async (invoice) => {
     setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: true }));
-
-    const additionalChargesRows =
-      invoice.additionalCharges.length > 0
-        ? `
-        <h3 style="font-size:14px;font-weight:700;margin:20px 0 8px;">Additional Charges</h3>
-        <table>
-          <thead><tr><th style="text-align:left;">Description</th><th style="text-align:right;">Amount</th></tr></thead>
-          <tbody>
-            ${invoice.additionalCharges
-              .map(
-                (c) =>
-                  `<tr><td>${c.description}</td><td style="text-align:right;">£${c.amount.toFixed(2)}</td></tr>`
-              )
-              .join('')}
-          </tbody>
-        </table>`
-        : '';
-
-    const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <title>Invoice #${invoice.invoiceNumber}</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; font-size: 13px; color: #111; padding: 32px; }
-    .header { border-bottom: 2px solid #0d9488; padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
-    .company-name { font-size: 20px; font-weight: 700; color: #0d9488; margin-bottom: 4px; }
-    .company-info { color: #555; font-size: 12px; line-height: 1.6; }
-    .invoice-meta { text-align: right; }
-    .invoice-number { font-size: 18px; font-weight: 700; }
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: ${invoice.status === 'Paid' ? '#dcfce7' : '#fef9c3'}; color: ${invoice.status === 'Paid' ? '#16a34a' : '#854d0e'}; margin-top: 4px; }
-    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 16px; margin-bottom: 20px; }
-    .meta-label { font-size: 11px; color: #6b7280; }
-    .meta-value { font-weight: 600; }
-    h3 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
-    thead tr { background: #f3f4f6; }
-    th { padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #6b7280; border-bottom: 1px solid #e5e7eb; }
-    td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; font-size: 12px; }
-    .summary { background: #f0fdfa; border: 2px solid #99f6e4; border-radius: 6px; padding: 14px 16px; margin-top: 20px; }
-    .summary-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; }
-    .summary-total { display: flex; justify-content: space-between; padding-top: 10px; margin-top: 8px; border-top: 2px solid #5eead4; font-size: 18px; font-weight: 700; color: #0d9488; }
-    @media print { body { padding: 16px; } button { display: none; } }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div>
-      <div class="company-name">M19 Logistics Limited</div>
-      <div class="company-info">
-        84 Acton Hall Walks, Wrexham, LL12 7YJ<br/>
-        Tel: 07971415430 / WhatsApp 07577574676<br/>
-        VAT Number: 447 5918 54
-      </div>
-    </div>
-    <div class="invoice-meta">
-      <div class="invoice-number">Invoice #${invoice.invoiceNumber}</div>
-      <div class="badge">${invoice.status}</div>
-    </div>
-  </div>
-
-  <div class="meta-grid">
-    <div><div class="meta-label">Invoice Date</div><div class="meta-value">${invoice.date}</div></div>
-    <div><div class="meta-label">Week Ending</div><div class="meta-value">${invoice.weekEnding}</div></div>
-  </div>
-
-  <h3>Delivery Items</h3>
-  <table>
-    <thead>
-      <tr>
-        <th style="text-align:left;">SPO Number</th>
-        <th style="text-align:left;">Date</th>
-        <th style="text-align:left;">Address</th>
-        <th style="text-align:right;">Unit Price</th>
-        <th style="text-align:right;">VAT</th>
-        <th style="text-align:right;">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${invoice.deliveries
-        .map(
-          (d) =>
-            `<tr>
-              <td>${d.spoNumber}</td>
-              <td>${d.date}</td>
-              <td>${d.address}</td>
-              <td style="text-align:right;">£${d.basePrice.toFixed(2)}</td>
-              <td style="text-align:right;">£${d.vat.toFixed(2)}</td>
-              <td style="text-align:right;"><strong>£${d.total.toFixed(2)}</strong></td>
-            </tr>`
-        )
-        .join('')}
-    </tbody>
-  </table>
-
-  ${additionalChargesRows}
-
-  <div class="summary">
-    <div class="summary-row"><span>Subtotal:</span><span>£${invoice.subtotal.toFixed(2)}</span></div>
-    <div class="summary-row"><span>VAT (20%):</span><span>£${invoice.totalVAT.toFixed(2)}</span></div>
-    <div class="summary-total"><span>Total:</span><span>£${invoice.total.toFixed(2)}</span></div>
-  </div>
-</body>
-</html>`;
-
-    const win = window.open('', '_blank', 'width=900,height=700');
-    win.document.write(html);
-    win.document.close();
-    win.focus();
-    setTimeout(() => {
-      win.print();
+    try {
+      const resp = await exportInvoicePDF(invoice.id);
+      const blob = new Blob([resp.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${invoice.invoiceNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to download PDF');
+    } finally {
       setDownloadingPDF((prev) => ({ ...prev, [invoice.id]: false }));
-    }, 500);
+    }
   };
 
   return (
