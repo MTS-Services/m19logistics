@@ -91,7 +91,17 @@ const DriverAvailability = () => {
 
   const openAddForm = (prefillDate = '') => {
     setEditingEntry(null);
-    setFormData({ date: prefillDate, timeSlot: 'AM', isAvailable: true, notes: '' });
+    // Auto-detect which slot is missing for the given date
+    let defaultSlot = 'AM';
+    if (prefillDate) {
+      const existingSlots = availabilities
+        .filter((a) => a.date.split('T')[0] === prefillDate)
+        .map((a) => a.timeSlot);
+      if (existingSlots.includes('AM') && !existingSlots.includes('PM')) {
+        defaultSlot = 'PM';
+      }
+    }
+    setFormData({ date: prefillDate, timeSlot: defaultSlot, isAvailable: true, notes: '' });
     setShowForm(true);
   };
 
@@ -125,7 +135,7 @@ const DriverAvailability = () => {
           date: formData.date,
           timeSlot: formData.timeSlot,
           isAvailable: formData.isAvailable,
-          notes: formData.notes,
+          notes: formData.notes.trim(),
         });
         toast.success('Availability saved');
       }
@@ -273,6 +283,7 @@ const DriverAvailability = () => {
                     value={formData.date}
                     onChange={(e) => setFormData((p) => ({ ...p, date: e.target.value }))}
                     disabled={!!editingEntry}
+                    min={new Date().toISOString().split('T')[0]}
                     required
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none disabled:bg-gray-50 disabled:text-gray-500"
                   />
