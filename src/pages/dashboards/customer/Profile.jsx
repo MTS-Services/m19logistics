@@ -42,6 +42,7 @@ const Profile = () => {
     phone: user?.phone || '',
     depotAddress: user?.depotAddress || '',
     loginId: user?.username || '',
+    ccEmail: '',
   });
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -79,6 +80,7 @@ const Profile = () => {
             phone: userData.phone || '',
             depotAddress: userData.customerProfile?.depotAddress || '',
             loginId: userData.username || '',
+            ccEmail: userData.customerProfile?.ccEmail || '',
           });
 
           // Prefer any locally selected preview saved during this session
@@ -554,6 +556,23 @@ const Profile = () => {
                     />
                   </div>
                 </div>
+
+                {/* CC Email */}
+                {profileData.ccEmail && (
+                  <div className="mt-6">
+                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <Mail className="h-4 w-4 text-gray-400" />
+                      CC Email
+                    </label>
+                    <input
+                      type="email"
+                      value={profileData.ccEmail}
+                      disabled
+                      className="w-full rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-gray-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-500">CC Email is managed by admin</p>
+                  </div>
+                )}
               </div>
 
               {/* Depot Address Section */}
