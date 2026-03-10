@@ -196,7 +196,7 @@ const AdminDriverAvailability = () => {
             </div>
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-gray-900">{driverInfo.fullName}</p>
-              <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-500">
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm text-gray-500">
                 {driverInfo.email && <span>{driverInfo.email}</span>}
                 {driverInfo.phone && <span>{driverInfo.phone}</span>}
                 {driverInfo.driverProfile?.vehicleRegistration && (
@@ -221,14 +221,14 @@ const AdminDriverAvailability = () => {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium text-gray-500">Total Slots</p>
+                <p className="text-sm font-medium text-gray-500">Total Slots</p>
                 <Calendar className="h-4 w-4 text-gray-400" />
               </div>
               <p className="mt-2 text-2xl font-bold text-gray-900">{totalSlots}</p>
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium text-gray-500">
+                <p className="text-sm font-medium text-gray-500">
                   {selectedDriverId ? 'Dates' : 'Drivers'}
                 </p>
                 <User className="h-4 w-4 text-gray-400" />
@@ -239,14 +239,14 @@ const AdminDriverAvailability = () => {
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium text-gray-500">Available</p>
+                <p className="text-sm font-medium text-gray-500">Available</p>
                 <CheckCircle className="h-4 w-4 text-gray-400" />
               </div>
               <p className="mt-2 text-2xl font-bold text-gray-900">{available}</p>
             </div>
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-xs font-medium text-gray-500">Unavailable</p>
+                <p className="text-sm font-medium text-gray-500">Unavailable</p>
                 <XCircle className="h-4 w-4 text-gray-400" />
               </div>
               <p className="mt-2 text-2xl font-bold text-gray-900">{unavailable}</p>
@@ -258,7 +258,7 @@ const AdminDriverAvailability = () => {
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="flex-1 space-y-1.5">
-              <label className="block text-xs font-medium text-gray-500">Filter by Driver</label>
+              <label className="block text-sm font-medium text-gray-500">Filter by Driver</label>
               <div className="relative">
                 <select
                   value={selectedDriverId ?? ''}
@@ -277,7 +277,7 @@ const AdminDriverAvailability = () => {
               </div>
             </div>
             <div className="flex-1 space-y-1.5">
-              <label className="block text-xs font-medium text-gray-500">Filter by Date</label>
+              <label className="block text-sm font-medium text-gray-500">Filter by Date</label>
               <div className="relative">
                 <Calendar className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input
@@ -307,8 +307,8 @@ const AdminDriverAvailability = () => {
               <Loader2 className="h-7 w-7 animate-spin text-teal-500" />
             </div>
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-600">Loading availability</p>
-              <p className="mt-0.5 text-xs text-gray-400">Please wait a moment…</p>
+              <p className="text-base font-medium text-gray-600">Loading availability</p>
+              <p className="mt-0.5 text-sm text-gray-400">Please wait a moment…</p>
             </div>
           </div>
         ) : error ? (
@@ -316,8 +316,8 @@ const AdminDriverAvailability = () => {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
               <XCircle className="h-6 w-6 text-red-400" />
             </div>
-            <p className="mt-3 text-sm font-semibold text-gray-800">Something went wrong</p>
-            <p className="mt-1 text-xs text-gray-400">{error}</p>
+            <p className="mt-3 text-base font-semibold text-gray-800">Something went wrong</p>
+            <p className="mt-1 text-sm text-gray-400">{error}</p>
             <button
               onClick={fetchData}
               className="mt-5 inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
@@ -333,8 +333,8 @@ const AdminDriverAvailability = () => {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
                 <Calendar className="h-7 w-7 text-gray-300" />
               </div>
-              <p className="mt-4 text-sm font-semibold text-gray-600">No availability set</p>
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-4 text-base font-semibold text-gray-600">No availability set</p>
+              <p className="mt-1 text-sm text-gray-400">
                 {dateFilter
                   ? 'No entries for the selected date'
                   : "This driver hasn't set any availability yet"}
@@ -342,7 +342,7 @@ const AdminDriverAvailability = () => {
               {dateFilter && (
                 <button
                   onClick={clearFilters}
-                  className="mt-4 text-xs font-medium text-teal-600 hover:underline"
+                  className="mt-4 text-sm font-medium text-teal-600 hover:underline"
                 >
                   Clear date filter
                 </button>
@@ -368,8 +368,10 @@ const AdminDriverAvailability = () => {
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-gray-800">{formatFullDate(date)}</p>
-                      <p className="mt-0.5 text-xs text-gray-400">
+                      <p className="text-base font-semibold text-gray-800">
+                        {formatFullDate(date)}
+                      </p>
+                      <p className="mt-0.5 text-sm text-gray-400">
                         {[AM, PM].filter(Boolean).length} of 2 slots set
                         {' · '}
                         <span className="text-green-600">
@@ -404,7 +406,7 @@ const AdminDriverAvailability = () => {
                               <Sunset className="h-3.5 w-3.5 text-indigo-500" />
                             )}
                           </div>
-                          <span className="text-sm font-medium text-gray-700">
+                          <span className="text-base font-medium text-gray-700">
                             {slot === 'AM' ? 'Morning (AM)' : 'Afternoon (PM)'}
                           </span>
                         </div>
@@ -423,7 +425,7 @@ const AdminDriverAvailability = () => {
                                 <XCircle className="h-4 w-4 text-red-500" />
                               )}
                               <span
-                                className={`text-sm font-semibold ${
+                                className={`text-base font-semibold ${
                                   entry.isAvailable ? 'text-green-700' : 'text-red-600'
                                 }`}
                               >
@@ -431,7 +433,7 @@ const AdminDriverAvailability = () => {
                               </span>
                             </div>
                             {entry.notes && (
-                              <p className="mt-2 border-t border-gray-200 pt-2 text-xs text-gray-500 italic">
+                              <p className="mt-2 border-t border-gray-200 pt-2 text-sm text-gray-500 italic">
                                 &ldquo;{entry.notes}&rdquo;
                               </p>
                             )}
@@ -454,8 +456,8 @@ const AdminDriverAvailability = () => {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
               <Calendar className="h-7 w-7 text-gray-300" />
             </div>
-            <p className="mt-4 text-sm font-semibold text-gray-600">No records found</p>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-4 text-base font-semibold text-gray-600">No records found</p>
+            <p className="mt-1 text-sm text-gray-400">
               {dateFilter ? 'Try adjusting your filters' : 'No availability has been set yet'}
             </p>
             {dateFilter && (
@@ -485,8 +487,8 @@ const AdminDriverAvailability = () => {
                     </span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-gray-800">{formatFullDate(date)}</p>
-                    <p className="mt-0.5 text-xs text-gray-400">
+                    <p className="text-base font-semibold text-gray-800">{formatFullDate(date)}</p>
+                    <p className="mt-0.5 text-sm text-gray-400">
                       {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
                       {' · '}
                       <span className="text-green-600">
@@ -522,19 +524,19 @@ const AdminDriverAvailability = () => {
                             {initials}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-gray-800">
+                            <p className="truncate text-base font-semibold text-gray-800">
                               {driverName}
                             </p>
                             {vehicleReg && (
-                              <span className="text-xs text-gray-400">{vehicleReg}</span>
+                              <span className="text-sm text-gray-400">{vehicleReg}</span>
                             )}
                           </div>
                         </div>
 
-                        {/* Slot + Status badges */}
-                        <div className="flex flex-wrap items-center gap-2">
+                        {/* Slot + Status + Notes + Arrow */}
+                        <div className="flex shrink-0 items-center gap-2">
                           <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold ${
                               isAM
                                 ? 'border-amber-200 bg-amber-50 text-amber-700'
                                 : 'border-indigo-200 bg-indigo-50 text-indigo-700'
@@ -548,7 +550,7 @@ const AdminDriverAvailability = () => {
                             {isAM ? 'Morning (AM)' : 'Afternoon (PM)'}
                           </span>
                           <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold ${
                               entry.isAvailable
                                 ? 'border-green-200 bg-green-50 text-green-700'
                                 : 'border-red-200 bg-red-50 text-red-600'
@@ -561,17 +563,13 @@ const AdminDriverAvailability = () => {
                             )}
                             {entry.isAvailable ? 'Available' : 'Unavailable'}
                           </span>
+                          {entry.notes && (
+                            <p className="hidden max-w-48 truncate text-sm text-gray-400 italic lg:block">
+                              &ldquo;{entry.notes}&rdquo;
+                            </p>
+                          )}
+                          <ChevronRight className="h-4 w-4 shrink-0 text-gray-300" />
                         </div>
-
-                        {/* Notes */}
-                        {entry.notes && (
-                          <p className="truncate text-xs text-gray-400 italic sm:max-w-55">
-                            &ldquo;{entry.notes}&rdquo;
-                          </p>
-                        )}
-
-                        {/* View arrow */}
-                        <ChevronRight className="hidden h-4 w-4 shrink-0 text-gray-300 sm:block" />
                       </button>
                     );
                   })}
