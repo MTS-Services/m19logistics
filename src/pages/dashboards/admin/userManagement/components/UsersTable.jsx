@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Mail, Phone, EllipsisVertical, Edit, Trash2 } from 'lucide-react';
+import { Mail, Phone, EllipsisVertical, Edit, Trash2, AtSign } from 'lucide-react';
 
 const UsersTable = ({
   users,
@@ -8,6 +8,7 @@ const UsersTable = ({
   setShowActionDropdown,
   handleEditUser,
   handleDeleteUser,
+  handleCCEmail,
 }) => {
   const dropdownRef = useRef(null);
 
@@ -105,6 +106,18 @@ const UsersTable = ({
                             <Edit className="h-4 w-4 text-gray-500" />
                             Edit User
                           </button>
+                          {user.role === 'customer' && (
+                            <>
+                              <div className="mx-3 border-t border-gray-100" />
+                              <button
+                                onClick={() => handleCCEmail(user)}
+                                className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                              >
+                                <AtSign className="h-4 w-4 text-gray-500" />
+                                CC Email
+                              </button>
+                            </>
+                          )}
                           <div className="mx-3 border-t border-gray-100" />
                           <button
                             onClick={() => handleDeleteUser(user)}

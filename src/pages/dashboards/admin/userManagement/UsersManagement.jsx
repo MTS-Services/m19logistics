@@ -27,6 +27,7 @@ import UserCard from './components/UserCard';
 import UsersTable from './components/UsersTable';
 import AddEditModal from './components/AddEditModal';
 import ConfirmDeleteModal from './components/ConfirmDeleteModal';
+import CCEmailModal from './components/CCEmailModal';
 // import ResetPasswordModal from './components/ResetPasswordModal';
 import Loading from '../../../../components/Loading';
 
@@ -87,6 +88,7 @@ const UsersManagement = () => {
                     : 'customer',
             depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
             pricingTier: u.customerProfile?.pricingTier?.name || null,
+            ccEmail: u.customerProfile?.ccEmail || null,
             status: u.isActive ? 'active' : 'inactive',
             passwordReset: !!u.requirePasswordReset,
             profilePhoto: u.profilePicture || null,
@@ -169,6 +171,13 @@ const UsersManagement = () => {
   };
 
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showCCEmailModal, setShowCCEmailModal] = useState(false);
+
+  const handleCCEmail = (user) => {
+    setSelectedUser(user);
+    setShowCCEmailModal(true);
+    setShowActionDropdown(null);
+  };
 
   const confirmDelete = async () => {
     if (!selectedUser) return;
@@ -203,6 +212,7 @@ const UsersManagement = () => {
                   : 'customer',
           depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
           pricingTier: u.customerProfile?.pricingTier?.name || null,
+          ccEmail: u.customerProfile?.ccEmail || null,
           status: u.isActive ? 'active' : 'inactive',
           passwordReset: !!u.requirePasswordReset,
           profilePhoto: u.profilePicture || null,
@@ -359,6 +369,7 @@ const UsersManagement = () => {
                   setShowActionDropdown={setShowActionDropdown}
                   handleEditUser={handleEditUser}
                   handleDeleteUser={handleDeleteUser}
+                  handleCCEmail={handleCCEmail}
                 />
               </div>
 
@@ -372,6 +383,21 @@ const UsersManagement = () => {
             </div>
 
             {/* MODAL RENDERING AREA */}
+            {showCCEmailModal && selectedUser && (
+              <CCEmailModal
+                user={selectedUser}
+                onClose={() => {
+                  setShowCCEmailModal(false);
+                  setSelectedUser(null);
+                }}
+                onSuccess={(userId, newCcEmail) => {
+                  setUsers((prev) =>
+                    prev.map((u) => (u.id === userId ? { ...u, ccEmail: newCcEmail } : u))
+                  );
+                }}
+              />
+            )}
+
             {showAddModal && (
               <AddEditModal
                 onClose={() => setShowAddModal(false)}
@@ -393,6 +419,7 @@ const UsersManagement = () => {
                             : 'customer',
                     depot: newUser.customerProfile?.depotAddress || '',
                     pricingTier: newUser.customerProfile?.pricingTier?.name || null,
+                    ccEmail: newUser.customerProfile?.ccEmail || null,
                     status: newUser.isActive ? 'active' : 'inactive',
                     passwordReset: !!newUser.requirePasswordReset,
                     profilePhoto: newUser.profilePicture || null,
@@ -428,6 +455,7 @@ const UsersManagement = () => {
                             : 'customer',
                     depot: updatedUser.customerProfile?.depotAddress || '',
                     pricingTier: updatedUser.customerProfile?.pricingTier?.name || null,
+                    ccEmail: updatedUser.customerProfile?.ccEmail || null,
                     status: updatedUser.isActive ? 'active' : 'inactive',
                     passwordReset: !!updatedUser.requirePasswordReset,
                     profilePhoto: updatedUser.profilePicture || null,
