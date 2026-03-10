@@ -102,6 +102,13 @@ const AdminDriverAvailability = () => {
     setSearchParams(p, { replace: true });
   };
 
+  const setDriverAndDate = (id, date) => {
+    const p = new URLSearchParams();
+    if (id) p.set('driver', id);
+    if (date) p.set('date', date);
+    setSearchParams(p, { replace: true });
+  };
+
   const setDateFilter = (val) => {
     const p = new URLSearchParams(searchParams);
     if (val) p.set('date', val);
@@ -515,7 +522,10 @@ const AdminDriverAvailability = () => {
                     return (
                       <button
                         key={entry.id}
-                        onClick={() => entry.driver && setDriverFilter(entry.driver.id)}
+                        onClick={() =>
+                          entry.driver &&
+                          setDriverAndDate(entry.driver.id, entry.date.split('T')[0])
+                        }
                         className="flex w-full flex-col gap-3 px-5 py-4 text-left transition-colors hover:bg-teal-50/40 sm:flex-row sm:items-center"
                       >
                         {/* Driver avatar + name */}
