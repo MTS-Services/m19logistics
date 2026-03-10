@@ -75,6 +75,18 @@ We welcome people from all backgrounds and value the different skills and perspe
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validation
+    if (formData.fullName.trim().length < 2 || formData.fullName.trim().length > 100) {
+      toast.error('Full name must be between 2 and 100 characters.');
+      setIsSubmitting(false);
+      return;
+    }
+    if (formData.coverLetter.trim().length < 5 || formData.coverLetter.trim().length > 2000) {
+      toast.error('Cover letter must be between 5 and 2000 characters.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const body = new FormData();
       body.append('fullName', formData.fullName);
