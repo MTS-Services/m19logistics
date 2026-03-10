@@ -150,8 +150,8 @@ const ContactView = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Phone</h3>
-                    <a href="tel:07971415430" className="text-teal-600 hover:text-teal-700">
-                      07971 415430
+                    <a href="tel:07818077110" className="text-teal-600 hover:text-teal-700">
+                      07818 077110
                     </a>
                     <br />
                     <a

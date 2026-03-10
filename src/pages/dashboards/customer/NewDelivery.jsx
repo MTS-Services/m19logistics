@@ -136,7 +136,7 @@ const NewDelivery = () => {
       if (formData.timeSlot === 'SAME_DAY' || isSameDayDelivery()) {
         setTimeout(() => {
           toast.warning(
-            'Same-day delivery cannot be guaranteed. Please call 07971415430 to confirm availability'
+            'Same-day delivery cannot be guaranteed. Please call 07818077110 to confirm availability'
           );
         }, 1000);
       }

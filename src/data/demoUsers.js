@@ -8,7 +8,7 @@ export const demoUsers = [
     email: 'admin@m19logistics.com',
     name: 'Ben Admin',
     role: 'admin',
-    phone: '07971415430',
+    phone: '07818077110',
     mustChangePassword: false,
     profilePhoto: null,
   },
@@ -101,7 +101,7 @@ export const demoUsers = [
     email: 'wwwbk@yahoo.co.uk',
     name: 'BK',
     role: 'driver',
-    phone: '07971415430',
+    phone: '07818077110',
     mustChangePassword: true,
     profilePhoto: '/assets/drivers/bk-profile.jpg',
   },
@@ -167,7 +167,7 @@ export const invoiceSettings = {
   companyDetails: {
     name: 'M19 Logistics Limited',
     address: '84 Acton Hall Walks, Wrexham, LL12 7YJ',
-    phone: '07971415430 / WhatsApp 07577574676',
+    phone: '07818077110 / WhatsApp 07577574676',
     email: '',
     vatNumber: '447 5918 54',
     bankDetails: {

@@ -75,8 +75,8 @@ const FooterLayout = () => {
               <li className="flex items-start space-x-2">
                 <Phone className="mt-1 h-4 w-4 flex-shrink-0 text-teal-400" />
                 <div>
-                  <a href="tel:07971415430" className="block text-gray-400 hover:text-[#31A2A2]">
-                    07971 415430
+                  <a href="tel:07818077110" className="block text-gray-400 hover:text-[#31A2A2]">
+                    07818 077110
                   </a>
                   <a
                     href="https://wa.me/447577574676"

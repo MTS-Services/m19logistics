@@ -791,8 +791,8 @@ const Profile = () => {
           <p className="text-sm text-teal-900">
             <strong>Note:</strong> For deliveries beyond 45 miles or custom pricing inquiries,
             please contact our admin team at{' '}
-            <a href="tel:07971415430" className="font-semibold underline">
-              07971 415430
+            <a href="tel:07818077110" className="font-semibold underline">
+              07818 077110
             </a>{' '}
             or{' '}
             <a href="mailto:deliveries@m19logistics.com" className="font-semibold underline">

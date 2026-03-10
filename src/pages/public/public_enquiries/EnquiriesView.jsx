@@ -293,11 +293,11 @@ const EnquiriesView = () => {
             {/* Quick Contact Options */}
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               <a
-                href="tel:07971415430"
+                href="tel:07818077110"
                 className="flex items-center justify-center space-x-3 rounded-lg bg-teal-600 px-6 py-4 font-semibold text-white shadow-lg transition-all hover:bg-teal-700"
               >
                 <Phone className="h-5 w-5" />
-                <span className="font-semibold">Call Us: 07971 415430</span>
+                <span className="font-semibold">Call Us: 07818 077110</span>
               </a>
 
               <a
