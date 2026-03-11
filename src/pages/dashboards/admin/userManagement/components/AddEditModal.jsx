@@ -39,13 +39,16 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
         }
       } catch (err) {
         console.error('Error fetching pricing tiers:', err);
-        toast.error('Failed to load pricing tiers');
+        // Don't show error toast if we already have user pricing tier data
+        if (!user?.pricingTierData) {
+          toast.error('Failed to load pricing tiers');
+        }
       } finally {
         setLoadingTiers(false);
       }
     };
     fetchPricingTiers();
-  }, []);
+  }, [user?.pricingTierData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -267,17 +270,23 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                       name="pricingTierId"
                       value={formData.pricingTierId}
                       onChange={handleChange}
-                      disabled={loadingTiers}
+                      disabled={loadingTiers && !user?.pricingTierData}
                       className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       {!isEdit && <option value="">Select pricing tier (optional)</option>}
+                      {/* Show current pricing tier immediately if available */}
+                      {isEdit && user?.pricingTierData && pricingTiers.length === 0 && (
+                        <option value={user.pricingTierData.id}>
+                          {user.pricingTierData.name}
+                        </option>
+                      )}
                       {pricingTiers.map((tier) => (
                         <option key={tier.id} value={tier.id}>
                           {tier.name}
                         </option>
                       ))}
                     </select>
-                    {loadingTiers && (
+                    {loadingTiers && !user?.pricingTierData && (
                       <p className="mt-1 text-xs text-gray-500">Loading pricing tiers...</p>
                     )}
                   </div>
