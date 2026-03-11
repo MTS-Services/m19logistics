@@ -69,11 +69,14 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
       newErrors.email = 'Invalid email format';
     }
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+
+    // Password validation
     if (!isEdit && !formData.password.trim()) {
       newErrors.password = 'Password is required';
-    } else if (!isEdit && formData.password.length < 6) {
+    } else if (formData.password.trim() && formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -95,6 +98,11 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           phone: formData.phone.trim(),
           role: formData.role,
         };
+
+        // Add password only if it's provided
+        if (formData.password.trim()) {
+          updatePayload.password = formData.password;
+        }
 
         // Add customer-specific fields if role is CUSTOMER
         if (formData.role === 'CUSTOMER') {
@@ -293,7 +301,7 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                 </div>
               )}
 
-              {!isEdit && (
+              {!isEdit ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Initial Password *
@@ -318,6 +326,35 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                   {errors.password && (
                     <p className="mt-1 text-xs text-red-500">{errors.password}</p>
                   )}
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Update Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Leave blank to keep current password"
+                      className={`mt-1 block w-full rounded-lg border px-3 py-2 pr-10 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">
+                    Optional: Enter a new password only if you want to change it (min. 6 characters)
+                  </p>
                 </div>
               )}
             </div>
