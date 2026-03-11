@@ -21,6 +21,7 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     storeName: '',
     depotAddress: user?.depot || '',
     pricingTierId: user?.pricingTierId || '',
+    customBasePrice: user?.customBasePrice || '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -112,6 +113,9 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           if (formData.pricingTierId) {
             updatePayload.pricingTierId = parseInt(formData.pricingTierId);
           }
+          if (formData.customBasePrice) {
+            updatePayload.customBasePrice = parseFloat(formData.customBasePrice);
+          }
         }
 
         response = await axiosInstance.put(`/api/admin/users/${user.id}`, updatePayload);
@@ -133,6 +137,9 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
             createPayload.depotAddress = formData.depotAddress.trim();
           if (formData.pricingTierId) {
             createPayload.pricingTierId = parseInt(formData.pricingTierId);
+          }
+          if (formData.customBasePrice) {
+            createPayload.customBasePrice = parseFloat(formData.customBasePrice);
           }
         }
 
@@ -298,6 +305,20 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                       <p className="mt-1 text-xs text-gray-500">Loading pricing tiers...</p>
                     )}
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Custom Base Price</label>
+                    <input
+                      type="number"
+                      name="customBasePrice"
+                      value={formData.customBasePrice}
+                      onChange={handleChange}
+                      step="0.01"
+                      min="0"
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                      placeholder="Enter custom base price (optional)"
+                    />
+
+                  </div>
                 </div>
               )}
 
@@ -352,9 +373,7 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                   {errors.password && (
                     <p className="mt-1 text-xs text-red-500">{errors.password}</p>
                   )}
-                  <p className="mt-1 text-xs text-gray-500">
-                    Optional: Enter a new password only if you want to change it (min. 6 characters)
-                  </p>
+
                 </div>
               )}
             </div>
