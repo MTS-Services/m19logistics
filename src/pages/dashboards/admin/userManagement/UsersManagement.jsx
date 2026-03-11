@@ -88,6 +88,7 @@ const UsersManagement = () => {
                     : 'customer',
             depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
             pricingTier: u.customerProfile?.pricingTier?.name || null,
+            pricingTierId: u.customerProfile?.pricingTier?.id || null,
             ccEmail: u.customerProfile?.ccEmail || null,
             status: u.isActive ? 'active' : 'inactive',
             passwordReset: !!u.requirePasswordReset,
@@ -212,6 +213,7 @@ const UsersManagement = () => {
                   : 'customer',
           depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
           pricingTier: u.customerProfile?.pricingTier?.name || null,
+          pricingTierId: u.customerProfile?.pricingTier?.id || null,
           ccEmail: u.customerProfile?.ccEmail || null,
           status: u.isActive ? 'active' : 'inactive',
           passwordReset: !!u.requirePasswordReset,
@@ -401,30 +403,62 @@ const UsersManagement = () => {
             {showAddModal && (
               <AddEditModal
                 onClose={() => setShowAddModal(false)}
-                onSuccess={(newUser) => {
-                  // Map the new user to our format and add to list
-                  const mapped = {
-                    id: newUser.id,
-                    name: newUser.fullName || newUser.username || newUser.email,
-                    email: newUser.email,
-                    phone: newUser.phone,
-                    username: newUser.username,
-                    role:
-                      newUser.role === 'ADMIN'
-                        ? 'admin'
-                        : newUser.role === 'DRIVER'
-                          ? 'driver'
-                          : newUser.role === 'MANAGER'
-                            ? 'area_manager'
-                            : 'customer',
-                    depot: newUser.customerProfile?.depotAddress || '',
-                    pricingTier: newUser.customerProfile?.pricingTier?.name || null,
-                    ccEmail: newUser.customerProfile?.ccEmail || null,
-                    status: newUser.isActive ? 'active' : 'inactive',
-                    passwordReset: !!newUser.requirePasswordReset,
-                    profilePhoto: newUser.profilePicture || null,
-                  };
-                  setUsers((prev) => [mapped, ...prev]);
+                onSuccess={async (newUser) => {
+                  // Re-fetch users to get the latest data from server
+                  try {
+                    const res = await axiosInstance.get('/api/admin/users');
+                    if (res.data?.success && Array.isArray(res.data.data)) {
+                      const mapped = res.data.data.map((u) => ({
+                        id: u.id,
+                        name: u.fullName || u.username || u.email,
+                        email: u.email,
+                        phone: u.phone,
+                        username: u.username,
+                        role:
+                          u.role === 'ADMIN'
+                            ? 'admin'
+                            : u.role === 'DRIVER'
+                              ? 'driver'
+                              : u.role === 'MANAGER'
+                                ? 'area_manager'
+                                : 'customer',
+                        depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
+                        pricingTier: u.customerProfile?.pricingTier?.name || null,
+                        pricingTierId: u.customerProfile?.pricingTier?.id || null,
+                        ccEmail: u.customerProfile?.ccEmail || null,
+                        status: u.isActive ? 'active' : 'inactive',
+                        passwordReset: !!u.requirePasswordReset,
+                        profilePhoto: u.profilePicture || null,
+                      }));
+                      setUsers(mapped);
+                    }
+                  } catch (err) {
+                    console.error('Error refreshing users:', err);
+                    // Fallback to adding the new user to the list
+                    const mapped = {
+                      id: newUser.id,
+                      name: newUser.fullName || newUser.username || newUser.email,
+                      email: newUser.email,
+                      phone: newUser.phone,
+                      username: newUser.username,
+                      role:
+                        newUser.role === 'ADMIN'
+                          ? 'admin'
+                          : newUser.role === 'DRIVER'
+                            ? 'driver'
+                            : newUser.role === 'MANAGER'
+                              ? 'area_manager'
+                              : 'customer',
+                      depot: newUser.customerProfile?.depotAddress || '',
+                      pricingTier: newUser.customerProfile?.pricingTier?.name || null,
+                      pricingTierId: newUser.customerProfile?.pricingTier?.id || null,
+                      ccEmail: newUser.customerProfile?.ccEmail || null,
+                      status: newUser.isActive ? 'active' : 'inactive',
+                      passwordReset: !!newUser.requirePasswordReset,
+                      profilePhoto: newUser.profilePicture || null,
+                    };
+                    setUsers((prev) => [mapped, ...prev]);
+                  }
                 }}
               />
             )}
@@ -437,30 +471,62 @@ const UsersManagement = () => {
                   setShowEditModal(false);
                   setSelectedUser(null);
                 }}
-                onSuccess={(updatedUser) => {
-                  // Update the user in the list
-                  const mapped = {
-                    id: updatedUser.id,
-                    name: updatedUser.fullName || updatedUser.username || updatedUser.email,
-                    email: updatedUser.email,
-                    phone: updatedUser.phone,
-                    username: updatedUser.username,
-                    role:
-                      updatedUser.role === 'ADMIN'
-                        ? 'admin'
-                        : updatedUser.role === 'DRIVER'
-                          ? 'driver'
-                          : updatedUser.role === 'MANAGER'
-                            ? 'area_manager'
-                            : 'customer',
-                    depot: updatedUser.customerProfile?.depotAddress || '',
-                    pricingTier: updatedUser.customerProfile?.pricingTier?.name || null,
-                    ccEmail: updatedUser.customerProfile?.ccEmail || null,
-                    status: updatedUser.isActive ? 'active' : 'inactive',
-                    passwordReset: !!updatedUser.requirePasswordReset,
-                    profilePhoto: updatedUser.profilePicture || null,
-                  };
-                  setUsers((prev) => prev.map((u) => (u.id === mapped.id ? mapped : u)));
+                onSuccess={async (updatedUser) => {
+                  // Re-fetch users to get the latest data from server
+                  try {
+                    const res = await axiosInstance.get('/api/admin/users');
+                    if (res.data?.success && Array.isArray(res.data.data)) {
+                      const mapped = res.data.data.map((u) => ({
+                        id: u.id,
+                        name: u.fullName || u.username || u.email,
+                        email: u.email,
+                        phone: u.phone,
+                        username: u.username,
+                        role:
+                          u.role === 'ADMIN'
+                            ? 'admin'
+                            : u.role === 'DRIVER'
+                              ? 'driver'
+                              : u.role === 'MANAGER'
+                                ? 'area_manager'
+                                : 'customer',
+                        depot: u.customerProfile?.depotAddress || u.driverProfile?.address || '',
+                        pricingTier: u.customerProfile?.pricingTier?.name || null,
+                        pricingTierId: u.customerProfile?.pricingTier?.id || null,
+                        ccEmail: u.customerProfile?.ccEmail || null,
+                        status: u.isActive ? 'active' : 'inactive',
+                        passwordReset: !!u.requirePasswordReset,
+                        profilePhoto: u.profilePicture || null,
+                      }));
+                      setUsers(mapped);
+                    }
+                  } catch (err) {
+                    console.error('Error refreshing users:', err);
+                    // Fallback to updating just the edited user
+                    const mapped = {
+                      id: updatedUser.id,
+                      name: updatedUser.fullName || updatedUser.username || updatedUser.email,
+                      email: updatedUser.email,
+                      phone: updatedUser.phone,
+                      username: updatedUser.username,
+                      role:
+                        updatedUser.role === 'ADMIN'
+                          ? 'admin'
+                          : updatedUser.role === 'DRIVER'
+                            ? 'driver'
+                            : updatedUser.role === 'MANAGER'
+                              ? 'area_manager'
+                              : 'customer',
+                      depot: updatedUser.customerProfile?.depotAddress || '',
+                      pricingTier: updatedUser.customerProfile?.pricingTier?.name || null,
+                      pricingTierId: updatedUser.customerProfile?.pricingTier?.id || null,
+                      ccEmail: updatedUser.customerProfile?.ccEmail || null,
+                      status: updatedUser.isActive ? 'active' : 'inactive',
+                      passwordReset: !!updatedUser.requirePasswordReset,
+                      profilePhoto: updatedUser.profilePicture || null,
+                    };
+                    setUsers((prev) => prev.map((u) => (u.id === mapped.id ? mapped : u)));
+                  }
                 }}
               />
             )}

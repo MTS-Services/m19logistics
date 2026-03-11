@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../../../services/axiosInstance';
@@ -20,10 +20,32 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     password: '',
     storeName: '',
     depotAddress: user?.depot || '',
+    pricingTierId: user?.pricingTierId || '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [pricingTiers, setPricingTiers] = useState([]);
+  const [loadingTiers, setLoadingTiers] = useState(false);
+
+  // Fetch pricing tiers on component mount
+  useEffect(() => {
+    const fetchPricingTiers = async () => {
+      try {
+        setLoadingTiers(true);
+        const response = await axiosInstance.get('/api/admin/pricing-tiers');
+        if (response.data?.success && Array.isArray(response.data.data)) {
+          setPricingTiers(response.data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching pricing tiers:', err);
+        toast.error('Failed to load pricing tiers');
+      } finally {
+        setLoadingTiers(false);
+      }
+    };
+    fetchPricingTiers();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,8 +94,13 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
         };
 
         // Add customer-specific fields if role is CUSTOMER
-        if (formData.role === 'CUSTOMER' && formData.depotAddress.trim()) {
-          updatePayload.depotAddress = formData.depotAddress.trim();
+        if (formData.role === 'CUSTOMER') {
+          if (formData.depotAddress.trim()) {
+            updatePayload.depotAddress = formData.depotAddress.trim();
+          }
+          if (formData.pricingTierId) {
+            updatePayload.pricingTierId = parseInt(formData.pricingTierId);
+          }
         }
 
         response = await axiosInstance.put(`/api/admin/users/${user.id}`, updatePayload);
@@ -93,6 +120,9 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           if (formData.storeName.trim()) createPayload.storeName = formData.storeName.trim();
           if (formData.depotAddress.trim())
             createPayload.depotAddress = formData.depotAddress.trim();
+          if (formData.pricingTierId) {
+            createPayload.pricingTierId = parseInt(formData.pricingTierId);
+          }
         }
 
         response = await axiosInstance.post('/api/admin/users', createPayload);
@@ -230,6 +260,26 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                       className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                       placeholder="Enter depot address"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Pricing Tier</label>
+                    <select
+                      name="pricingTierId"
+                      value={formData.pricingTierId}
+                      onChange={handleChange}
+                      disabled={loadingTiers}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    >
+                      {!isEdit && <option value="">Select pricing tier (optional)</option>}
+                      {pricingTiers.map((tier) => (
+                        <option key={tier.id} value={tier.id}>
+                          {tier.name}
+                        </option>
+                      ))}
+                    </select>
+                    {loadingTiers && (
+                      <p className="mt-1 text-xs text-gray-500">Loading pricing tiers...</p>
+                    )}
                   </div>
                 </div>
               )}
