@@ -4,6 +4,7 @@ import { Loader2, Plus, Bell } from 'lucide-react';
 import Loading from '../../../../components/Loading';
 import InvoiceCard from './components/InvoiceCard';
 import ViewInvoiceModal from './components/ViewInvoiceModal';
+import EditInvoiceModal from './components/EditInvoiceModal';
 import GenerateInvoiceModal from './components/GenerateInvoiceModal';
 import {
   getAllAdminInvoices,
@@ -31,8 +32,10 @@ export default function InvoicesManagement() {
   const [error, setError] = useState(null);
 
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [editingInvoice, setEditingInvoice] = useState(null);
   const [markingPaidId, setMarkingPaidId] = useState(null);
   const [sendingReminders, setSendingReminders] = useState(false);
 
@@ -57,14 +60,23 @@ export default function InvoicesManagement() {
 
   const handleViewInvoice = async (invoice) => {
     try {
-      setLoading(true);
       const resp = await getAdminInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
       setSelectedInvoice(resp?.data || resp);
       setShowViewModal(true);
-    } catch {
+    } catch (err) {
+      console.error('Error loading invoice:', err);
       toast.error('Failed to load invoice');
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleEditInvoice = async (invoice) => {
+    try {
+      const resp = await getAdminInvoiceById(invoice.id || invoice._id || invoice.invoiceId);
+      setEditingInvoice(resp?.data || resp);
+      setShowEditModal(true);
+    } catch (err) {
+      console.error('Error loading invoice for editing:', err);
+      toast.error('Failed to load invoice for editing');
     }
   };
 
@@ -123,24 +135,21 @@ export default function InvoicesManagement() {
   };
 
   return (
-    <div className="p-2 sm:p-6">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="p-3 sm:p-6">
+      <div className="mb-6 flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
             Invoice Management
           </h1>
           <p className="mt-1 text-sm text-gray-600 sm:text-base">
             Generate, manage, and track customer invoices
-
-
-            
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-3">
           <button
             onClick={handleSendReminders}
             disabled={sendingReminders}
-            className="inline-flex items-center gap-2 rounded-lg border border-teal-600 px-4 py-2 text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-teal-600 px-3 py-2 text-xs sm:text-sm font-medium text-teal-600 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-60 flex-1 sm:flex-initial"
           >
             {sendingReminders ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -151,7 +160,7 @@ export default function InvoicesManagement() {
           </button>
           <button
             onClick={() => setShowGenerateModal(true)}
-            className="inline-flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white shadow"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-600 px-3 py-2 text-xs sm:text-sm font-medium text-white shadow hover:bg-teal-700 flex-1 sm:flex-initial"
           >
             <Plus className="h-4 w-4" />
             <span>Generate Invoice</span>
@@ -176,19 +185,19 @@ export default function InvoicesManagement() {
 
       {!loading && !error && (
         <>
-          <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-4">
-            <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
+          <div className="mb-6 grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
+            <div className="rounded-lg bg-white p-3 sm:p-4 md:p-6 shadow-sm">
               <p className="text-xs text-gray-600">Total Invoices</p>
-              <p className="text-lg font-bold">{stats.totalInvoices}</p>
+              <p className="text-base sm:text-lg font-bold mt-1">{stats.totalInvoices}</p>
             </div>
 
-            <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
+            <div className="rounded-lg bg-white p-3 sm:p-4 md:p-6 shadow-sm">
               <p className="text-xs text-gray-600">Total Paid</p>
-              <p className="text-lg font-bold text-green-600">£{stats.totalPaid}</p>
+              <p className="text-base sm:text-lg font-bold text-green-600 mt-1">£{stats.totalPaid}</p>
             </div>
-            <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6">
+            <div className="rounded-lg bg-white p-3 sm:p-4 md:p-6 shadow-sm">
               <p className="text-xs text-gray-600">Total Unpaid</p>
-              <p className="text-lg font-bold text-red-600">£{stats.totalUnpaid}</p>
+              <p className="text-base sm:text-lg font-bold text-red-600 mt-1">£{stats.totalUnpaid}</p>
             </div>
           </div>
 
@@ -200,6 +209,7 @@ export default function InvoicesManagement() {
                 invoice={inv}
                 statusConfig={statusConfig}
                 onView={handleViewInvoice}
+                onEdit={handleEditInvoice}
                 onDownload={handleDownloadInvoice}
                 onMarkPaid={handleMarkPaid}
                 markingPaid={markingPaidId === (inv.id || inv._id || inv.invoiceId)}
@@ -217,6 +227,19 @@ export default function InvoicesManagement() {
             setSelectedInvoice(null);
           }}
           onDownload={() => handleDownloadInvoice(selectedInvoice)}
+        />
+      )}
+
+      {showEditModal && editingInvoice && (
+        <EditInvoiceModal
+          invoice={editingInvoice}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingInvoice(null);
+          }}
+          onSuccess={() => {
+            fetchInvoices();
+          }}
         />
       )}
 

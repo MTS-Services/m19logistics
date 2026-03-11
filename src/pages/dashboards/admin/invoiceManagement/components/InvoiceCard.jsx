@@ -1,7 +1,7 @@
 import React from 'react';
-import { Building, Calendar, Package, Eye, Download, CheckCircle } from 'lucide-react';
+import { Building, Calendar, Package, Eye, Download, CheckCircle, Edit } from 'lucide-react';
 
-const InvoiceCard = ({ invoice, statusConfig, onView, onDownload, onMarkPaid, markingPaid }) => {
+const InvoiceCard = ({ invoice, statusConfig, onView, onEdit, onDownload, onMarkPaid, markingPaid }) => {
   // If invoice has a paidAt date, treat it as paid regardless of status field
   const isPaid = !!(invoice.paidAt || invoice.paidDate || invoice.isPaid);
   // Normalize status: paid takes priority
@@ -28,7 +28,7 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onDownload, onMarkPaid, ma
   const paidDate = invoice.paidAt || invoice.paidDate || null;
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
+    <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 lg:p-6 shadow-sm transition-all hover:shadow-md">
       <div className="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
         <div className="flex-1">
           <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
@@ -42,21 +42,21 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onDownload, onMarkPaid, ma
           </div>
 
           <div className="mt-2 space-y-1">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Building className="h-4 w-4 shrink-0" />
-              <span className="wrap-break-word">
+            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
+              <Building className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="wrap-break-word truncate">
                 {customer} {customerEmail && `(${customerEmail})`}
               </span>
             </div>
-            <div className="flex items-start space-x-2 text-xs text-gray-500 sm:text-sm">
-              <Calendar className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>
+            <div className="flex items-start space-x-2 text-xs text-gray-500">
+              <Calendar className="mt-0.5 h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+              <span className="text-xs sm:text-sm">
                 Issued: {new Date(invoiceDate).toLocaleDateString('en-GB')} | Due:{' '}
                 {dueDate ? new Date(dueDate).toLocaleDateString('en-GB') : '—'}
               </span>
             </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <Package className="h-4 w-4 shrink-0" />
+            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
               <span>
                 {items.length} {items.length === 1 ? 'delivery' : 'deliveries'}
               </span>
@@ -75,26 +75,41 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onDownload, onMarkPaid, ma
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
+      <div className="mt-4 grid grid-cols-2 gap-2 border-t border-gray-100 pt-4 sm:flex sm:flex-wrap sm:gap-2">
         <button
+          type="button"
           onClick={() => onView(invoice)}
-          className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-teal-50 px-3 py-2 text-sm font-medium text-teal-700 transition-colors hover:bg-teal-100 sm:flex-initial"
+          className="flex items-center justify-center space-x-1 rounded-lg bg-teal-50 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-teal-700 transition-colors hover:bg-teal-100"
         >
           <Eye className="h-4 w-4" />
-          <span>View</span>
+          <span className="hidden sm:inline">View</span>
         </button>
         <button
+          type="button"
+          onClick={() => onEdit(invoice)}
+          disabled={isPaid}
+          className={`flex items-center justify-center space-x-1 rounded-lg px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-colors ${isPaid
+            ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
+            : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+            }`}
+        >
+          <Edit className="h-4 w-4" />
+          <span className="hidden sm:inline">Edit</span>
+        </button>
+        <button
+          type="button"
           onClick={() => onDownload(invoice)}
-          className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:flex-initial"
+          className="flex items-center justify-center space-x-1 rounded-lg bg-gray-50 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
         >
           <Download className="h-4 w-4" />
-          <span>PDF</span>
+          <span className="hidden sm:inline">PDF</span>
         </button>
         {!isPaid && onMarkPaid && (
           <button
+            type="button"
             onClick={() => onMarkPaid(invoice)}
             disabled={markingPaid}
-            className="flex min-w-20 flex-1 items-center justify-center space-x-1 rounded-lg bg-teal-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-initial"
+            className="col-span-2 sm:col-span-1 flex items-center justify-center space-x-1 rounded-lg bg-teal-600 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {markingPaid ? (
               <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -111,7 +126,8 @@ const InvoiceCard = ({ invoice, statusConfig, onView, onDownload, onMarkPaid, ma
             ) : (
               <CheckCircle className="h-4 w-4" />
             )}
-            <span>{markingPaid ? 'Marking...' : 'Mark as Paid'}</span>
+            <span className="hidden sm:inline">{markingPaid ? 'Marking...' : 'Mark as Paid'}</span>
+            <span className="sm:hidden">{markingPaid ? '...' : 'Paid'}</span>
           </button>
         )}
       </div>
