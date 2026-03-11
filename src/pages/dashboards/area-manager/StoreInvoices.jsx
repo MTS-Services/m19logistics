@@ -289,11 +289,10 @@ const StoreInvoices = () => {
                     </div>
                   </div>
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      invoice.isPaid
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${invoice.isPaid
                         ? 'bg-green-100 text-green-600'
                         : 'bg-orange-100 text-orange-600'
-                    }`}
+                      }`}
                   >
                     {invoice.isPaid ? 'Paid' : 'Unpaid'}
                   </span>
@@ -339,9 +338,9 @@ const StoreInvoices = () => {
         {/* View Invoice Modal */}
         {showViewModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 sm:p-4">
-            <div className="max-h-[95vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white shadow-2xl lg:max-h-none lg:overflow-visible">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between rounded-t-xl bg-linear-to-r from-teal-600 to-teal-500 px-4 py-4 sm:px-6 sm:py-5">
+            <div className="max-h-[85vh] w-full max-w-3xl rounded-xl bg-white shadow-2xl flex flex-col overflow-hidden">
+              {/* Modal Header - Sticky */}
+              <div className="flex items-center justify-between rounded-t-xl bg-linear-to-r from-teal-600 to-teal-500 px-4 py-4 sm:px-6 sm:py-5 shrink-0">
                 <div>
                   <p className="text-xs font-medium tracking-widest text-teal-100 uppercase">
                     Invoice
@@ -358,8 +357,8 @@ const StoreInvoices = () => {
                 </button>
               </div>
 
-              {/* Modal Body */}
-              <div className="p-4 sm:p-6">
+              {/* Modal Body - Scrollable */}
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                 {/* Loading state */}
                 {modalLoading && (
                   <div className="flex flex-col items-center gap-3 py-12 text-gray-500">
@@ -410,11 +409,10 @@ const StoreInvoices = () => {
                           {selectedInvoice.weekStartDate} – {selectedInvoice.weekEndDate}
                         </p>
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                            selectedInvoice.isPaid
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${selectedInvoice.isPaid
                               ? 'bg-green-100 text-green-700'
                               : 'bg-orange-100 text-orange-600'
-                          }`}
+                            }`}
                         >
                           {selectedInvoice.isPaid && <CheckCircle className="h-3 w-3" />}
                           {selectedInvoice.isPaid
@@ -561,8 +559,8 @@ const StoreInvoices = () => {
                 )}
               </div>
 
-              {/* Footer */}
-              <div className="border-t border-gray-100 px-4 py-3 sm:px-6 sm:py-4">
+              {/* Footer - Sticky */}
+              <div className="border-t border-gray-100 px-4 py-3 sm:px-6 sm:py-4 shrink-0">
                 <button
                   onClick={() => setShowViewModal(false)}
                   className="w-full rounded-lg bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
