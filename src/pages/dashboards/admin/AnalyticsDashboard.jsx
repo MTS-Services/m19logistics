@@ -53,7 +53,7 @@ const DonutChart = ({ data, total }) => {
     });
 
   return (
-    <svg width="180" height="180" viewBox="0 0 180 180">
+    <svg width="190" height="190" viewBox="0 0 180 180">
       {/* Track */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f3f4f6" strokeWidth={sw} />
       {/* Segments — rotated so first segment starts at 12 o'clock */}
@@ -73,10 +73,10 @@ const DonutChart = ({ data, total }) => {
         />
       ))}
       {/* Centre label */}
-      <text x={cx} y={cy - 7} textAnchor="middle" fill="#111827" fontSize="22" fontWeight="700">
+      <text x={cx} y={cy - 7} textAnchor="middle" fill="#111827" fontSize="24" fontWeight="700">
         {total}
       </text>
-      <text x={cx} y={cy + 13} textAnchor="middle" fill="#6b7280" fontSize="11">
+      <text x={cx} y={cy + 13} textAnchor="middle" fill="#6b7280" fontSize="16">
         Deliveries
       </text>
     </svg>
