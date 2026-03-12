@@ -217,7 +217,7 @@ const ManagerDashboard = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-100">
+        <main className="flex-1 overflow-y-auto bg-gray-100 p-2 sm:p-6">
           <Outlet />
         </main>
       </div>
