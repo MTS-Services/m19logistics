@@ -276,7 +276,7 @@ const UsersManagement = () => {
                   <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                     User Management
                   </h1>
-                  <p className="mt-1 text-sm text-gray-600 sm:mt-2">
+                  <p className="mt-1 text-base text-gray-600 sm:mt-2">
                     Manage admins, drivers, customers, and area managers
                   </p>
                 </div>

@@ -181,8 +181,8 @@ const AnalyticsDashboard = () => {
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Analytics Dashboard</h1>
-          <p className="mt-1 text-base text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">Analytics Dashboard</h1>
+          <p className="mt-1 text-base text-gray-600 sm:mt-2">
             {dateLabel ? `Period: ${dateLabel}` : 'Comprehensive performance metrics and reports'}
           </p>
         </div>
