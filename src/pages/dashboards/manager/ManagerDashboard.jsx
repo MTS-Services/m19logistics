@@ -114,7 +114,7 @@ const ManagerDashboard = () => {
                         key={item.name}
                         to={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ${
                           active
                             ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
@@ -156,7 +156,7 @@ const ManagerDashboard = () => {
           <div className="border-t border-gray-700 p-4">
             <button
               onClick={handleLogout}
-              className="flex w-full items-center space-x-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-red-600 hover:text-white"
+              className="flex w-full items-center space-x-3 rounded-lg px-4 py-3 text-base font-medium text-gray-300 transition-colors hover:bg-red-600 hover:text-white"
             >
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
@@ -181,11 +181,11 @@ const ManagerDashboard = () => {
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
               className="flex items-center space-x-3 rounded-lg px-4 py-2 transition-colors hover:bg-gray-100"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-base font-bold text-white">
                 {user?.name?.charAt(0) || 'M'}
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                <p className="text-base font-semibold text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500">Manager</p>
               </div>
               <ChevronDown
@@ -205,7 +205,7 @@ const ManagerDashboard = () => {
                 <div className="absolute top-full right-0 z-20 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-lg">
                   <button
                     onClick={handleLogout}
-                    className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                    className="flex w-full items-center space-x-2 px-4 py-2 text-base text-gray-700 transition-colors hover:bg-gray-100"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>
