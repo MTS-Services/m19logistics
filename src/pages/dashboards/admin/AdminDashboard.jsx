@@ -118,7 +118,7 @@ const AdminDashboard = () => {
                         key={item.name}
                         to={item.href}
                         onClick={() => setSidebarOpen(false)}
-                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                        className={`group relative flex items-center justify-between rounded-lg px-4 py-3 text-base font-medium transition-all duration-200 ${
                           active
                             ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-lg shadow-teal-900/50'
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
@@ -160,7 +160,7 @@ const AdminDashboard = () => {
           <div className="border-t border-gray-700 p-4">
             <button
               onClick={handleLogout}
-              className="flex w-full items-center space-x-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition-colors hover:bg-red-600 hover:text-white"
+              className="flex w-full items-center space-x-3 rounded-lg px-4 py-3 text-base font-medium text-gray-300 transition-colors hover:bg-red-600 hover:text-white"
             >
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
                 {user?.name?.charAt(0) || 'A'}
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                <p className="text-base font-semibold text-gray-900">{user?.name}</p>
                 <p className="text-xs text-gray-500">Administrator</p>
               </div>
               <ChevronDown
@@ -210,7 +210,7 @@ const AdminDashboard = () => {
                   <Link
                     to="/"
                     onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center space-x-2 rounded-t-lg px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                    className="flex items-center space-x-2 rounded-t-lg px-4 py-3 text-base text-gray-700 transition-colors hover:bg-gray-100"
                   >
                     <Home className="h-4 w-4" />
                     <span>Homepage</span>
