@@ -362,7 +362,7 @@ const AnalyticsDashboard = () => {
       {/* ── Recent Deliveries Table ──────────────────────────────────────────── */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="flex flex-col gap-1 border-b border-gray-200 px-6 py-4">
-          <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-gray-900">
             <Package className="h-5 w-5 text-teal-600" />
             Recent Deliveries
           </h2>
