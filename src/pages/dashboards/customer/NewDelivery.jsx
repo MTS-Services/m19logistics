@@ -586,7 +586,7 @@ const NewDelivery = () => {
                     <p className="font-semibold text-gray-900">{formData.instructions}</p>
                   </div>
                 )}
-
+{/* 
                 <div className="rounded-lg border border-teal-200 bg-teal-50 p-4">
                   <p className="text-base text-teal-900">
                     <span className="font-semibold">Estimated Cost:</span> £{getEstimatedCost()}
@@ -594,7 +594,7 @@ const NewDelivery = () => {
                   <p className="mt-1 text-base text-teal-700">
                     Final cost may vary based on distance and additional requirements
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
 
