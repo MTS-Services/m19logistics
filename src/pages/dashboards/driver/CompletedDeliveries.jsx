@@ -39,6 +39,7 @@ const CompletedDeliveries = () => {
           const normalized = res.data.map((d) => ({
             id: d.id,
             spoNumber: d.spoNumber,
+            weight: d.weight || d.packWeight || d.packageWeight || '',
             customerName: d.customerName || (d.customer && d.customer.fullName) || '',
             customerPhone: d.customerPhone || (d.customer && d.customer.phone) || '',
             depotAddress:
@@ -276,6 +277,10 @@ const CompletedDeliveries = () => {
                       <p className="text-sm text-gray-900">
                         {selectedDelivery.date} - {selectedDelivery.timeSlot}
                       </p>
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">Weight</label>
+                      <p className="text-sm text-gray-900">{selectedDelivery.weight ? `${selectedDelivery.weight} kg` : '—'}</p>
                     </div>
                     <div>
                       <label className="mb-1 block text-sm font-medium text-gray-700">

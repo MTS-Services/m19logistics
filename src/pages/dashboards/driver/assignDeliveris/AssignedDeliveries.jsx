@@ -64,6 +64,7 @@ const AssignedDeliveries = () => {
           const normalized = response.data.map((d) => ({
             id: d.id,
             spoNumber: d.spoNumber,
+            weight: d.weight || d.packWeight || d.packageWeight || '',
             customerName: d.customerName || (d.customer && d.customer.fullName) || '',
             customerPhone: d.customerPhone || (d.customer && d.customer.phone) || '',
             depotAddress:
@@ -415,7 +416,7 @@ const AssignedDeliveries = () => {
   const handleCall = (phone) => {
     window.location.href = `tel:${phone}`;
   };
-
+  console.log(deliveries)
   return (
     <div className="p-2 sm:p-6">
       <div className="space-y-6">
@@ -470,6 +471,11 @@ const AssignedDeliveries = () => {
                               >
                                 {delivery.status}
                               </span>
+                            </div>
+                            <div>
+                              <h3 className="text-base font-medium text-gray-900">
+                                Weight: {delivery.weight} kg
+                              </h3>
                             </div>
 
                             <div className="mt-3 space-y-2">
