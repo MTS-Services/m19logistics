@@ -195,11 +195,11 @@ const NewDelivery = () => {
   };
 
   // Calculate estimated cost
-  const getEstimatedCost = () => {
-    if (!formData.weight) return 0;
-    const weightBlocks = Math.ceil(formData.weight / 800);
-    return weightBlocks * 45; // Tier B pricing
-  };
+  // const getEstimatedCost = () => {
+  //   if (!formData.weight) return 0;
+  //   const weightBlocks = Math.ceil(formData.weight / 800);
+  //   return weightBlocks * 45; // Tier B pricing
+  // };
 
   return (
     <div className="p-2 sm:p-6 md:p-8 lg:p-8">
@@ -313,11 +313,11 @@ const NewDelivery = () => {
                 placeholder="Enter weight in kg"
               />
               {errors.weight && <p className="mt-1 text-base text-red-600">{errors.weight}</p>}
-              {formData.weight > 0 && (
+              {/* {formData.weight > 0 && (
                 <p className="mt-1 text-base text-gray-600">
                   Estimated Cost: <span className="font-semibold">£{getEstimatedCost()}</span>
                 </p>
-              )}
+              )} */}
             </div>
 
             {/* Delivery Date */}
