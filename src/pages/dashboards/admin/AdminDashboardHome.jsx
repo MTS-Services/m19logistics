@@ -269,7 +269,7 @@ const AdminDashboardHome = () => {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr className="text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                  <th className="px-4 py-3 sm:px-6">Invoice #</th>
+                  <th className="px-4 py-3 sm:px-6">Reference Number</th>
                   <th className="px-4 py-3 sm:px-6">Customer</th>
                   <th className="hidden px-4 py-3 sm:table-cell sm:px-6">Date</th>
                   <th className="hidden px-4 py-3 md:table-cell md:px-6">Time</th>
