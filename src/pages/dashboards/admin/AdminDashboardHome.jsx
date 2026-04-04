@@ -211,7 +211,7 @@ const AdminDashboardHome = () => {
           })}
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions --*/}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-lg bg-linear-to-br from-teal-500 to-teal-600 p-4 text-white shadow-lg sm:rounded-xl sm:p-6">
             <Package className="mb-2 h-6 w-6 sm:mb-3 sm:h-8 sm:w-8" />
