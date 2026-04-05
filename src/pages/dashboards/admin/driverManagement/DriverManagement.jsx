@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Truck,
@@ -56,6 +56,7 @@ const DriverManagement = () => {
   const [error, setError] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const itemsPerPage = 6;
+  const buttonRefs = useRef({});
 
   // Fetch drivers from API
   const fetchDrivers = async () => {
@@ -361,7 +362,7 @@ const DriverManagement = () => {
             </div>
 
             {/* Driver Table */}
-            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-x-auto">
               {/* Table Header */}
               <div className="border-b border-gray-200 bg-white px-6 py-4">
                 <h2 className="text-lg font-bold text-gray-900">Driver Records</h2>
@@ -407,7 +408,7 @@ const DriverManagement = () => {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white">
+                      <tbody className="divide-y divide-gray-200 bg-white overflow-visible">
                         {paginatedDrivers.map((driver, index) => (
                           <tr key={driver.id} className="transition-colors hover:bg-gray-50">
                             <td className="px-6 py-4">
@@ -496,6 +497,7 @@ const DriverManagement = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="action-dropdown-container relative">
                                 <button
+                                  ref={(el) => (buttonRefs.current[driver.id] = el)}
                                   onClick={() =>
                                     setShowActionDropdown(
                                       showActionDropdown === driver.id ? null : driver.id
@@ -516,7 +518,7 @@ const DriverManagement = () => {
                                     onDelete={handleDeleteDriver}
                                     onToggleStatus={handleToggleStatus}
                                     onViewAvailability={handleViewAvailability}
-                                    openUpward={index >= Math.max(paginatedDrivers.length - 3, 1)}
+                                    buttonRef={buttonRefs.current[driver.id]}
                                   />
                                 )}
                               </div>
@@ -616,6 +618,7 @@ const DriverManagement = () => {
                         <div className="mt-3 border-t border-gray-100 pt-3">
                           <div className="action-dropdown-container relative">
                             <button
+                              ref={(el) => (buttonRefs.current[driver.id] = el)}
                               onClick={() =>
                                 setShowActionDropdown(
                                   showActionDropdown === driver.id ? null : driver.id
@@ -637,7 +640,7 @@ const DriverManagement = () => {
                                 onDelete={handleDeleteDriver}
                                 onToggleStatus={handleToggleStatus}
                                 onViewAvailability={handleViewAvailability}
-                                openUpward={index >= Math.max(paginatedDrivers.length - 3, 1)}
+                                buttonRef={buttonRefs.current[driver.id]}
                               />
                             )}
                           </div>
