@@ -239,7 +239,7 @@ const NewDelivery = () => {
           <div className="text-base text-teal-900">
             <p className="font-semibold">Pricing Information</p>
             <ul className="mt-2 space-y-1">
-              <li>• Base rate: £45 per 800kg (up to 45 miles)</li>
+              {/* <li>• Base rate: £45 per 800kg (up to 45 miles)</li> */}
               <li>• Additional charges apply for deliveries beyond 45 miles</li>
               <li>• Estimated cost is calculated based on weight</li>
             </ul>
