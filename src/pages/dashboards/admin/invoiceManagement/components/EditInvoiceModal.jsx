@@ -22,11 +22,13 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
         notes: invoice.notes || '',
         paymentTerms: invoice.paymentTerms || '30 Days (End of Month)',
         items: (invoice.items || []).map((item) => ({
+          ...(item.deliveryId && { deliveryId: item.deliveryId }),
           description: item.description || '',
           quantity: item.quantity || 1,
           unitCost: item.unitCost || 0,
           vatAmount: item.vatAmount || 0,
           total: item.total || 0,
+          ...(item.isAdditional !== undefined && { isAdditional: item.isAdditional }),
         })),
       });
     }
@@ -40,28 +42,36 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
     }
   };
 
+  const calculateItemTotal = (quantity, unitCost, vatAmount) => {
+    const q = parseFloat(quantity) || 0;
+    const uc = parseFloat(unitCost) || 0;
+    const va = parseFloat(vatAmount) || 0;
+    const total = q * uc + va;
+    return Math.round(total * 100) / 100; // Round to 2 decimal places
+  };
+
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...formData.items];
-    const numericFields = ['quantity', 'unitCost', 'vatAmount', 'total'];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      [field]: numericFields.includes(field) ? parseFloat(value) || 0 : value,
-    };
+    const numericFields = ['quantity', 'unitCost', 'vatAmount'];
 
-    // Auto-calculate total if quantity or unitCost changes
-    if (field === 'quantity' || field === 'unitCost') {
-      const quantity = field === 'quantity' ? parseFloat(value) || 0 : updatedItems[index].quantity;
-      const unitCost = field === 'unitCost' ? parseFloat(value) || 0 : updatedItems[index].unitCost;
-      const vatAmount = updatedItems[index].vatAmount || 0;
-      updatedItems[index].total = quantity * unitCost + vatAmount;
+    if (numericFields.includes(field)) {
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [field]: parseFloat(value) || 0,
+      };
+    } else {
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [field]: value,
+      };
     }
-    // Auto-calculate total if vatAmount changes
-    if (field === 'vatAmount') {
-      const quantity = updatedItems[index].quantity || 0;
-      const unitCost = updatedItems[index].unitCost || 0;
-      const vatAmount = parseFloat(value) || 0;
-      updatedItems[index].total = quantity * unitCost + vatAmount;
-    }
+
+    // Always recalculate total based on quantity, unitCost, and vatAmount
+    updatedItems[index].total = calculateItemTotal(
+      updatedItems[index].quantity,
+      updatedItems[index].unitCost,
+      updatedItems[index].vatAmount
+    );
 
     setFormData((prev) => ({ ...prev, items: updatedItems }));
   };
@@ -140,12 +150,27 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
     try {
       const invoiceId = invoice.id || invoice._id || invoice.invoiceId;
 
+      console.log('Original invoice:', invoice);
+      console.log('FormData items:', formData.items);
+      console.log('FormData items detailed:', JSON.stringify(formData.items, null, 2));
+
+      // Format items: ensure numeric values are numbers, preserve deliveryId and isAdditional if present
+      const formattedItems = formData.items.map((item) => ({
+        ...(item.deliveryId && { deliveryId: item.deliveryId }),
+        description: item.description.trim(),
+        quantity: Number(item.quantity),
+        unitCost: Number(item.unitCost),
+        vatAmount: Number(item.vatAmount),
+        total: Number(item.total),
+        ...(item.isAdditional !== undefined && { isAdditional: item.isAdditional }),
+      }));
+
       const payload = {
-        invoiceNumber: formData.invoiceNumber.trim(),
+        // invoiceNumber is read-only, don't send it for update
         customerRef: formData.customerRef.trim(),
         notes: formData.notes.trim(),
         paymentTerms: formData.paymentTerms.trim(),
-        items: formData.items,
+        items: formattedItems,
       };
 
       console.log('Updating invoice with ID:', invoiceId);
@@ -167,12 +192,31 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
       console.error('Error response:', err.response?.data);
       console.error('Error status:', err.response?.status);
 
-      const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        (err.response?.data?.errors ? JSON.stringify(err.response.data.errors) : '') ||
-        err.message ||
-        'Failed to update invoice';
+      // Log detailed error info
+      if (err.response?.data?.errors) {
+        console.error('Validation errors details:');
+        console.error(JSON.stringify(err.response.data.errors, null, 2));
+      }
+
+      // Better error message with backend validation errors
+      let errorMessage = 'Failed to update invoice';
+
+      if (err.response?.data?.errors && Array.isArray(err.response.data.errors)) {
+        errorMessage = err.response.data.errors
+          .map((e) => {
+            if (typeof e === 'string') return e;
+            if (e.message) return e.message;
+            if (e.msg) return e.msg;
+            return JSON.stringify(e);
+          })
+          .join('; ');
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
 
       toast.error(`Update failed: ${errorMessage}`);
     } finally {
@@ -217,14 +261,9 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
                     name="invoiceNumber"
                     value={formData.invoiceNumber}
                     readOnly
-                    className={`mt-1 block w-full cursor-not-allowed rounded-lg border bg-gray-50 px-3 py-2 shadow-sm focus:outline-0 ${
-                      errors.invoiceNumber ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className="mt-1 block w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-gray-600 shadow-sm"
                     placeholder="e.g., T0337"
                   />
-                  {errors.invoiceNumber && (
-                    <p className="mt-1 text-xs text-red-500">{errors.invoiceNumber}</p>
-                  )}
                 </div>
 
                 <div>
@@ -245,10 +284,9 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
                 <input
                   type="text"
                   name="paymentTerms"
-                  readOnly
                   value={formData.paymentTerms}
                   onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border cursor-not-allowed focus:outline-0 border-gray-300 px-3 py-2 shadow-sm "
+                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
                   placeholder="e.g., 30 Days (End of Month)"
                 />
               </div>
@@ -301,7 +339,7 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                           <div>
                             <label className="block text-xs font-medium text-gray-700">
                               Quantity *
@@ -331,7 +369,7 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                           <div>
                             <label className="block text-xs font-medium text-gray-700">
                               VAT Amount (£) *
@@ -348,15 +386,14 @@ const EditInvoiceModal = ({ invoice, onClose, onSuccess }) => {
 
                           <div>
                             <label className="block text-xs font-medium text-gray-700">
-                              Total (£) *
+                              Total (£)
                             </label>
                             <input
                               type="number"
                               step="0.01"
                               min="0"
-                              value={item.total}
-                              onChange={(e) => handleItemChange(index, 'total', e.target.value)}
-                              className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 px-2 py-1.5 text-sm shadow-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
+                              value={Number(item.total).toFixed(2)}
+                              className="mt-1 block w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-50 px-2 py-1.5 text-sm text-gray-600 shadow-sm"
                               readOnly
                             />
                           </div>
