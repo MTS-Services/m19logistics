@@ -223,8 +223,8 @@ const NewDelivery = () => {
             <h3 className="font-semibold text-orange-900">Same-Day Delivery Notice</h3>
             <p className="mt-1 text-base text-orange-800">
               Same-day delivery cannot be guaranteed. Please call{' '}
-              <a href="tel:07971415430" className="font-semibold underline">
-                07971 415430
+              <a href="tel:07818077110" className="font-semibold underline">
+                07818077110
               </a>{' '}
               to confirm availability.
             </p>
@@ -256,8 +256,8 @@ const NewDelivery = () => {
             <p className="mt-1">
               Time slots are subject to availability and admin configuration. If you encounter any
               issues with slot availability, please contact support at{' '}
-              <a href="tel:07971415430" className="font-semibold underline">
-                07971 415430
+              <a href="tel:07818077110" className="font-semibold underline">
+                07818077110
               </a>{' '}
               for assistance.
             </p>
