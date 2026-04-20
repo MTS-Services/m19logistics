@@ -233,19 +233,19 @@ const NewDelivery = () => {
       )}
 
       {/* Information Card */}
-      <div className="mb-6 rounded-lg border border-teal-200 bg-teal-50 p-4">
+      {/* <div className="mb-6 rounded-lg border border-teal-200 bg-teal-50 p-4">
         <div className="flex items-start gap-3">
           <Info className="h-5 w-5 shrink-0 text-teal-600" />
           <div className="text-base text-teal-900">
             <p className="font-semibold">Pricing Information</p>
             <ul className="mt-2 space-y-1">
-              {/* <li>• Base rate: £45 per 800kg (up to 45 miles)</li> */}
+              <li>• Base rate: £45 per 800kg (up to 45 miles)</li>
               <li>• Additional charges apply for deliveries beyond 45 miles</li>
               <li>• Estimated cost is calculated based on weight</li>
             </ul>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Slot Availability Notice */}
       <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">

@@ -337,7 +337,7 @@ const Profile = () => {
       </div>
 
       {/* Account Summary Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -350,7 +350,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        {/* <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Pricing Tier</p>
@@ -360,9 +360,9 @@ const Profile = () => {
               <Package className="h-6 w-6 text-teal-600" />
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        {/* <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Rate Per Delivery</p>
@@ -372,7 +372,7 @@ const Profile = () => {
               <DollarSign className="h-6 w-6 text-blue-600" />
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
