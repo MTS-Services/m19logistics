@@ -5,6 +5,8 @@ import {
   MapPin,
   DollarSign,
   Database,
+  Eye,
+  EyeOff,
   Save,
   RefreshCw,
   Building,
@@ -53,6 +55,53 @@ const SettingsManagement = () => {
   // Status summary state for the 4 stat cards
   const [statusSummary, setStatusSummary] = useState(null);
   const [statusLoading, setStatusLoading] = useState(true);
+
+  // Change Password State
+  const [passwordFields, setPasswordFields] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+  const [passwordSaving, setPasswordSaving] = useState(false);
+
+  // Password visibility toggles
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Change Password Handler
+  const handleChangePassword = async () => {
+    if (
+      !passwordFields.currentPassword ||
+      !passwordFields.newPassword ||
+      !passwordFields.confirmNewPassword
+    ) {
+      toast.error('All password fields are required');
+      return;
+    }
+    if (passwordFields.newPassword !== passwordFields.confirmNewPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    try {
+      setPasswordSaving(true);
+      const response = await axiosInstance.post('/api/auth/change-password', {
+        currentPassword: passwordFields.currentPassword,
+        newPassword: passwordFields.newPassword,
+      });
+      if (response.data.success) {
+        toast.success(response.data.message || 'Password changed successfully', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        setPasswordFields({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to change password');
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
 
   useEffect(() => {
     fetchStatusSummary();
@@ -254,8 +303,9 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${statusSummary?.systemStatus === 'Active' ? 'text-green-600' : 'text-red-600'
-                    }`}
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.systemStatus === 'Active' ? 'text-green-600' : 'text-red-600'
+                  }`}
                 >
                   {statusSummary?.systemStatus ?? '—'}
                 </p>
@@ -275,8 +325,9 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${statusSummary?.emailConfig === 'Enabled' ? 'text-gray-900' : 'text-red-600'
-                    }`}
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.emailConfig === 'Enabled' ? 'text-gray-900' : 'text-red-600'
+                  }`}
                 >
                   {statusSummary?.emailConfig ?? '—'}
                 </p>
@@ -296,8 +347,9 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${statusSummary?.mapsApi === 'Active' ? 'text-gray-900' : 'text-red-600'
-                    }`}
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.mapsApi === 'Active' ? 'text-gray-900' : 'text-red-600'
+                  }`}
                 >
                   {statusSummary?.mapsApi ?? '—'}
                 </p>
@@ -317,8 +369,9 @@ const SettingsManagement = () => {
                 <Loader2 className="mt-2 h-5 w-5 animate-spin text-teal-600" />
               ) : (
                 <p
-                  className={`mt-1 text-2xl font-bold ${statusSummary?.autoInvoicing === 'On' ? 'text-gray-900' : 'text-red-600'
-                    }`}
+                  className={`mt-1 text-2xl font-bold ${
+                    statusSummary?.autoInvoicing === 'On' ? 'text-gray-900' : 'text-red-600'
+                  }`}
                 >
                   {statusSummary?.autoInvoicing ?? '—'}
                 </p>
@@ -336,30 +389,33 @@ const SettingsManagement = () => {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('company')}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${activeTab === 'company'
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
+              activeTab === 'company'
                 ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+            }`}
           >
             <Building className="h-4 w-4" />
             Company
           </button>
           <button
             onClick={() => setActiveTab('banking')}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${activeTab === 'banking'
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
+              activeTab === 'banking'
                 ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+            }`}
           >
             <DollarSign className="h-4 w-4" />
             Banking
           </button>
           <button
             onClick={() => setActiveTab('system')}
-            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${activeTab === 'system'
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
+              activeTab === 'system'
                 ? 'bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+            }`}
           >
             <Database className="h-4 w-4" />
             System
@@ -369,149 +425,251 @@ const SettingsManagement = () => {
 
       {/* Company Settings Tab */}
       {activeTab === 'company' && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
-              <Building className="h-6 w-6 text-teal-600" />
-              Company Information
-            </h2>
-            {settingsLoading && <Loading message="Loading Settings" size="small" />}
-          </div>
-
-          <div
-            className={`space-y-4 transition-opacity ${settingsLoading ? 'pointer-events-none opacity-50' : ''}`}
-          >
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  value={companySettings.companyName}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, companyName: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">VAT Number</label>
-                <input
-                  type="text"
-                  value={companySettings.vatNumber}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, vatNumber: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
+        <>
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                <Building className="h-6 w-6 text-teal-600" />
+                Company Information
+              </h2>
+              {settingsLoading && <Loading message="Loading Settings" size="small" />}
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Primary Phone
-                </label>
-                <input
-                  type="text"
-                  value={companySettings.phone}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, phone: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Alternative Phone
-                </label>
-                <input
-                  type="text"
-                  value={companySettings.altPhone}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, altPhone: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">Email</label>
-                <input
-                  type="email"
-                  value={companySettings.email}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, email: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">Website</label>
-                <input
-                  type="text"
-                  value={companySettings.website}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, website: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">Address</label>
-                <input
-                  type="text"
-                  value={companySettings.address}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, address: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Founded Year
-                </label>
-                <input
-                  type="text"
-                  value={companySettings.founded}
-                  onChange={(e) =>
-                    setCompanySettings({ ...companySettings, founded: e.target.value })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 flex justify-end gap-3 border-t border-gray-200 pt-6">
-            <button
-              onClick={handleResetToDefaults}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100"
+            <div
+              className={`space-y-4 transition-opacity ${settingsLoading ? 'pointer-events-none opacity-50' : ''}`}
             >
-              <RefreshCw className="h-5 w-5" />
-              Reset
-            </button>
-            <button
-              onClick={handleSaveCompanySettings}
-              disabled={companySaving || settingsLoading}
-              className="flex items-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {companySaving ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Save className="h-5 w-5" />
-              )}
-              {companySaving ? 'Saving...' : 'Save Changes'}
-            </button>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    value={companySettings.companyName}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, companyName: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    VAT Number
+                  </label>
+                  <input
+                    type="text"
+                    value={companySettings.vatNumber}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, vatNumber: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Primary Phone
+                  </label>
+                  <input
+                    type="text"
+                    value={companySettings.phone}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, phone: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Alternative Phone
+                  </label>
+                  <input
+                    type="text"
+                    value={companySettings.altPhone}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, altPhone: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    value={companySettings.email}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, email: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Website</label>
+                  <input
+                    type="text"
+                    value={companySettings.website}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, website: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">Address</label>
+                  <input
+                    type="text"
+                    value={companySettings.address}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, address: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    Founded Year
+                  </label>
+                  <input
+                    type="text"
+                    value={companySettings.founded}
+                    onChange={(e) =>
+                      setCompanySettings({ ...companySettings, founded: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 border-t border-gray-200 pt-6 md:flex-row md:justify-end">
+              <button
+                onClick={handleResetToDefaults}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-100 md:w-auto"
+              >
+                <RefreshCw className="h-5 w-5" />
+                Reset
+              </button>
+              <button
+                onClick={handleSaveCompanySettings}
+                disabled={companySaving || settingsLoading}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
+              >
+                {companySaving ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Save className="h-5 w-5" />
+                )}
+                {companySaving ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
           </div>
-        </div>
+          {/* Change Password Section */}
+          <div className="mt-10 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-lg font-semibold text-gray-800">Change Password</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {/* Current Password */}
+              <div className="relative flex flex-col">
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Current Password
+                </label>
+                <input
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={passwordFields.currentPassword}
+                  onChange={(e) =>
+                    setPasswordFields({ ...passwordFields, currentPassword: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword((s) => !s)}
+                  className="absolute top-[38px] right-3 text-gray-500 hover:text-gray-700"
+                >
+                  {showCurrentPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+
+              {/* New Password */}
+              <div className="relative flex flex-col">
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  New Password
+                </label>
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={passwordFields.newPassword}
+                  onChange={(e) =>
+                    setPasswordFields({ ...passwordFields, newPassword: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword((s) => !s)}
+                  className="absolute top-[38px] right-3 text-gray-500 hover:text-gray-700"
+                >
+                  {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+
+              {/* Confirm New Password */}
+              <div className="relative flex flex-col">
+                <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  Confirm New Password
+                </label>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={passwordFields.confirmNewPassword}
+                  onChange={(e) =>
+                    setPasswordFields({ ...passwordFields, confirmNewPassword: e.target.value })
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((s) => !s)}
+                  className="absolute top-[38px] right-3 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={handleChangePassword}
+                disabled={passwordSaving}
+                className="flex items-center gap-2 rounded-lg bg-teal-600 px-6 py-2 text-white shadow-md transition-all hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {passwordSaving ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Save className="h-5 w-5" />
+                )}
+                {passwordSaving ? 'Changing...' : 'Change Password'}
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Banking Settings Tab */}
