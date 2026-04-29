@@ -231,7 +231,7 @@ const EnquiriesView = () => {
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
                     }`}
-                    placeholder="07971 415430"
+                    placeholder="Your Phone Number"
                   />
                   {errors.phoneNumber && (
                     <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
