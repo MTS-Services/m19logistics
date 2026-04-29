@@ -173,7 +173,7 @@ const EnquiriesView = () => {
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
                     }`}
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                   />
                   {errors.fullName && (
                     <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
@@ -190,7 +190,7 @@ const EnquiriesView = () => {
                     value={formData.companyName}
                     onChange={handleChange}
                     className="w-full rounded-md border border-gray-300 px-4 py-2 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                    placeholder="Your Company Ltd"
+                    placeholder="Your Company Name"
                   />
                 </div>
               </div>
@@ -211,7 +211,7 @@ const EnquiriesView = () => {
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500'
                     }`}
-                    placeholder="john@example.com"
+                    placeholder="Your Email"
                   />
                   {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                 </div>
