@@ -211,8 +211,8 @@ const CustomerDashboardHome = () => {
 
   // Handle edit delivery
   const handleEditDelivery = (delivery) => {
-    if (delivery.status === 'ALLOCATED' || delivery.status === 'DELIVERED') {
-      toast.error('Cannot edit delivery that has been allocated or delivered');
+    if (delivery.status === 'DELIVERED') {
+      toast.error('Cannot edit delivery that has been delivered');
       return;
     }
     setSelectedDelivery(delivery);
