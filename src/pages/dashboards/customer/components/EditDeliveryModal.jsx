@@ -1,7 +1,9 @@
-import React from 'react';
-import { XCircle, AlertCircle, Edit2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { XCircle, AlertCircle, Edit2, Loader2 } from 'lucide-react';
 
 const EditDeliveryModal = ({ isOpen, delivery, onClose, onSave, onChange }) => {
+  const [isSaving, setIsSaving] = useState(false);
+
   if (!isOpen || !delivery) {
     return null;
   }
@@ -34,6 +36,15 @@ const EditDeliveryModal = ({ isOpen, delivery, onClose, onSave, onChange }) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">Delivery Date *</label>
+              <input
+                type="date"
+                value={delivery.deliveryDate ? new Date(delivery.deliveryDate).toISOString().split('T')[0] : ''}
+                onChange={(e) => onChange({ ...delivery, deliveryDate: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700">Time Slot *</label>
               <select
@@ -105,19 +116,28 @@ const EditDeliveryModal = ({ isOpen, delivery, onClose, onSave, onChange }) => {
           </div>
         </div>
 
-        <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
+          <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
           <button
             onClick={onClose}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
+            disabled={isSaving}
+            className="w-full disabled:opacity-60 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
           >
             Cancel
           </button>
           <button
-            onClick={onSave}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
+            onClick={async () => {
+              try {
+                setIsSaving(true);
+                await onSave();
+              } finally {
+                setIsSaving(false);
+              }
+            }}
+            disabled={isSaving}
+            className="flex w-full disabled:opacity-60 items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
           >
-            <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />
-            Save Changes
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />}
+            {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>

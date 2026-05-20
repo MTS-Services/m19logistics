@@ -225,6 +225,7 @@ const CustomerDashboardHome = () => {
     try {
       const id = selectedDelivery.id || selectedDelivery._id;
       const updateData = {
+        deliveryDate: selectedDelivery.deliveryDate || null,
         timeSlot: selectedDelivery.timeSlot,
         weight: parseInt(selectedDelivery.weight),
         deliveryAddress: selectedDelivery.deliveryAddress,
