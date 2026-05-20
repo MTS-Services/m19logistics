@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
+import EditDeliveryModal from './components/EditDeliveryModal';
 
 const CustomerDashboardHome = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -1070,161 +1071,16 @@ const CustomerDashboardHome = () => {
           </div>
         )}
 
-        {/* Edit Delivery Modal */}
-        {showEditModal && selectedDelivery && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
-                <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
-                  Edit Delivery
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setSelectedDelivery(null);
-                  }}
-                  className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
-                >
-                  <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
-                </button>
-              </div>
-
-              <div className="space-y-4 p-4 sm:p-6">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    SPO Number *
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedDelivery.spoNumber}
-                    onChange={(e) =>
-                      setSelectedDelivery({ ...selectedDelivery, spoNumber: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Time Slot *
-                    </label>
-                    <select
-                      value={selectedDelivery.timeSlot}
-                      onChange={(e) =>
-                        setSelectedDelivery({ ...selectedDelivery, timeSlot: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Weight (kg) *
-                    </label>
-                    <input
-                      type="number"
-                      value={selectedDelivery.weight}
-                      onChange={(e) =>
-                        setSelectedDelivery({ ...selectedDelivery, weight: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Delivery Address *
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedDelivery.deliveryAddress}
-                    onChange={(e) =>
-                      setSelectedDelivery({ ...selectedDelivery, deliveryAddress: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Customer Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={selectedDelivery.customerName}
-                      onChange={(e) =>
-                        setSelectedDelivery({ ...selectedDelivery, customerName: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Customer Phone *
-                    </label>
-                    <input
-                      type="tel"
-                      value={selectedDelivery.customerPhone}
-                      onChange={(e) =>
-                        setSelectedDelivery({ ...selectedDelivery, customerPhone: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Special Instructions
-                  </label>
-                  <textarea
-                    value={selectedDelivery.specialInstructions || ''}
-                    onChange={(e) =>
-                      setSelectedDelivery({
-                        ...selectedDelivery,
-                        specialInstructions: e.target.value,
-                      })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    rows="3"
-                  />
-                </div>
-
-                <div className="flex items-start gap-3 rounded-lg bg-yellow-50 p-4">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-yellow-600" />
-                  <p className="text-sm text-gray-900">
-                    Changes will notify the admin. Please ensure all details are correct before
-                    saving.
-                  </p>
-                </div>
-              </div>
-
-              <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
-                <button
-                  onClick={() => {
-                    setShowEditModal(false);
-                    setSelectedDelivery(null);
-                  }}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveEdit}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
-                >
-                  <Edit2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <EditDeliveryModal
+          isOpen={showEditModal && !!selectedDelivery}
+          delivery={selectedDelivery}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedDelivery(null);
+          }}
+          onSave={handleSaveEdit}
+          onChange={setSelectedDelivery}
+        />
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && selectedDelivery && (
