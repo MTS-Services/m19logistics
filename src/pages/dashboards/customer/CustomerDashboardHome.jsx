@@ -37,7 +37,6 @@ import EditDeliveryModal from './components/EditDeliveryModal';
 import ViewDeliveryModal from './components/ViewDeliveryModal';
 
 const CustomerDashboardHome = () => {
-  const [showRequestModal, setShowRequestModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -92,19 +91,6 @@ const CustomerDashboardHome = () => {
     fetchDeliveries('all');
   }, []);
 
-  // New delivery request form
-  const [newDelivery, setNewDelivery] = useState({
-    spoNumber: '',
-    date: '',
-    timeSlot: 'AM',
-    weight: '',
-    address: '',
-    customerName: '',
-    phone: '',
-    requestedBy: '',
-    instructions: '',
-  });
-
   // Deliveries are already filtered by API; use directly
   const filteredDeliveries = deliveries;
 
@@ -141,54 +127,6 @@ const CustomerDashboardHome = () => {
       default:
         return 'bg-gray-100 text-gray-600';
     }
-  };
-
-  // Handle request new delivery
-  const handleRequestDelivery = () => {
-    if (
-      !newDelivery.spoNumber ||
-      !newDelivery.date ||
-      !newDelivery.weight ||
-      !newDelivery.address
-    ) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    // Check if same day delivery
-    const today = new Date().toISOString().split('T')[0];
-    const isSameDay = newDelivery.date === today;
-
-    if (isSameDay) {
-      toast.warning(
-        'Same-day delivery cannot be guaranteed. Please call 07971415430 to confirm availability'
-      );
-    }
-
-    const delivery = {
-      id: Date.now(),
-      ...newDelivery,
-      status: 'Received',
-      createdAt: new Date().toISOString(),
-      distance: Math.floor(Math.random() * 45) + 10,
-      estimatedCost: newDelivery.weight <= 800 ? 45.0 : Math.ceil(newDelivery.weight / 800) * 45.0,
-      driver: null,
-    };
-
-    setDeliveries([delivery, ...deliveries]);
-    setShowRequestModal(false);
-    setNewDelivery({
-      spoNumber: '',
-      date: '',
-      timeSlot: 'AM',
-      weight: '',
-      address: '',
-      customerName: '',
-      phone: '',
-      requestedBy: '',
-      instructions: '',
-    });
-    toast.success('Delivery request submitted successfully!');
   };
 
   // Handle view delivery
@@ -233,9 +171,10 @@ const CustomerDashboardHome = () => {
       }
 
       // Safely parse weight, avoid sending NaN
-      const weightValue = selectedDelivery.weight === '' || selectedDelivery.weight == null
-        ? null
-        : Number(selectedDelivery.weight);
+      const weightValue =
+        selectedDelivery.weight === '' || selectedDelivery.weight == null
+          ? null
+          : Number(selectedDelivery.weight);
 
       if (weightValue !== null && Number.isNaN(weightValue)) {
         toast.error('Weight must be a number');
@@ -250,7 +189,9 @@ const CustomerDashboardHome = () => {
           if (d instanceof Date) {
             if (!Number.isNaN(d.getTime())) {
               // Use UTC midnight for the date portion
-              formattedDate = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString();
+              formattedDate = new Date(
+                Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())
+              ).toISOString();
             }
           } else if (typeof d === 'string') {
             // If it's YYYY-MM-DD, construct UTC start of day
@@ -355,7 +296,9 @@ const CustomerDashboardHome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 sm:text-sm">Allocated</p>
-                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.allocated}</p>
+                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
+                  {stats.allocated}
+                </p>
               </div>
               <div className="rounded-lg bg-blue-50 p-2 sm:p-3">
                 <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
@@ -367,7 +310,9 @@ const CustomerDashboardHome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 sm:text-sm">Delivered</p>
-                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.completed}</p>
+                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
+                  {stats.completed}
+                </p>
               </div>
               <div className="rounded-lg bg-green-50 p-2 sm:p-3">
                 <CheckCircle className="h-5 w-5 text-green-600 sm:h-6 sm:w-6" />
@@ -379,7 +324,9 @@ const CustomerDashboardHome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 sm:text-sm">Cancelled</p>
-                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.cancelled}</p>
+                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
+                  {stats.cancelled}
+                </p>
               </div>
               <div className="rounded-lg bg-gray-50 p-2 sm:p-3">
                 <XCircle className="h-5 w-5 text-gray-600 sm:h-6 sm:w-6" />
@@ -640,128 +587,6 @@ const CustomerDashboardHome = () => {
           />
         )}
 
-        {/* Request Delivery Modal */}
-        {showRequestModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
-                <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
-                  Request New Deliveryy
-                </h2>
-                <button
-                  onClick={() => setShowRequestModal(false)}
-                  className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
-                >
-                  <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
-                </button>
-              </div>
-
-              <div className="space-y-4 p-4 sm:p-6">
-                <div className="flex items-start gap-3 rounded-lg bg-teal-50 p-4">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Same-day delivery notice</p>
-                    <p className="mt-1 text-xs text-gray-600">
-                      Same-day delivery cannot be guaranteed. Please call 07971415430 to confirm
-                      availability.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      SPO Number *
-                    </label>
-                    <input
-                      type="text"
-                      value={newDelivery.spoNumber}
-                      onChange={(e) =>
-                        setNewDelivery({ ...newDelivery, spoNumber: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                      placeholder="e.g., SPO013350"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Weight (kg) *
-                    </label>
-                    <input
-                      type="number"
-                      value={newDelivery.weight}
-                      onChange={(e) => setNewDelivery({ ...newDelivery, weight: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                      placeholder="800"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">Date *</label>
-                    <input
-                      type="date"
-                      value={newDelivery.date}
-                      onChange={(e) => setNewDelivery({ ...newDelivery, date: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">Time Slot</label>
-                    <select
-                      value={newDelivery.timeSlot}
-                      onChange={(e) => setNewDelivery({ ...newDelivery, timeSlot: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">Customer Name</label>
-                    <input
-                      type="text"
-                      value={newDelivery.customerName}
-                      onChange={(e) => setNewDelivery({ ...newDelivery, customerName: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">Phone</label>
-                    <input
-                      type="tel"
-                      value={newDelivery.phone}
-                      onChange={(e) => setNewDelivery({ ...newDelivery, phone: e.target.value })}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => setShowRequestModal(false)}
-                    className="mr-3 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleRequestDelivery}
-                    className="rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white"
-                  >
-                    Submit Request
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Edit Delivery Modal */}
         {showEditModal && (
           <EditDeliveryModal
@@ -795,7 +620,9 @@ const CustomerDashboardHome = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
             <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
               <h3 className="mb-4 text-lg font-bold text-gray-900">Cancel Delivery</h3>
-              <p className="mb-4 text-sm text-gray-600">Are you sure you want to cancel this delivery?</p>
+              <p className="mb-4 text-sm text-gray-600">
+                Are you sure you want to cancel this delivery?
+              </p>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
@@ -820,11 +647,9 @@ const CustomerDashboardHome = () => {
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
-
 };
 
 export default CustomerDashboardHome;
