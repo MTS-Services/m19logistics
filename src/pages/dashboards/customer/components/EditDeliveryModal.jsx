@@ -40,7 +40,16 @@ const EditDeliveryModal = ({ isOpen, delivery, onClose, onSave, onChange }) => {
               <label className="mb-2 block text-sm font-semibold text-gray-700">Delivery Date *</label>
               <input
                 type="date"
-                value={delivery.deliveryDate ? new Date(delivery.deliveryDate).toISOString().split('T')[0] : ''}
+                value={(() => {
+                  if (!delivery.deliveryDate) return '';
+                  try {
+                    const dt = new Date(delivery.deliveryDate);
+                    if (Number.isNaN(dt.getTime())) return '';
+                    return dt.toISOString().split('T')[0];
+                  } catch {
+                    return '';
+                  }
+                })()}
                 onChange={(e) => onChange({ ...delivery, deliveryDate: e.target.value })}
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
               />

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   getAllDeliveries,
@@ -34,6 +34,7 @@ import {
 import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
 import EditDeliveryModal from './components/EditDeliveryModal';
+import ViewDeliveryModal from './components/ViewDeliveryModal';
 
 const CustomerDashboardHome = () => {
   const [showRequestModal, setShowRequestModal] = useState(false);
@@ -224,16 +225,60 @@ const CustomerDashboardHome = () => {
   const handleSaveEdit = async () => {
     try {
       const id = selectedDelivery.id || selectedDelivery._id;
+
+      // Basic client-side validation
+      if (!selectedDelivery.spoNumber || selectedDelivery.spoNumber.toString().trim() === '') {
+        toast.error('SPO Number is required');
+        return;
+      }
+
+      // Safely parse weight, avoid sending NaN
+      const weightValue = selectedDelivery.weight === '' || selectedDelivery.weight == null
+        ? null
+        : Number(selectedDelivery.weight);
+
+      if (weightValue !== null && Number.isNaN(weightValue)) {
+        toast.error('Weight must be a number');
+        return;
+      }
+
+      // Robust date formatting: accept YYYY-MM-DD, ISO strings, or Date objects
+      let formattedDate = null;
+      if (selectedDelivery.deliveryDate) {
+        try {
+          const d = selectedDelivery.deliveryDate;
+          if (d instanceof Date) {
+            if (!Number.isNaN(d.getTime())) {
+              // Use UTC midnight for the date portion
+              formattedDate = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())).toISOString();
+            }
+          } else if (typeof d === 'string') {
+            // If it's YYYY-MM-DD, construct UTC start of day
+            if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+              const tmp = new Date(`${d}T00:00:00.000Z`);
+              if (!Number.isNaN(tmp.getTime())) formattedDate = tmp.toISOString();
+            } else {
+              const tmp = new Date(d);
+              if (!Number.isNaN(tmp.getTime())) formattedDate = tmp.toISOString();
+            }
+          }
+        } catch {
+          formattedDate = null;
+        }
+      }
+
       const updateData = {
-        deliveryDate: selectedDelivery.deliveryDate || null,
+        deliveryDate: formattedDate,
         timeSlot: selectedDelivery.timeSlot,
-        weight: parseInt(selectedDelivery.weight),
+        // include weight only when present
+        ...(weightValue !== null ? { weight: Math.round(weightValue) } : {}),
         deliveryAddress: selectedDelivery.deliveryAddress,
         customerName: selectedDelivery.customerName,
         customerPhone: selectedDelivery.customerPhone,
         spoNumber: selectedDelivery.spoNumber,
         specialInstructions: selectedDelivery.specialInstructions || '',
       };
+
       await updateDelivery(id, updateData);
       toast.success('Delivery updated successfully!');
       setShowEditModal(false);
@@ -241,7 +286,15 @@ const CustomerDashboardHome = () => {
       fetchStats();
       fetchDeliveries(filterStatus);
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to update delivery');
+      // Prefer backend message when available
+      const serverMsg = err?.response?.data?.message || err?.response?.data || null;
+      if (serverMsg) {
+        toast.error(serverMsg);
+        console.error('Update delivery error response:', err.response?.data);
+      } else {
+        console.error('Update delivery error:', err);
+        toast.error('Failed to update delivery');
+      }
     }
   };
 
@@ -302,9 +355,7 @@ const CustomerDashboardHome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 sm:text-sm">Allocated</p>
-                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
-                  {stats.allocated}
-                </p>
+                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.allocated}</p>
               </div>
               <div className="rounded-lg bg-blue-50 p-2 sm:p-3">
                 <Package className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
@@ -316,9 +367,7 @@ const CustomerDashboardHome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 sm:text-sm">Delivered</p>
-                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
-                  {stats.completed}
-                </p>
+                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.completed}</p>
               </div>
               <div className="rounded-lg bg-green-50 p-2 sm:p-3">
                 <CheckCircle className="h-5 w-5 text-green-600 sm:h-6 sm:w-6" />
@@ -330,9 +379,7 @@ const CustomerDashboardHome = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600 sm:text-sm">Cancelled</p>
-                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
-                  {stats.cancelled}
-                </p>
+                <p className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">{stats.cancelled}</p>
               </div>
               <div className="rounded-lg bg-gray-50 p-2 sm:p-3">
                 <XCircle className="h-5 w-5 text-gray-600 sm:h-6 sm:w-6" />
@@ -636,6 +683,7 @@ const CustomerDashboardHome = () => {
                       placeholder="e.g., SPO013350"
                     />
                   </div>
+
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-gray-700">
                       Weight (kg) *
@@ -660,10 +708,9 @@ const CustomerDashboardHome = () => {
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
+
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Time Slot *
-                    </label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">Time Slot</label>
                     <select
                       value={newDelivery.timeSlot}
                       onChange={(e) => setNewDelivery({ ...newDelivery, timeSlot: e.target.value })}
@@ -675,500 +722,109 @@ const CustomerDashboardHome = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Delivery Address *
-                  </label>
-                  <input
-                    type="text"
-                    value={newDelivery.address}
-                    onChange={(e) => setNewDelivery({ ...newDelivery, address: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    placeholder="Full delivery address"
-                  />
-                </div>
-
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Customer Name *
-                    </label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">Customer Name</label>
                     <input
                       type="text"
                       value={newDelivery.customerName}
-                      onChange={(e) =>
-                        setNewDelivery({ ...newDelivery, customerName: e.target.value })
-                      }
+                      onChange={(e) => setNewDelivery({ ...newDelivery, customerName: e.target.value })}
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                      placeholder="Contact person name"
                     />
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
-                      Phone Number *
-                    </label>
+                    <label className="mb-2 block text-sm font-semibold text-gray-700">Phone</label>
                     <input
                       type="tel"
                       value={newDelivery.phone}
                       onChange={(e) => setNewDelivery({ ...newDelivery, phone: e.target.value })}
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                      placeholder="07123456789"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Requested By
-                  </label>
-                  <input
-                    type="text"
-                    value={newDelivery.requestedBy}
-                    onChange={(e) =>
-                      setNewDelivery({ ...newDelivery, requestedBy: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    placeholder="Your name"
-                  />
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setShowRequestModal(false)}
+                    className="mr-3 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleRequestDelivery}
+                    className="rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2 text-sm font-medium text-white"
+                  >
+                    Submit Request
+                  </button>
                 </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Special Instructions
-                  </label>
-                  <textarea
-                    value={newDelivery.instructions}
-                    onChange={(e) =>
-                      setNewDelivery({ ...newDelivery, instructions: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                    rows="3"
-                    placeholder="Any specific delivery instructions..."
-                  />
-                </div>
-              </div>
-
-              <div className="sticky bottom-0 z-10 flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
-                <button
-                  onClick={() => setShowRequestModal(false)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleRequestDelivery}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
-                >
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-                  Submit Request
-                </button>
               </div>
             </div>
           </div>
+        )}
+
+        {/* Edit Delivery Modal */}
+        {showEditModal && (
+          <EditDeliveryModal
+            isOpen={showEditModal}
+            delivery={selectedDelivery}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedDelivery(null);
+            }}
+            onSave={handleSaveEdit}
+            onChange={(d) => setSelectedDelivery(d)}
+          />
         )}
 
         {/* View Delivery Modal */}
         {showViewModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
-                <h2 className="text-lg font-bold text-gray-900 sm:text-xl lg:text-2xl">
-                  Delivery Details
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowViewModal(false);
-                    setDetailedDelivery(null);
-                  }}
-                  className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
-                >
-                  <XCircle className="h-5 w-5 sm:h-6 sm:w-6" />
-                </button>
-              </div>
-
-              {loadingDetails ? (
-                <div className="flex items-center justify-center gap-3 p-12">
-                  <Loader2 className="h-6 w-6 animate-spin text-teal-600" />
-                  <span className="text-gray-600">Loading delivery details...</span>
-                </div>
-              ) : detailedDelivery ? (
-                <div className="space-y-4 p-4 sm:p-6">
-                  {/* Header with SPO Number and Status */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-teal-200 bg-teal-50 p-4">
-                    <div>
-                      <p className="text-sm text-gray-600">SPO Number</p>
-                      <p className="text-xl font-bold text-gray-900">
-                        {detailedDelivery.spoNumber}
-                      </p>
-                    </div>
-                    <span
-                      className={`rounded-full px-4 py-1.5 text-sm font-semibold ${getStatusColor(detailedDelivery.status)}`}
-                    >
-                      {detailedDelivery.status}
-                    </span>
-                  </div>
-
-                  {/* Delivery Information */}
-                  <div className="rounded-lg border border-gray-200 bg-white p-4">
-                    <h3 className="mb-3 text-base font-bold text-gray-900">Delivery Information</h3>
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                      <div>
-                        <p className="text-xs text-gray-600">Delivery Date</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.deliveryDate
-                            ? new Date(detailedDelivery.deliveryDate).toLocaleDateString('en-GB')
-                            : '—'}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Time Slot</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.timeSlot}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Weight</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.weight}kg
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Distance from Depot</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.distanceFromDepot} miles
-                        </p>
-                      </div>
-                      <div className="col-span-1 md:col-span-2">
-                        <p className="text-xs text-gray-600">Delivery Address</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.deliveryAddress}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Customer Name</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.customerName}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Customer Phone</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.customerPhone}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Requested By</p>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {detailedDelivery.requestedBy || '—'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {detailedDelivery.specialInstructions && (
-                      <div className="mt-3 rounded-lg bg-teal-50 p-3">
-                        <p className="text-xs font-semibold text-gray-700">Special Instructions</p>
-                        <p className="mt-1 text-sm text-gray-900">
-                          {detailedDelivery.specialInstructions}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Customer Information */}
-                  {detailedDelivery.customer && (
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                      <h3 className="mb-3 text-base font-bold text-gray-900">Customer Account</h3>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                        <div>
-                          <p className="text-xs text-gray-600">Full Name</p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {detailedDelivery.customer.fullName}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-600">Email</p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {detailedDelivery.customer.email}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-gray-600">Phone</p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {detailedDelivery.customer.phone}
-                          </p>
-                        </div>
-                        {detailedDelivery.customer.customerProfile?.depotAddress && (
-                          <div>
-                            <p className="text-xs text-gray-600">Depot Address</p>
-                            <p className="text-sm font-semibold text-gray-900">
-                              {detailedDelivery.customer.customerProfile.depotAddress}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Pricing */}
-                  <div className="rounded-lg border border-teal-200 bg-teal-50 p-4">
-                    <h3 className="mb-3 text-base font-bold text-gray-900">Pricing</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Base Price</span>
-                        <span className="font-semibold text-gray-900">
-                          £{parseFloat(detailedDelivery.calculatedBasePrice || 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Distance Surcharge</span>
-                        <span className="font-semibold text-gray-900">
-                          £{parseFloat(detailedDelivery.distanceSurcharge || 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Subtotal</span>
-                        <span className="font-semibold text-gray-900">
-                          £{parseFloat(detailedDelivery.subtotal || 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">VAT</span>
-                        <span className="font-semibold text-gray-900">
-                          £{parseFloat(detailedDelivery.vatAmount || 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between border-t border-teal-300 pt-2">
-                        <span className="font-bold text-gray-900">Total Price</span>
-                        <span className="text-lg font-bold text-teal-600">
-                          £{parseFloat(detailedDelivery.totalPrice || 0).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Driver (if allocated) */}
-                  {detailedDelivery.driver && (
-                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                      <h3 className="mb-3 text-base font-bold text-gray-900">Driver</h3>
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-900">
-                          <span className="font-semibold">Name:</span>{' '}
-                          {detailedDelivery.driver.fullName || detailedDelivery.driver.name || '—'}
-                        </p>
-                        {detailedDelivery.acceptedAt && (
-                          <p className="text-sm text-gray-900">
-                            <span className="font-semibold">Accepted At:</span>{' '}
-                            {new Date(detailedDelivery.acceptedAt).toLocaleString('en-GB')}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Delivery Status Details */}
-                  {detailedDelivery.deliveredAt && (
-                    <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-                      <h3 className="mb-3 text-base font-bold text-gray-900">Delivery Complete</h3>
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-900">
-                          <span className="font-semibold">Delivered At:</span>{' '}
-                          {new Date(detailedDelivery.deliveredAt).toLocaleString('en-GB')}
-                        </p>
-                        {detailedDelivery.receivedBy && (
-                          <p className="text-sm text-gray-900">
-                            <span className="font-semibold">Received By:</span>{' '}
-                            {detailedDelivery.receivedBy}
-                          </p>
-                        )}
-                        {detailedDelivery.signatureUrl && (
-                          <p className="text-sm">
-                            <a
-                              href={detailedDelivery.signatureUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-green-700 underline hover:text-green-800"
-                            >
-                              View Signature
-                            </a>
-                          </p>
-                        )}
-                        {detailedDelivery.photoUrl && (
-                          <p className="text-sm">
-                            <a
-                              href={detailedDelivery.photoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-green-700 underline hover:text-green-800"
-                            >
-                              View Photo
-                            </a>
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {detailedDelivery.cancelledAt && (
-                    <div className="rounded-lg border border-gray-300 bg-gray-50 p-4">
-                      <h3 className="mb-3 text-base font-bold text-gray-900">Cancelled</h3>
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-900">
-                          <span className="font-semibold">Cancelled At:</span>{' '}
-                          {new Date(detailedDelivery.cancelledAt).toLocaleString('en-GB')}
-                        </p>
-                        {detailedDelivery.cancelledBy && (
-                          <p className="text-sm text-gray-900">
-                            <span className="font-semibold">Cancelled By:</span>{' '}
-                            {detailedDelivery.cancelledBy}
-                          </p>
-                        )}
-                        {detailedDelivery.cancellationReason && (
-                          <p className="text-sm text-gray-900">
-                            <span className="font-semibold">Reason:</span>{' '}
-                            {detailedDelivery.cancellationReason}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {detailedDelivery.rejectedAt && (
-                    <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
-                      <h3 className="mb-3 text-base font-bold text-gray-900">Rejected</h3>
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-900">
-                          <span className="font-semibold">Rejected At:</span>{' '}
-                          {new Date(detailedDelivery.rejectedAt).toLocaleString('en-GB')}
-                        </p>
-                        {detailedDelivery.rejectionReason && (
-                          <p className="text-sm text-gray-900">
-                            <span className="font-semibold">Reason:</span>{' '}
-                            {detailedDelivery.rejectionReason}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-12 text-center">
-                  <AlertCircle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-                  <p className="text-gray-600">No delivery details available</p>
-                </div>
-              )}
-
-              <div className="sticky bottom-0 z-10 flex justify-end border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6 sm:py-4">
-                <button
-                  onClick={() => {
-                    setShowViewModal(false);
-                    setDetailedDelivery(null);
-                  }}
-                  className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
+          <ViewDeliveryModal
+            isOpen={showViewModal}
+            delivery={detailedDelivery}
+            isLoading={loadingDetails}
+            onClose={() => {
+              setShowViewModal(false);
+              setDetailedDelivery(null);
+            }}
+            getStatusColor={getStatusColor}
+          />
         )}
 
-        <EditDeliveryModal
-          isOpen={showEditModal && !!selectedDelivery}
-          delivery={selectedDelivery}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedDelivery(null);
-          }}
-          onSave={handleSaveEdit}
-          onChange={setSelectedDelivery}
-        />
-
-        {/* Delete Confirmation Modal */}
+        {/* Delete / Cancel Confirmation Modal */}
         {showDeleteModal && selectedDelivery && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-            <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
-                <h2 className="text-base font-bold text-gray-900 sm:text-lg lg:text-xl">
-                  Confirm Cancellation
-                </h2>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+            <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+              <h3 className="mb-4 text-lg font-bold text-gray-900">Cancel Delivery</h3>
+              <p className="mb-4 text-sm text-gray-600">Are you sure you want to cancel this delivery?</p>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Optional cancellation reason"
+                className="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+                rows={3}
+              />
+              <div className="flex justify-end">
                 <button
-                  onClick={() => {
-                    setShowDeleteModal(false);
-                    setSelectedDelivery(null);
-                  }}
-                  className="rounded-lg p-1.5 transition-colors hover:bg-gray-100 sm:p-2"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="mr-3 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700"
                 >
-                  <XCircle className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="p-4 sm:p-6">
-                <div className="mb-4 flex items-start gap-3 sm:mb-6 sm:gap-4">
-                  <div className="rounded-full bg-red-100 p-2 sm:p-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 sm:h-6 sm:w-6" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="mb-2 text-base font-semibold text-gray-900 sm:text-lg">
-                      Are you sure you want to cancel this delivery?
-                    </h3>
-                    <p className="text-xs text-gray-600 sm:text-sm">
-                      This action will cancel the delivery request for{' '}
-                      <span className="font-semibold">{selectedDelivery.spoNumber}</span>. This
-                      cannot be undone.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-lg bg-gray-50 p-4">
-                  <p className="text-sm text-gray-600">Delivery Details:</p>
-                  <p className="mt-1 text-sm font-semibold text-gray-900">
-                    {selectedDelivery.deliveryAddress}
-                  </p>
-                  <p className="mt-1 text-sm text-gray-600">
-                    {selectedDelivery.deliveryDate
-                      ? new Date(selectedDelivery.deliveryDate).toLocaleDateString('en-GB')
-                      : '—'}{' '}
-                    - {selectedDelivery.timeSlot}
-                  </p>
-                </div>
-
-                <div className="mt-4">
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Reason for cancellation
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={cancelReason}
-                    onChange={(e) => setCancelReason(e.target.value)}
-                    placeholder="Enter reason (optional)"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:justify-end sm:gap-3 sm:px-6 sm:py-4">
-                <button
-                  onClick={() => {
-                    setShowDeleteModal(false);
-                    setSelectedDelivery(null);
-                  }}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto sm:px-6 sm:text-base"
-                >
-                  No, Keep It
+                  Keep Delivery
                 </button>
                 <button
                   onClick={confirmDeleteDelivery}
-                  className="w-full rounded-lg bg-linear-to-r from-red-600 to-red-500 px-4 py-2.5 text-sm font-medium text-white shadow-md transition-all hover:shadow-lg sm:w-auto sm:px-6 sm:text-base"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white"
                 >
-                  Yes, Cancel Delivery
+                  Confirm Cancel
                 </button>
               </div>
             </div>
           </div>
         )}
+
       </div>
     </div>
   );
+
 };
 
 export default CustomerDashboardHome;
