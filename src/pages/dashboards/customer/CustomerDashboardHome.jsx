@@ -35,6 +35,7 @@ import { toast } from 'react-toastify';
 import Pagination from '../../../components/Pagination';
 import EditDeliveryModal from './components/EditDeliveryModal';
 import ViewDeliveryModal from './components/ViewDeliveryModal';
+import CancelDeliveryModal from './components/CancelDeliveryModal';
 
 const CustomerDashboardHome = () => {
   const [showViewModal, setShowViewModal] = useState(false);
@@ -279,7 +280,7 @@ const CustomerDashboardHome = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md sm:p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -400,7 +401,6 @@ const CustomerDashboardHome = () => {
             </button>
           </div>
         </div>
-
         {/* Deliveries List */}
         <div className="space-y-4">
           {loading ? (
@@ -615,38 +615,14 @@ const CustomerDashboardHome = () => {
           />
         )}
 
-        {/* Delete / Cancel Confirmation Modal */}
-        {showDeleteModal && selectedDelivery && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-            <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
-              <h3 className="mb-4 text-lg font-bold text-gray-900">Cancel Delivery</h3>
-              <p className="mb-4 text-sm text-gray-600">
-                Are you sure you want to cancel this delivery?
-              </p>
-              <textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Optional cancellation reason"
-                className="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-                rows={3}
-              />
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="mr-3 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700"
-                >
-                  Keep Delivery
-                </button>
-                <button
-                  onClick={confirmDeleteDelivery}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white"
-                >
-                  Confirm Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <CancelDeliveryModal
+          isOpen={showDeleteModal}
+          delivery={selectedDelivery}
+          cancelReason={cancelReason}
+          onCancelReasonChange={setCancelReason}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={confirmDeleteDelivery}
+        />
       </div>
     </div>
   );
