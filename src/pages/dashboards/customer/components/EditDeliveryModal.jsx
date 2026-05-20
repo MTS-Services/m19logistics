@@ -74,16 +74,15 @@ const EditDeliveryModal = ({ isOpen, delivery, onClose, onSave, onChange }) => {
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
               />
             </div>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-gray-700">Delivery Address *</label>
-            <input
-              type="text"
-              value={delivery.deliveryAddress}
-              onChange={(e) => onChange({ ...delivery, deliveryAddress: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
-            />
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">Delivery Address *</label>
+              <input
+                type="text"
+                value={delivery.deliveryAddress}
+                onChange={(e) => onChange({ ...delivery, deliveryAddress: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
