@@ -61,24 +61,30 @@ const AssignedDeliveries = () => {
 
         if (response && response.success && response.data) {
           // Normalize API fields to the UI shape
-          const normalized = response.data.map((d) => ({
-            id: d.id,
-            spoNumber: d.spoNumber,
-            weight: d.weight || d.packWeight || d.packageWeight || '',
-            customerName: d.customerName || (d.customer && d.customer.fullName) || '',
-            customerPhone: d.customerPhone || (d.customer && d.customer.phone) || '',
-            depotAddress:
-              (d.customer &&
-                d.customer.customerProfile &&
-                d.customer.customerProfile.depotAddress) ||
-              '',
-            deliveryAddress: d.deliveryAddress || '',
-            date: d.deliveryDate ? new Date(d.deliveryDate).toISOString().split('T')[0] : '',
-            timeSlot: d.timeSlot || '',
-            instructions: d.specialInstructions || '',
-            status: d.status === 'ALLOCATED' ? 'Assigned' : d.status,
-            acceptedAt: d.acceptedAt || null,
-          }));
+          const normalized = response.data
+            .map((d) => ({
+              id: d.id,
+              spoNumber: d.spoNumber,
+              weight: d.weight || d.packWeight || d.packageWeight || '',
+              customerName: d.customerName || (d.customer && d.customer.fullName) || '',
+              customerPhone: d.customerPhone || (d.customer && d.customer.phone) || '',
+              depotAddress:
+                (d.customer &&
+                  d.customer.customerProfile &&
+                  d.customer.customerProfile.depotAddress) ||
+                '',
+              deliveryAddress: d.deliveryAddress || '',
+              date: d.deliveryDate ? new Date(d.deliveryDate).toISOString().split('T')[0] : '',
+              timeSlot: d.timeSlot || '',
+              instructions: d.specialInstructions || '',
+              status: d.status === 'ALLOCATED' ? 'Assigned' : d.status,
+              acceptedAt: d.acceptedAt || null,
+            }))
+            .sort((firstDelivery, secondDelivery) => {
+              const firstDate = firstDelivery.date ? new Date(firstDelivery.date).getTime() : 0;
+              const secondDate = secondDelivery.date ? new Date(secondDelivery.date).getTime() : 0;
+              return firstDate - secondDate;
+            });
 
           setDeliveries(normalized);
         }
