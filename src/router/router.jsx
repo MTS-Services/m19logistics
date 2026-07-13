@@ -52,7 +52,7 @@ import DriverAvailability from '../pages/dashboards/driver/DriverAvailability';
 // Dashboard pages - Contractor
 import ContractorDashboardLayout from '../pages/dashboards/contractor/ContractorDashboardLayout';
 import ContractorDashboardHome from '../pages/dashboards/contractor/dashboard/ContractorDashboardHome';
-import ContractorAssignedDeliveries from '../pages/dashboards/contractor/ContractorAssignedDeliveries';
+import ContractorAssignedDeliveries from '../pages/dashboards/contractor/assignedDeliveries/ContractorAssignedDeliveries';
 import ContractorCompletedDeliveries from '../pages/dashboards/contractor/ContractorCompletedDeliveries';
 import ContractorInvoices from '../pages/dashboards/contractor/ContractorInvoices';
 import ContractorGenerateInvoice from '../pages/dashboards/contractor/ContractorGenerateInvoice';
