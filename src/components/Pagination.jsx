@@ -63,20 +63,20 @@ const Pagination = ({
   if (totalPages <= 1) return null;
 
   const containerClass = compact
-    ? 'flex flex-col items-center justify-between gap-4 w-full pt-4 border-t border-gray-100 sm:flex-row sm:gap-6'
+    ? 'flex flex-col items-stretch justify-between gap-3 w-full px-0 py-3 sm:flex-row sm:items-center sm:gap-4'
     : 'flex flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-2 py-3 shadow-sm sm:gap-4 sm:px-6 sm:py-5 sm:flex-row sm:justify-between';
 
   return (
     <div className={containerClass}>
       {/* Items count */}
-      <div className="order-3 w-full text-center text-[11px] font-medium text-gray-700 sm:order-1 sm:w-auto sm:text-left sm:text-sm">
+      <div className="order-3 w-full text-left text-[11px] font-medium text-gray-700 sm:order-1 sm:w-auto sm:text-sm">
         Showing <span className="font-bold text-gray-900">{startItem}</span> to{' '}
         <span className="font-bold text-gray-900">{endItem}</span> of{' '}
         <span className="font-bold text-gray-900">{totalItems}</span> results
       </div>
 
       {/* Pagination controls */}
-      <div className="order-1 sm:order-2 flex items-center justify-center gap-0.5 overflow-x-auto sm:gap-2">
+      <div className="order-1 sm:order-2 flex items-center justify-end gap-0.5 overflow-x-auto sm:gap-2">
         {/* Previous button */}
         <button
           onClick={() => onPageChange(currentPage - 1)}
