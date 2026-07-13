@@ -12,10 +12,10 @@ import {
   Clock,
   Home,
   ChevronDown,
-  CalendarCheck,
+  FileText,
 } from 'lucide-react';
 
-const DriverDashboardLayout = () => {
+const ContractorDashboardLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,30 +27,35 @@ const DriverDashboardLayout = () => {
     navigate('/');
   };
 
+  const displayName = user?.tradingName || user?.fullName || user?.name || 'Contractor';
+
   const navigationSections = [
     {
       title: 'Main',
-      items: [{ name: 'Dashboard', href: '/driver/dashboard', icon: LayoutDashboard }],
+      items: [{ name: 'Dashboard', href: '/contractor/dashboard', icon: LayoutDashboard }],
     },
     {
       title: 'Deliveries',
       items: [
-        { name: 'Assigned Deliveries', href: '/driver/assigned', icon: Clock },
-        { name: 'Completed Deliveries', href: '/driver/completed', icon: CheckCircle },
-        { name: 'My Availability', href: '/driver/slots', icon: CalendarCheck },
+        { name: 'Assigned Deliveries', href: '/contractor/assigned', icon: Clock },
+        { name: 'Completed Deliveries', href: '/contractor/completed', icon: CheckCircle },
       ],
     },
     {
+      title: 'Invoices',
+      items: [{ name: 'My Invoices', href: '/contractor/invoices', icon: FileText }],
+    },
+    {
       title: 'Account',
-      items: [{ name: 'Profile', href: '/driver/profile', icon: User }],
+      items: [{ name: 'Profile', href: '/contractor/profile', icon: User }],
     },
   ];
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
-      {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
           className="bg-opacity-75 fixed inset-0 z-40 bg-gray-600 lg:hidden"
@@ -58,14 +63,12 @@ const DriverDashboardLayout = () => {
         ></div>
       )}
 
-      {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 w-3/4 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex h-full flex-col">
-          {/* Header */}
           <div className="flex h-16 items-center justify-center border-b border-gray-700 px-6">
             <Link to="/" className="transition-opacity hover:opacity-80">
               <img src="/images/logo.png" alt="M19 Logistics" className="h-12 w-auto" />
@@ -78,18 +81,15 @@ const DriverDashboardLayout = () => {
             </button>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 space-y-6 overflow-y-auto p-4">
             {navigationSections.map((section, sectionIndex) => (
               <div key={section.title}>
-                {/* Section Header */}
                 <div className="mb-3 px-3">
                   <h3 className="text-xs font-semibold tracking-wider text-gray-500 uppercase">
                     {section.title}
                   </h3>
                 </div>
 
-                {/* Section Items */}
                 <div className="space-y-1">
                   {section.items.map((item) => {
                     const Icon = item.icon;
@@ -105,7 +105,6 @@ const DriverDashboardLayout = () => {
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                         }`}
                       >
-                        {/* Active indicator bar */}
                         {active && (
                           <div className="absolute top-0 left-0 h-full w-1 rounded-r-full bg-white"></div>
                         )}
@@ -129,7 +128,6 @@ const DriverDashboardLayout = () => {
                   })}
                 </div>
 
-                {/* Section Divider (except for last section) */}
                 {sectionIndex < navigationSections.length - 1 && (
                   <div className="mt-6 border-t border-gray-700/50"></div>
                 )}
@@ -137,7 +135,6 @@ const DriverDashboardLayout = () => {
             ))}
           </nav>
 
-          {/* Logout Button */}
           <div className="border-t border-gray-700 p-4">
             <button
               onClick={handleLogout}
@@ -150,9 +147,7 @@ const DriverDashboardLayout = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top Bar */}
         <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -167,13 +162,11 @@ const DriverDashboardLayout = () => {
               className="flex items-center space-x-3 rounded-lg px-4 py-2 transition-colors hover:bg-gray-100"
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-sm font-bold text-white">
-                {user?.name?.charAt(0) || user?.fullName?.charAt(0) || 'D'}
+                {displayName.charAt(0)}
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-gray-900">
-                  {user?.name || user?.fullName}
-                </p>
-                <p className="text-xs text-gray-500">Driver</p>
+                <p className="text-sm font-semibold text-gray-900">{displayName}</p>
+                <p className="text-xs text-gray-500">Contractor</p>
               </div>
               <ChevronDown
                 className={`h-4 w-4 text-gray-500 transition-transform ${
@@ -182,7 +175,6 @@ const DriverDashboardLayout = () => {
               />
             </button>
 
-            {/* Dropdown Menu */}
             {userDropdownOpen && (
               <>
                 <div
@@ -204,7 +196,6 @@ const DriverDashboardLayout = () => {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-2 sm:p-6">
           <Outlet />
         </main>
@@ -213,4 +204,4 @@ const DriverDashboardLayout = () => {
   );
 };
 
-export default DriverDashboardLayout;
+export default ContractorDashboardLayout;

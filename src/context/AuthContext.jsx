@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     isAdmin: user?.role?.toLowerCase() === 'admin',
     isDriver: user?.role?.toLowerCase() === 'driver',
+    isContractor: user?.role?.toLowerCase() === 'contractor',
     isCustomer: user?.role?.toLowerCase() === 'customer',
     isManager: user?.role?.toLowerCase() === 'manager',
     isAreaManager: user?.role?.toLowerCase() === 'area_manager',

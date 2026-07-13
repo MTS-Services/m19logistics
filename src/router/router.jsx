@@ -49,6 +49,15 @@ import CompletedDeliveries from '../pages/dashboards/driver/CompletedDeliveries'
 import DriverProfile from '../pages/dashboards/driver/DriverProfile';
 import DriverAvailability from '../pages/dashboards/driver/DriverAvailability';
 
+// Dashboard pages - Contractor
+import ContractorDashboardLayout from '../pages/dashboards/contractor/ContractorDashboardLayout';
+import ContractorDashboardHome from '../pages/dashboards/contractor/dashboard/ContractorDashboardHome';
+import ContractorAssignedDeliveries from '../pages/dashboards/contractor/ContractorAssignedDeliveries';
+import ContractorCompletedDeliveries from '../pages/dashboards/contractor/ContractorCompletedDeliveries';
+import ContractorInvoices from '../pages/dashboards/contractor/ContractorInvoices';
+import ContractorGenerateInvoice from '../pages/dashboards/contractor/ContractorGenerateInvoice';
+import ContractorProfile from '../pages/dashboards/contractor/ContractorProfile';
+
 // Dashboard pages - Area Manager
 import AreaManagerDashboardLayout from '../pages/dashboards/area-manager/AreaManagerDashboardLayout';
 import AreaManagerDashboardHome from '../pages/dashboards/area-manager/AreaManagerDashboardHome';
@@ -129,7 +138,7 @@ const router = createBrowserRouter(
         <Route path="profile" element={<CustomerProfile />} />
       </Route>
 
-      {/* Driver Routes */}
+      {/* Driver Routes (Employee) */}
       <Route
         path="/driver"
         element={
@@ -144,6 +153,24 @@ const router = createBrowserRouter(
         <Route path="completed" element={<CompletedDeliveries />} />
         <Route path="slots" element={<DriverAvailability />} />
         <Route path="profile" element={<DriverProfile />} />
+      </Route>
+
+      {/* Contractor Routes */}
+      <Route
+        path="/contractor"
+        element={
+          <ProtectedRoute allowedRoles={['contractor']}>
+            <ContractorDashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ContractorDashboardHome />} />
+        <Route path="dashboard" element={<ContractorDashboardHome />} />
+        <Route path="assigned" element={<ContractorAssignedDeliveries />} />
+        <Route path="completed" element={<ContractorCompletedDeliveries />} />
+        <Route path="invoices" element={<ContractorInvoices />} />
+        <Route path="invoices/generate" element={<ContractorGenerateInvoice />} />
+        <Route path="profile" element={<ContractorProfile />} />
       </Route>
 
       {/* Area Manager Routes */}
