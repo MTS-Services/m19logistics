@@ -55,7 +55,7 @@ import ContractorDashboardHome from '../pages/dashboards/contractor/dashboard/Co
 import ContractorAssignedDeliveries from '../pages/dashboards/contractor/assignedDeliveries/ContractorAssignedDeliveries';
 import ContractorCompletedDeliveries from '../pages/dashboards/contractor/completedDeliveries/ContractorCompletedDeliveries';
 import ContractorInvoices from '../pages/dashboards/contractor/ContractorInvoices';
-import ContractorGenerateInvoice from '../pages/dashboards/contractor/ContractorGenerateInvoice';
+import ContractorGenerateInvoice from '../pages/dashboards/contractor/contractorInvoice/ContractorGenerateInvoice';
 import ContractorProfile from '../pages/dashboards/contractor/contractorProfile/ContractorProfile';
 
 // Dashboard pages - Area Manager
