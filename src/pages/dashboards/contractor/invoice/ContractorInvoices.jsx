@@ -7,6 +7,7 @@ import InvoicesFilters from './components/InvoicesFilters';
 import EmptyInvoicesState from './components/EmptyInvoicesState';
 import InvoicesTable from './components/InvoicesTable';
 import InvoiceViewModal from './components/InvoiceViewModal';
+import InvoiceDeleteModal from './components/InvoiceDeleteModal';
 
 const ContractorInvoices = () => {
   const [invoices, setInvoices] = useState(dummyInvoices);
@@ -15,6 +16,7 @@ const ContractorInvoices = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const itemsPerPage = 5;
 
   const filtered = useMemo(() => {
@@ -49,17 +51,24 @@ const ContractorInvoices = () => {
   };
 
   const handleDelete = (invoice) => {
-    const confirmed = window.confirm(`Delete invoice ${invoice.id}?`);
-    if (!confirmed) return;
+    setSelectedInvoice(invoice);
+    setShowDeleteModal(true);
+  };
 
-    setInvoices((prev) => prev.filter((inv) => inv.id !== invoice.id));
-    toast.success(`${invoice.id} deleted (dummy — backend later)`);
+  const handleConfirmDelete = () => {
+    if (!selectedInvoice) return;
+
+    setInvoices((prev) => prev.filter((inv) => inv.id !== selectedInvoice.id));
+    toast.success(`${selectedInvoice.id} deleted (dummy — backend later)`);
 
     const remaining = filtered.length - 1;
     const nextTotalPages = Math.ceil(remaining / itemsPerPage) || 1;
     if (currentPage > nextTotalPages) {
       setCurrentPage(nextTotalPages);
     }
+
+    setShowDeleteModal(false);
+    setSelectedInvoice(null);
   };
 
   return (
@@ -77,13 +86,11 @@ const ContractorInvoices = () => {
           <EmptyInvoicesState hasFilters={!!searchQuery || statusFilter !== 'all'} />
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <InvoicesTable
-                invoices={pageItems}
-                onView={handleView}
-                onDelete={handleDelete}
-              />
-            </div>
+            <InvoicesTable
+              invoices={pageItems}
+              onView={handleView}
+              onDelete={handleDelete}
+            />
             <div className="border-t border-gray-200 px-6 py-0">
               <Pagination
                 currentPage={currentPage}
@@ -105,6 +112,17 @@ const ContractorInvoices = () => {
             setShowViewModal(false);
             setSelectedInvoice(null);
           }}
+        />
+      )}
+
+      {showDeleteModal && (
+        <InvoiceDeleteModal
+          invoice={selectedInvoice}
+          onCancel={() => {
+            setShowDeleteModal(false);
+            setSelectedInvoice(null);
+          }}
+          onConfirm={handleConfirmDelete}
         />
       )}
     </div>

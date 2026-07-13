@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { MoreVertical, Eye, Trash2 } from 'lucide-react';
 
@@ -7,13 +7,13 @@ const MENU_HEIGHT = 88;
 
 const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
   const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState({ top: 0, left: 0, openUp: false });
+  const [position, setPosition] = useState(null);
   const buttonRef = useRef(null);
   const menuRef = useRef(null);
 
-  const updatePosition = () => {
+  const getPosition = () => {
     const button = buttonRef.current;
-    if (!button) return;
+    if (!button) return null;
 
     const rect = button.getBoundingClientRect();
     const spaceBelow = window.innerHeight - rect.bottom;
@@ -27,17 +27,33 @@ const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
 
     const top = openUp ? rect.top - MENU_HEIGHT - 8 : rect.bottom + 8;
 
-    setPosition({
+    return {
       top: Math.max(8, top),
       left,
-      openUp,
-    });
+    };
   };
+
+  const handleToggle = () => {
+    if (open) {
+      setOpen(false);
+      setPosition(null);
+      return;
+    }
+
+    const nextPosition = getPosition();
+    if (!nextPosition) return;
+    setPosition(nextPosition);
+    setOpen(true);
+  };
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const nextPosition = getPosition();
+    if (nextPosition) setPosition(nextPosition);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
-
-    updatePosition();
 
     const handleClickOutside = (e) => {
       if (
@@ -47,9 +63,13 @@ const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
         return;
       }
       setOpen(false);
+      setPosition(null);
     };
 
-    const handleReposition = () => updatePosition();
+    const handleReposition = () => {
+      const nextPosition = getPosition();
+      if (nextPosition) setPosition(nextPosition);
+    };
 
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('resize', handleReposition);
@@ -67,7 +87,7 @@ const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
       <button
         ref={buttonRef}
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={handleToggle}
         className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
         aria-label="Invoice actions"
       >
@@ -75,6 +95,7 @@ const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
       </button>
 
       {open &&
+        position &&
         createPortal(
           <div
             ref={menuRef}
@@ -91,6 +112,7 @@ const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
               type="button"
               onClick={() => {
                 setOpen(false);
+                setPosition(null);
                 onView(invoice);
               }}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
@@ -102,6 +124,7 @@ const InvoiceActionMenu = ({ invoice, onView, onDelete }) => {
               type="button"
               onClick={() => {
                 setOpen(false);
+                setPosition(null);
                 onDelete(invoice);
               }}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
