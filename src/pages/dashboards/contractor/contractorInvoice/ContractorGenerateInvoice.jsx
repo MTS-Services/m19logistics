@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileText, Building2, CreditCard } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../../context/AuthContext';
 import {
   DEMO_CONTRACTOR_USER,
   contractorDashboardData,
   dummyCompletedDeliveries,
   formatMoney,
   formatDate,
-} from './contractorDummyData';
+} from '../contractorDummyData';
 
 const ContractorGenerateInvoice = () => {
   const { user } = useAuth();
