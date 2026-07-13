@@ -2,9 +2,17 @@ import React, { useState } from 'react';
 import { X, Loader2, Save } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../../../services/axiosInstance';
+import ContractorDriverFields from '../../components/ContractorDriverFields';
+import {
+  DRIVER_TYPE,
+  emptyContractorFields,
+  validateContractorFields,
+  buildContractorPayload,
+} from '../../components/driverTypeUtils';
 
 const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     fullName: driver?.name || '',
     username: driver?.username || '',
@@ -16,19 +24,63 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
     isActiveDriver: true,
     enableSmsNotifications: driver?.enableSmsNotifications || false,
     enableEmailNotifications: driver?.enableEmailNotifications || true,
+    driverType: driver?.driverType || DRIVER_TYPE.EMPLOYEE,
+    ...emptyContractorFields,
+    tradingName: driver?.tradingName || '',
+    contactName: driver?.contactName || '',
+    address: driver?.address || '',
+    tradingAddress: driver?.tradingAddress || '',
+    driversLicenceNumber: driver?.driversLicenceNumber || '',
+    vatRegistered: driver?.vatRegistered ?? false,
+    vatNumber: driver?.vatNumber || '',
+    vanRegistration: driver?.vehicle?.vanRegistration || driver?.vehicleRegistration || '',
+    vehicleMake: driver?.vehicle?.make || '',
+    vehicleModel: driver?.vehicle?.model || '',
+    motExpiry: driver?.vehicle?.motExpiry || '',
+    insuranceExpiry: driver?.vehicle?.insuranceExpiry || '',
+    goodsInTransitExpiry: driver?.vehicle?.goodsInTransitExpiry || '',
+    publicLiabilityExpiry: driver?.vehicle?.publicLiabilityExpiry || '',
+    bankName: driver?.bank?.bankName || '',
+    accountName: driver?.bank?.accountName || '',
+    sortCode: driver?.bank?.sortCode || '',
+    accountNumber: driver?.bank?.accountNumber || '',
+    bankReference: driver?.bank?.reference || '',
+    payType: driver?.payStructure?.payType || 'Weekly',
+    rate: driver?.payStructure?.rate ?? '',
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleRadioChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.fullName.trim()) return toast.error('Full name is required');
-    if (!formData.email.trim()) return toast.error('Email is required');
-    if (!formData.phone.trim()) return toast.error('Phone is required');
-    if (!isEdit && !formData.password.trim()) return toast.error('Password is required');
+    const newErrors = {};
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
+    if (!isEdit && !formData.password.trim()) newErrors.password = 'Password is required';
+
+    if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+      Object.assign(newErrors, validateContractorFields(formData));
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
 
     try {
       setIsSubmitting(true);
@@ -37,8 +89,17 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
           fullName: formData.fullName,
           username: formData.username,
           phone: formData.phone,
-          vehicleRegistration: formData.vehicleRegistration,
+          driverType: formData.driverType,
+          vehicleRegistration:
+            formData.driverType === DRIVER_TYPE.CONTRACTOR
+              ? formData.vanRegistration
+              : formData.vehicleRegistration,
         };
+
+        if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+          Object.assign(updatePayload, buildContractorPayload(formData));
+        }
+
         const response = await axiosInstance.put(`/api/admin/drivers/${driver.id}`, updatePayload);
         toast.success(response.data.message || 'Driver updated successfully');
       } else {
@@ -49,9 +110,18 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
           phone: formData.phone,
           role: 'DRIVER',
           isActive: formData.isActive,
-          vehicleRegistration: formData.vehicleRegistration,
           isActiveDriver: formData.isActiveDriver,
+          driverType: formData.driverType,
+          vehicleRegistration:
+            formData.driverType === DRIVER_TYPE.CONTRACTOR
+              ? formData.vanRegistration
+              : formData.vehicleRegistration,
         };
+
+        if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+          Object.assign(createPayload, buildContractorPayload(formData));
+        }
+
         const response = await axiosInstance.post('/api/admin/users', createPayload);
         toast.success(response.data.message || 'Driver created successfully');
       }
@@ -66,6 +136,8 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
     }
   };
 
+  const isContractor = formData.driverType === DRIVER_TYPE.CONTRACTOR;
+
   return (
     <div
       className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4"
@@ -73,7 +145,7 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
         if (e.target === e.currentTarget) onClose?.();
       }}
     >
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             {isEdit ? 'Edit Driver' : 'Add New Driver'}
@@ -88,6 +160,30 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
 
         <div className="p-6">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-lg border border-teal-200 bg-teal-50 p-4">
+              <label className="mb-3 block text-sm font-semibold text-gray-900">Driver Type *</label>
+              <div className="flex flex-wrap gap-6">
+                <label className="flex items-center gap-2 text-sm text-gray-800">
+                  <input
+                    type="radio"
+                    name="driverType"
+                    checked={formData.driverType === DRIVER_TYPE.EMPLOYEE}
+                    onChange={() => handleRadioChange('driverType', DRIVER_TYPE.EMPLOYEE)}
+                  />
+                  Employee
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-800">
+                  <input
+                    type="radio"
+                    name="driverType"
+                    checked={formData.driverType === DRIVER_TYPE.CONTRACTOR}
+                    onChange={() => handleRadioChange('driverType', DRIVER_TYPE.CONTRACTOR)}
+                  />
+                  Contractor
+                </label>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Full Name *</label>
@@ -155,18 +251,29 @@ const AddEditModal = ({ isEdit = false, driver = null, onClose, onSuccess }) => 
               </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Vehicle Registration
-              </label>
-              <input
-                name="vehicleRegistration"
-                value={formData.vehicleRegistration}
+            {!isContractor && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Vehicle Registration
+                </label>
+                <input
+                  name="vehicleRegistration"
+                  value={formData.vehicleRegistration}
+                  onChange={handleChange}
+                  placeholder="e.g., AB12 CDE"
+                  className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                />
+              </div>
+            )}
+
+            {isContractor && (
+              <ContractorDriverFields
+                formData={formData}
+                errors={errors}
                 onChange={handleChange}
-                placeholder="e.g., AB12 CDE"
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2"
+                onRadioChange={handleRadioChange}
               />
-            </div>
+            )}
 
             <div className="flex items-center justify-end space-x-3 border-t border-gray-200 pt-4">
               <button

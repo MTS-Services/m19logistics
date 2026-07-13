@@ -10,9 +10,14 @@ const invoiceStatusStyles = {
 const InvoiceSnapshot = ({ invoices }) => {
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-      <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4">
         <h2 className="text-lg font-bold text-gray-900">Invoices</h2>
-        <p className="text-sm text-gray-500">Submit invoice to M19 Logistics</p>
+        <Link
+          to="/contractor/invoices"
+          className="text-sm font-medium text-teal-600 hover:text-teal-700"
+        >
+          View all
+        </Link>
       </div>
       <div className="divide-y divide-gray-200">
         {invoices.map((invoice) => (
@@ -21,7 +26,7 @@ const InvoiceSnapshot = ({ invoices }) => {
               <div>
                 <p className="font-semibold text-gray-900">{invoice.id}</p>
                 <p className="text-sm text-gray-600">{invoice.period}</p>
-                <p className="mt-1 text-xs text-gray-500">Issued {formatDate(invoice.issuedAt)}</p>
+                {/* <p className="mt-1 text-xs text-gray-500">Issued {formatDate(invoice.issuedAt)}</p> */}
               </div>
               <span
                 className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${

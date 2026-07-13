@@ -54,7 +54,7 @@ import ContractorDashboardLayout from '../pages/dashboards/contractor/Contractor
 import ContractorDashboardHome from '../pages/dashboards/contractor/dashboard/ContractorDashboardHome';
 import ContractorAssignedDeliveries from '../pages/dashboards/contractor/assignedDeliveries/ContractorAssignedDeliveries';
 import ContractorCompletedDeliveries from '../pages/dashboards/contractor/completedDeliveries/ContractorCompletedDeliveries';
-import ContractorInvoices from '../pages/dashboards/contractor/ContractorInvoices';
+import ContractorInvoices from '../pages/dashboards/contractor/invoice/ContractorInvoices';
 import ContractorGenerateInvoice from '../pages/dashboards/contractor/contractorInvoice/ContractorGenerateInvoice';
 import ContractorProfile from '../pages/dashboards/contractor/contractorProfile/ContractorProfile';
 

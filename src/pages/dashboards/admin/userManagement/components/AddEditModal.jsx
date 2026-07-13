@@ -2,26 +2,58 @@ import React, { useState, useEffect } from 'react';
 import { X, Save, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../../../services/axiosInstance';
+import ContractorDriverFields from '../../components/ContractorDriverFields';
+import {
+  DRIVER_TYPE,
+  emptyContractorFields,
+  validateContractorFields,
+  buildContractorPayload,
+} from '../../components/driverTypeUtils';
 
 const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
+  const initialRole =
+    user?.role === 'admin'
+      ? 'ADMIN'
+      : user?.role === 'driver'
+        ? 'DRIVER'
+        : user?.role === 'area_manager'
+          ? 'MANAGER'
+          : 'CUSTOMER';
+
   const [formData, setFormData] = useState({
     fullName: user?.name || '',
     username: user?.username || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    role:
-      user?.role === 'admin'
-        ? 'ADMIN'
-        : user?.role === 'driver'
-          ? 'DRIVER'
-          : user?.role === 'area_manager'
-            ? 'MANAGER'
-            : 'CUSTOMER',
+    role: initialRole,
     password: '',
     storeName: '',
     depotAddress: user?.depot || '',
     pricingTierId: user?.pricingTierId || '',
     customBasePrice: user?.customBasePrice || '',
+    driverType: user?.driverType || DRIVER_TYPE.EMPLOYEE,
+    ...emptyContractorFields,
+    tradingName: user?.tradingName || '',
+    contactName: user?.contactName || '',
+    address: user?.address || '',
+    tradingAddress: user?.tradingAddress || '',
+    driversLicenceNumber: user?.driversLicenceNumber || '',
+    vatRegistered: user?.vatRegistered ?? false,
+    vatNumber: user?.vatNumber || '',
+    vanRegistration: user?.vehicle?.vanRegistration || user?.vehicleRegistration || '',
+    vehicleMake: user?.vehicle?.make || '',
+    vehicleModel: user?.vehicle?.model || '',
+    motExpiry: user?.vehicle?.motExpiry || '',
+    insuranceExpiry: user?.vehicle?.insuranceExpiry || '',
+    goodsInTransitExpiry: user?.vehicle?.goodsInTransitExpiry || '',
+    publicLiabilityExpiry: user?.vehicle?.publicLiabilityExpiry || '',
+    bankName: user?.bank?.bankName || '',
+    accountName: user?.bank?.accountName || '',
+    sortCode: user?.bank?.sortCode || '',
+    accountNumber: user?.bank?.accountNumber || '',
+    bankReference: user?.bank?.reference || '',
+    payType: user?.payStructure?.payType || 'Weekly',
+    rate: user?.payStructure?.rate ?? '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
@@ -29,7 +61,6 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
   const [pricingTiers, setPricingTiers] = useState([]);
   const [loadingTiers, setLoadingTiers] = useState(false);
 
-  // Fetch pricing tiers on component mount
   useEffect(() => {
     const fetchPricingTiers = async () => {
       try {
@@ -40,7 +71,6 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
         }
       } catch (err) {
         console.error('Error fetching pricing tiers:', err);
-        // Don't show error toast if we already have user pricing tier data
         if (!user?.pricingTierData) {
           toast.error('Failed to load pricing tiers');
         }
@@ -53,8 +83,20 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === 'role' && value !== 'DRIVER') {
+        next.driverType = DRIVER_TYPE.EMPLOYEE;
+      }
+      return next;
+    });
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleRadioChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -71,11 +113,17 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     }
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
 
-    // Password validation
     if (!isEdit && !formData.password.trim()) {
       newErrors.password = 'Password is required';
     } else if (formData.password.trim() && formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (
+      formData.role === 'DRIVER' &&
+      formData.driverType === DRIVER_TYPE.CONTRACTOR
+    ) {
+      Object.assign(newErrors, validateContractorFields(formData));
     }
 
     setErrors(newErrors);
@@ -91,7 +139,6 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
       let response;
 
       if (isEdit && user?.id) {
-        // For update, send all editable fields
         const updatePayload = {
           fullName: formData.fullName.trim(),
           username: formData.username.trim(),
@@ -100,12 +147,10 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           role: formData.role,
         };
 
-        // Add password only if it's provided
         if (formData.password.trim()) {
           updatePayload.password = formData.password;
         }
 
-        // Add customer-specific fields if role is CUSTOMER
         if (formData.role === 'CUSTOMER') {
           if (formData.depotAddress.trim()) {
             updatePayload.depotAddress = formData.depotAddress.trim();
@@ -118,9 +163,15 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           }
         }
 
+        if (formData.role === 'DRIVER') {
+          updatePayload.driverType = formData.driverType;
+          if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+            Object.assign(updatePayload, buildContractorPayload(formData));
+          }
+        }
+
         response = await axiosInstance.put(`/api/admin/users/${user.id}`, updatePayload);
       } else {
-        // For create, send all required fields
         const createPayload = {
           email: formData.email.trim(),
           username: formData.username.trim(),
@@ -130,16 +181,23 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           password: formData.password,
         };
 
-        // Add customer-specific fields if role is CUSTOMER
         if (formData.role === 'CUSTOMER') {
           if (formData.storeName.trim()) createPayload.storeName = formData.storeName.trim();
-          if (formData.depotAddress.trim())
+          if (formData.depotAddress.trim()) {
             createPayload.depotAddress = formData.depotAddress.trim();
+          }
           if (formData.pricingTierId) {
             createPayload.pricingTierId = parseInt(formData.pricingTierId);
           }
           if (formData.customBasePrice) {
             createPayload.customBasePrice = parseFloat(formData.customBasePrice);
+          }
+        }
+
+        if (formData.role === 'DRIVER') {
+          createPayload.driverType = formData.driverType;
+          if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+            Object.assign(createPayload, buildContractorPayload(formData));
           }
         }
 
@@ -162,12 +220,15 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     }
   };
 
+  const isDriver = formData.role === 'DRIVER';
+  const isContractor = isDriver && formData.driverType === DRIVER_TYPE.CONTRACTOR;
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
       onClick={(e) => e.target === e.currentTarget && !isSubmitting && onClose()}
     >
-      <div className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
+      <div className="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="flex shrink-0 items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900">
             {isEdit ? 'Edit User' : 'Add New User'}
@@ -254,6 +315,47 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                 </select>
               </div>
 
+              {isDriver && (
+                <div className="rounded-lg border border-teal-200 bg-teal-50 p-4">
+                  <label className="mb-3 block text-sm font-semibold text-gray-900">
+                    Driver Type *
+                  </label>
+                  <div className="flex flex-wrap gap-6">
+                    <label className="flex items-center gap-2 text-sm text-gray-800">
+                      <input
+                        type="radio"
+                        name="driverType"
+                        checked={formData.driverType === DRIVER_TYPE.EMPLOYEE}
+                        onChange={() => handleRadioChange('driverType', DRIVER_TYPE.EMPLOYEE)}
+                      />
+                      Employee
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-gray-800">
+                      <input
+                        type="radio"
+                        name="driverType"
+                        checked={formData.driverType === DRIVER_TYPE.CONTRACTOR}
+                        onChange={() => handleRadioChange('driverType', DRIVER_TYPE.CONTRACTOR)}
+                      />
+                      Contractor
+                    </label>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-600">
+                    Employee works as before. Contractor requires extra personal, vehicle, bank and
+                    pay details.
+                  </p>
+                </div>
+              )}
+
+              {isContractor && (
+                <ContractorDriverFields
+                  formData={formData}
+                  errors={errors}
+                  onChange={handleChange}
+                  onRadioChange={handleRadioChange}
+                />
+              )}
+
               {formData.role === 'CUSTOMER' && (
                 <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
                   <h3 className="text-sm font-medium text-gray-700">Customer-Specific Settings</h3>
@@ -286,10 +388,9 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                       value={formData.pricingTierId}
                       onChange={handleChange}
                       disabled={loadingTiers && !user?.pricingTierData}
-                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 disabled:cursor-not-allowed disabled:bg-gray-100"
                     >
                       {!isEdit && <option value="">Select pricing tier (optional)</option>}
-                      {/* Show current pricing tier immediately if available */}
                       {isEdit && user?.pricingTierData && pricingTiers.length === 0 && (
                         <option value={user.pricingTierData.id}>
                           {user.pricingTierData.name}
@@ -306,7 +407,9 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Custom Base Price</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Custom Base Price
+                    </label>
                     <input
                       type="number"
                       name="customBasePrice"
@@ -317,7 +420,6 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                       className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
                       placeholder="Enter custom base price (optional)"
                     />
-
                   </div>
                 </div>
               )}
@@ -350,9 +452,7 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Update Password
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">Update Password</label>
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -373,7 +473,6 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                   {errors.password && (
                     <p className="mt-1 text-xs text-red-500">{errors.password}</p>
                   )}
-
                 </div>
               )}
             </div>

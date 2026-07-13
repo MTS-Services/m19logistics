@@ -47,7 +47,7 @@ const ContractorDashboardHome = () => {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <RecentCompletedJobs jobs={recentJobs} />
-        <InvoiceSnapshot invoices={dummyInvoices} />
+        <InvoiceSnapshot invoices={dummyInvoices.slice(-3).reverse()} />
       </div>
 
       <VehicleDocumentStatus documents={documentChecks} />
