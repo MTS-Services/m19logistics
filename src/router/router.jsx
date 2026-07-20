@@ -17,6 +17,7 @@ import LoginView from '../pages/auth/LoginView';
 import AdminDashboard from '../pages/dashboards/admin/AdminDashboard';
 import AdminDashboardHome from '../pages/dashboards/admin/AdminDashboardHome';
 import BookingsBoard from '../pages/dashboards/admin/bookings/BookingsBoard';
+import FailedDeliveries from '../pages/dashboards/admin/failedDeliveries/FailedDeliveries';
 import AllocateDriverPage from '../pages/dashboards/admin/bookings/AllocateDriverPage';
 import UsersManagement from '../pages/dashboards/admin/userManagement/UsersManagement';
 import DriverManagement from '../pages/dashboards/admin/driverManagement/DriverManagement';
@@ -106,6 +107,7 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<AdminDashboardHome />} />
         <Route path="bookings" element={<BookingsBoard />} />
         <Route path="bookings/allocate" element={<AllocateDriverPage />} />
+        <Route path="failed-deliveries" element={<FailedDeliveries />} />
         <Route path="users" element={<UsersManagement />} />
         <Route path="drivers" element={<DriverManagement />} />
         <Route path="drivers/availability" element={<AdminDriverAvailability />} />

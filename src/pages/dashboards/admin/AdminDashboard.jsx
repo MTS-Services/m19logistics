@@ -20,6 +20,7 @@ import {
   MessageSquare,
   HelpCircle,
   Briefcase,
+  AlertTriangle,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -43,6 +44,7 @@ const AdminDashboard = () => {
       title: 'Operations',
       items: [
         { name: 'Bookings', href: '/admin/bookings', icon: Package },
+        { name: 'Failed Deliveries', href: '/admin/failed-deliveries', icon: AlertTriangle },
         { name: 'Users', href: '/admin/users', icon: Users },
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
         { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
