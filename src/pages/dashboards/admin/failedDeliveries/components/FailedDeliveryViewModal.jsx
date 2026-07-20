@@ -5,7 +5,7 @@ import {
   formatMoney,
   getReasonStyle,
   getStatusStyle,
-} from '../failedDeliveriesDummyData';
+} from '../utils';
 
 const FailedDeliveryViewModal = ({ delivery, onClose }) => {
   if (!delivery) return null;

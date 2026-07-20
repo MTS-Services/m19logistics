@@ -1,5 +1,4 @@
 import { Search, Filter } from 'lucide-react';
-import { FAILURE_REASONS, FAILURE_STATUSES } from '../failedDeliveriesDummyData';
 
 const FailedDeliveriesFilters = ({
   searchQuery,
