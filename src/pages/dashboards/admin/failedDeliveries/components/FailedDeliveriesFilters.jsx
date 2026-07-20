@@ -22,7 +22,7 @@ const FailedDeliveriesFilters = ({
         />
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      {/* <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-gray-500" />
           <select
@@ -51,7 +51,7 @@ const FailedDeliveriesFilters = ({
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
     </div>
   </div>
 );
