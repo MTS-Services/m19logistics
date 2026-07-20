@@ -75,7 +75,7 @@ const FailedDeliveries = () => {
     <div className="p-2 sm:p-6">
       <div className="space-y-6">
         <FailedDeliveriesHeader />
-        <FailedDeliveriesStats stats={stats} />
+        {/* <FailedDeliveriesStats stats={stats} /> */}
         <FailedDeliveriesFilters
           searchQuery={searchQuery}
           statusFilter={statusFilter}
@@ -85,21 +85,31 @@ const FailedDeliveries = () => {
           onReasonChange={handleReasonChange}
         />
 
-        {filteredDeliveries.length === 0 ? (
-          <EmptyFailedState hasFilters={hasFilters} />
-        ) : (
-          <>
-            <FailedDeliveriesTable deliveries={paginatedDeliveries} onView={handleView} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(filteredDeliveries.length / itemsPerPage)}
-              onPageChange={setCurrentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={filteredDeliveries.length}
-              compact
-            />
-          </>
-        )}
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+            <h2 className="text-lg font-bold text-gray-900">Delivery Records</h2>
+          </div>
+
+          {filteredDeliveries.length === 0 ? (
+            <div className="p-4 sm:p-6">
+              <EmptyFailedState hasFilters={hasFilters} />
+            </div>
+          ) : (
+            <>
+              <FailedDeliveriesTable deliveries={paginatedDeliveries} onView={handleView} />
+              <div className="border-t border-gray-200 bg-white px-6 py-3">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(filteredDeliveries.length / itemsPerPage)}
+                  onPageChange={setCurrentPage}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={filteredDeliveries.length}
+                  compact
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {showViewModal && (
