@@ -80,17 +80,37 @@ const FinalCompleteModal = ({
                         />
                     </div>
 
-                    {/* Photo URL from backend */}
+                    {/* Photo URLs from backend (array) */}
                     <div>
                         <label className="mb-2 block text-base font-medium text-gray-700">
-                            Photo URL
+                            Photo URLs
                         </label>
-                        <input
-                            type="text"
-                            value={proofUploadResponse?.photoUrl || ''}
-                            readOnly
-                            className="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600"
-                        />
+                        {(proofUploadResponse?.photoUrls || []).length > 0 ? (
+                            <div className="space-y-2">
+                                {(proofUploadResponse.photoUrls || []).map((url, index) => (
+                                    <div key={`${url}-${index}`} className="flex items-start gap-3">
+                                        <img
+                                            src={url}
+                                            alt={`Proof ${index + 1}`}
+                                            className="h-16 w-16 shrink-0 rounded-md border border-gray-200 object-cover"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={url}
+                                            readOnly
+                                            className="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <input
+                                type="text"
+                                value={proofUploadResponse?.photoUrl || ''}
+                                readOnly
+                                className="w-full rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600"
+                            />
+                        )}
                     </div>
 
                     {/* Received By */}

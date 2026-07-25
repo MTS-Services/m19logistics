@@ -29,7 +29,6 @@ const AssignedDeliveries = () => {
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showFinalCompleteModal, setShowFinalCompleteModal] = useState(false);
   const [selectedDelivery, setSelectedDelivery] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
   const [proofUploadResponse, setProofUploadResponse] = useState(null);
@@ -39,7 +38,7 @@ const AssignedDeliveries = () => {
   const isDrawingRef = useRef(false);
 
   const [completionData, setCompletionData] = useState({
-    photo: null,
+    photos: [],
     signature: null,
     receivedBy: '',
     driverNotes: '',
@@ -149,21 +148,80 @@ const AssignedDeliveries = () => {
     setShowCompleteModal(true);
   };
 
-  // Handle photo upload
+  // Handle photo upload (multiple)
   const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5000000) {
-        toast.error('File size must be less than 5MB');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result);
-        setCompletionData({ ...completionData, photo: file });
-      };
-      reader.readAsDataURL(file);
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const MAX_PHOTOS = 10;
+    const MAX_SIZE = 5000000;
+    const remaining = MAX_PHOTOS - (completionData.photos?.length || 0);
+
+    if (remaining <= 0) {
+      toast.error(`You can upload up to ${MAX_PHOTOS} photos`);
+      e.target.value = '';
+      return;
     }
+
+    const selected = files.slice(0, remaining);
+    const validFiles = [];
+
+    for (const file of selected) {
+      if (!file.type.startsWith('image/') && !/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name)) {
+        toast.error(`${file.name} is not a valid image`);
+        continue;
+      }
+      if (file.size > MAX_SIZE) {
+        toast.error(`${file.name} must be less than 5MB`);
+        continue;
+      }
+      validFiles.push(file);
+    }
+
+    if (!validFiles.length) {
+      e.target.value = '';
+      return;
+    }
+
+    const newPhotos = validFiles.map((file) => ({
+      id: `${file.name}-${file.lastModified}-${Math.random().toString(36).slice(2)}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setCompletionData((prev) => ({
+      ...prev,
+      photos: [...(prev.photos || []), ...newPhotos],
+    }));
+    toast.success(`${newPhotos.length} photo${newPhotos.length > 1 ? 's' : ''} added`);
+    e.target.value = '';
+  };
+
+  const handleRemovePhoto = (photoId) => {
+    setCompletionData((prev) => {
+      const target = (prev.photos || []).find((p) => p.id === photoId);
+      if (target?.preview?.startsWith('blob:')) {
+        URL.revokeObjectURL(target.preview);
+      }
+      return {
+        ...prev,
+        photos: (prev.photos || []).filter((p) => p.id !== photoId),
+      };
+    });
+  };
+
+  const resetCompletionPhotos = () => {
+    setCompletionData((prev) => {
+      (prev.photos || []).forEach((p) => {
+        if (p.preview?.startsWith('blob:')) URL.revokeObjectURL(p.preview);
+      });
+      return {
+        photos: [],
+        signature: null,
+        receivedBy: '',
+        driverNotes: '',
+      };
+    });
   };
 
   // Handle signature canvas
@@ -285,7 +343,7 @@ const AssignedDeliveries = () => {
       const handleTouchMove = (e) => {
         if (!isDrawingRef.current) return;
 
-        console.log('Touch move');
+        // console.log('Touch move');
         e.preventDefault();
 
         const touch = e.touches[0];
@@ -326,15 +384,13 @@ const AssignedDeliveries = () => {
 
   // Submit completion
   const handleProofUploadSuccess = (responseData) => {
-    // Store the response data (signatureUrl and photoUrl)
-    setProofUploadResponse(responseData);
+    console.log('Proof upload success callback data:', responseData);
+    console.log('photoUrls array:', responseData?.photoUrls);
 
-    // Close first modal and open second modal
+    setProofUploadResponse(responseData);
     setShowCompleteModal(false);
     setShowFinalCompleteModal(true);
-
-    // Reset first modal data
-    setPhotoPreview(null);
+    resetCompletionPhotos();
   };
 
   const handleFinalCompleteSuccess = () => {
@@ -387,7 +443,7 @@ const AssignedDeliveries = () => {
       const handleTouchMove = (e) => {
         if (!isDrawingRef.current) return;
 
-        console.log('Touch move');
+        // console.log('Touch move');
         e.preventDefault();
 
         const touch = e.touches[0];
@@ -609,20 +665,14 @@ const AssignedDeliveries = () => {
           isOpen={showCompleteModal}
           selectedDelivery={selectedDelivery}
           completionData={completionData}
-          photoPreview={photoPreview}
           canvasRef={canvasRef}
           fileInputRef={fileInputRef}
           onPhotoChange={handlePhotoChange}
+          onRemovePhoto={handleRemovePhoto}
           onCompletionDataChange={setCompletionData}
           onClose={() => {
             setShowCompleteModal(false);
-            setPhotoPreview(null);
-            setCompletionData({
-              photo: null,
-              signature: null,
-              receivedBy: '',
-              driverNotes: '',
-            });
+            resetCompletionPhotos();
           }}
           onSuccess={handleProofUploadSuccess}
           onStartDrawing={startDrawing}

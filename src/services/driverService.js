@@ -43,9 +43,9 @@ export const respondToDelivery = async (deliveryId, action, reason = null) => {
 };
 
 /**
- * Upload delivery proof (photo, signature, and notes)
+ * Upload delivery proof (photo[], signature, and notes)
  * @param {number} deliveryId - Delivery ID
- * @param {FormData} formData - FormData containing photo, signature, receivedBy, and driverNotes
+ * @param {FormData} formData - FormData containing photo[], signature, receivedBy, and driverNotes
  * @returns {Promise} Promise with upload response data
  */
 export const uploadDeliveryProof = async (deliveryId, formData) => {
@@ -53,11 +53,12 @@ export const uploadDeliveryProof = async (deliveryId, formData) => {
     `/api/driver/deliveries/${deliveryId}/upload-proof`,
     formData,
     {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      // Do not set Content-Type manually — browser/axios adds boundary for FormData
+      timeout: 120000,
     }
   );
+  console.log('uploadDeliveryProof axios response:', response);
+  console.log('uploadDeliveryProof response.data:', response.data);
   return response.data;
 };
 
