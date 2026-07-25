@@ -132,6 +132,35 @@ const BookingsBoard = () => {
             specialInstructions: delivery.specialInstructions,
             deliveredAt: delivery.deliveredAt,
             cancelReason: delivery.cancellationReason,
+            cancelledAt: delivery.cancelledAt,
+            receivedBy: delivery.receivedBy,
+            signatureUrl: delivery.signatureUrl || null,
+            photoUrl: delivery.photoUrl || null,
+            photoUrls: (() => {
+              const urls = [];
+              const pushSplit = (value) => {
+                if (!value) return;
+                if (Array.isArray(value)) {
+                  value.forEach((item) => pushSplit(item));
+                  return;
+                }
+                const str = String(value).trim();
+                if (!str) return;
+                // "url1,url2" → split before next http(s)
+                const parts = str.includes(',http')
+                  ? str.split(/,(?=https?:\/\/)/)
+                  : (str.match(/https?:\/\//g) || []).length > 1
+                    ? str.split(/(?=https?:\/\/)/).map((p) => p.replace(/^,/, ''))
+                    : [str];
+                parts.forEach((p) => {
+                  const url = p.trim();
+                  if (url) urls.push(url);
+                });
+              };
+              pushSplit(delivery.photoUrls);
+              pushSplit(delivery.photoUrl);
+              return [...new Set(urls)];
+            })(),
             // Additional API fields
             customerId: delivery.customerId,
             driverId: delivery.driverId,
@@ -183,6 +212,34 @@ const BookingsBoard = () => {
           specialInstructions: delivery.specialInstructions,
           deliveredAt: delivery.deliveredAt,
           cancelReason: delivery.cancellationReason,
+          cancelledAt: delivery.cancelledAt,
+          receivedBy: delivery.receivedBy,
+          signatureUrl: delivery.signatureUrl || null,
+          photoUrl: delivery.photoUrl || null,
+          photoUrls: (() => {
+            const urls = [];
+            const pushSplit = (value) => {
+              if (!value) return;
+              if (Array.isArray(value)) {
+                value.forEach((item) => pushSplit(item));
+                return;
+              }
+              const str = String(value).trim();
+              if (!str) return;
+              const parts = str.includes(',http')
+                ? str.split(/,(?=https?:\/\/)/)
+                : (str.match(/https?:\/\//g) || []).length > 1
+                  ? str.split(/(?=https?:\/\/)/).map((p) => p.replace(/^,/, ''))
+                  : [str];
+              parts.forEach((p) => {
+                const url = p.trim();
+                if (url) urls.push(url);
+              });
+            };
+            pushSplit(delivery.photoUrls);
+            pushSplit(delivery.photoUrl);
+            return [...new Set(urls)];
+          })(),
           // Additional API fields
           customerId: delivery.customerId,
           driverId: delivery.driverId,
