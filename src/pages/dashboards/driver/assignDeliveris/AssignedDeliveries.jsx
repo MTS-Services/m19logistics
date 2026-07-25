@@ -300,7 +300,7 @@ const AssignedDeliveries = () => {
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    console.log('Signature cleared');
+    // console.log('Signature cleared');
   };
 
   // Initialize canvas when modal opens
@@ -329,7 +329,7 @@ const AssignedDeliveries = () => {
         const x = (touch.clientX - rect.left) * scaleX;
         const y = (touch.clientY - rect.top) * scaleY;
 
-        console.log('Touch position:', { x, y });
+        // console.log('Touch position:', { x, y });
 
         ctx.strokeStyle = '#000000';
         ctx.lineWidth = 2;
@@ -359,7 +359,7 @@ const AssignedDeliveries = () => {
       };
 
       const handleTouchEnd = (e) => {
-        console.log('Touch end');
+        // console.log('Touch end');
         if (isDrawingRef.current) {
           e.preventDefault();
         }
@@ -384,8 +384,8 @@ const AssignedDeliveries = () => {
 
   // Submit completion
   const handleProofUploadSuccess = (responseData) => {
-    console.log('Proof upload success callback data:', responseData);
-    console.log('photoUrls array:', responseData?.photoUrls);
+    // console.log('Proof upload success callback data:', responseData);
+    // console.log('photoUrls array:', responseData?.photoUrls);
 
     setProofUploadResponse(responseData);
     setShowCompleteModal(false);
@@ -413,11 +413,11 @@ const AssignedDeliveries = () => {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      console.log('Canvas initialized with white background');
+      // console.log('Canvas initialized with white background');
 
       // Native touch event handlers with passive: false
       const handleTouchStart = (e) => {
-        console.log('Touch start detected');
+        // console.log('Touch start detected');
         e.preventDefault();
         isDrawingRef.current = true;
 
@@ -459,7 +459,7 @@ const AssignedDeliveries = () => {
       };
 
       const handleTouchEnd = (e) => {
-        console.log('Touch end');
+        // console.log('Touch end');
         if (isDrawingRef.current) {
           e.preventDefault();
         }
@@ -478,7 +478,7 @@ const AssignedDeliveries = () => {
   const handleCall = (phone) => {
     window.location.href = `tel:${phone}`;
   };
-  console.log(deliveries)
+  // console.log(deliveries)
   return (
     <div className="p-2 sm:p-6">
       <div className="space-y-6">
