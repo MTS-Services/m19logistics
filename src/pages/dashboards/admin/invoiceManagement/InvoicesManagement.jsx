@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Loader2, Plus, Bell } from 'lucide-react';
 import Loading from '../../../../components/Loading';
+import Pagination from '../../../../components/Pagination';
 import InvoiceCard from './components/InvoiceCard';
 import ViewInvoiceModal from './components/ViewInvoiceModal';
 import EditInvoiceModal from './components/EditInvoiceModal';
@@ -21,6 +22,8 @@ const statusConfig = {
   overdue: { label: 'Overdue', color: 'bg-red-100 text-red-700', icon: () => null },
 };
 
+const ITEMS_PER_PAGE = 5;
+
 export default function InvoicesManagement() {
   const [invoices, setInvoices] = useState([]);
   const [summary, setSummary] = useState({
@@ -30,6 +33,7 @@ export default function InvoicesManagement() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -50,6 +54,7 @@ export default function InvoicesManagement() {
       const data = await getAllAdminInvoices();
       // API returns { success, data: [...], count, summary: { totalInvoices, totalPaid, totalUnpaid } }
       setInvoices(Array.isArray(data?.data) ? data.data : []);
+      setCurrentPage(1);
       if (data?.summary) setSummary(data.summary);
     } catch (err) {
       setError(err.message || 'Failed to load invoices');
@@ -134,6 +139,15 @@ export default function InvoicesManagement() {
     totalUnpaid: Number(summary.totalUnpaid).toFixed(2),
   };
 
+  const totalPages = Math.ceil(invoices.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedInvoices = invoices.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="p-3 sm:p-6">
       <div className="mb-6 flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
@@ -203,7 +217,7 @@ export default function InvoicesManagement() {
 
           <div className="grid gap-4">
             {invoices.length === 0 && <p className="text-gray-600">No invoices found.</p>}
-            {invoices.map((inv) => (
+            {paginatedInvoices.map((inv) => (
               <InvoiceCard
                 key={inv.id || inv._id || inv.invoiceNumber}
                 invoice={inv}
@@ -216,6 +230,18 @@ export default function InvoicesManagement() {
               />
             ))}
           </div>
+
+          {invoices.length > 0 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                itemsPerPage={ITEMS_PER_PAGE}
+                totalItems={invoices.length}
+              />
+            </div>
+          )}
         </>
       )}
 
