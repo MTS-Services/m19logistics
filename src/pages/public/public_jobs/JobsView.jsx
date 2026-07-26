@@ -13,6 +13,7 @@ const JobsView = () => {
     positionOfInterest: '',
   });
   const [cv, setCv] = useState(null);
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const jobCategories = [
@@ -51,50 +52,105 @@ We welcome people from all backgrounds and value the different skills and perspe
       ...prev,
       [name]: value,
     }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Validate file type (PDF, DOC, DOCX)
-      const validTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      ];
-      if (validTypes.includes(file.type)) {
-        setCv(file);
-      } else {
-        alert('Please upload a PDF or Word document');
-        e.target.value = '';
-      }
+    if (!file) return;
+
+    const validTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    const maxSize = 10 * 1024 * 1024; // 10MB
+
+    if (!validTypes.includes(file.type)) {
+      setErrors((prev) => ({ ...prev, cv: 'Please upload a PDF or Word document' }));
+      toast.error('Please upload a PDF or Word document');
+      e.target.value = '';
+      setCv(null);
+      return;
     }
+
+    if (file.size > maxSize) {
+      setErrors((prev) => ({ ...prev, cv: 'CV file must be less than 10MB' }));
+      toast.error('CV file must be less than 10MB');
+      e.target.value = '';
+      setCv(null);
+      return;
+    }
+
+    setCv(file);
+    if (errors.cv) {
+      setErrors((prev) => ({ ...prev, cv: '' }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    } else if (formData.fullName.trim().length < 2) {
+      newErrors.fullName = 'Full name must be at least 2 characters';
+    } else if (formData.fullName.trim().length > 100) {
+      newErrors.fullName = 'Full name must be less than 100 characters';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    } else if (!/^[0-9+\s()-]{10,}$/.test(formData.phoneNumber.trim())) {
+      newErrors.phoneNumber = 'Please enter a valid phone number';
+    }
+
+    if (!formData.positionOfInterest.trim()) {
+      newErrors.positionOfInterest = 'Please select a position of interest';
+    }
+
+    if (!formData.coverLetter.trim()) {
+      newErrors.coverLetter = 'Cover letter is required';
+    } else if (formData.coverLetter.trim().length < 5) {
+      newErrors.coverLetter = 'Cover letter must be at least 5 characters';
+    } else if (formData.coverLetter.trim().length > 2000) {
+      newErrors.coverLetter = 'Cover letter must be less than 2000 characters';
+    }
+
+    if (!cv) {
+      newErrors.cv = 'Please upload your CV';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    // Validation
-    if (formData.fullName.trim().length < 2 || formData.fullName.trim().length > 100) {
-      toast.error('Full name must be between 2 and 100 characters.');
-      setIsSubmitting(false);
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields.');
       return;
     }
-    if (formData.coverLetter.trim().length < 5 || formData.coverLetter.trim().length > 2000) {
-      toast.error('Cover letter must be between 5 and 2000 characters.');
-      setIsSubmitting(false);
-      return;
-    }
+
+    setIsSubmitting(true);
 
     try {
       const body = new FormData();
-      body.append('fullName', formData.fullName);
-      body.append('email', formData.email);
-      body.append('phoneNumber', formData.phoneNumber);
+      body.append('fullName', formData.fullName.trim());
+      body.append('email', formData.email.trim());
+      body.append('phoneNumber', formData.phoneNumber.trim());
       body.append('positionOfInterest', formData.positionOfInterest);
-      body.append('coverLetter', formData.coverLetter);
-      if (cv) body.append('cv', cv);
+      body.append('coverLetter', formData.coverLetter.trim());
+      body.append('cv', cv);
 
       await axiosInstance.post('/api/jobs/apply', body, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -109,6 +165,7 @@ We welcome people from all backgrounds and value the different skills and perspe
         positionOfInterest: '',
       });
       setCv(null);
+      setErrors({});
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Something went wrong. Please try again.');
     } finally {
@@ -220,7 +277,7 @@ We welcome people from all backgrounds and value the different skills and perspe
 
             {/* Application Form */}
             <div className="rounded-2xl bg-linear-to-br from-gray-50 to-white p-8 shadow-lg">
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 <div>
                   <label
                     htmlFor="fullName"
@@ -234,10 +291,16 @@ We welcome people from all backgrounds and value the different skills and perspe
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    required
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                    className={`w-full rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none ${
+                      errors.fullName
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500/20'
+                    }`}
                     placeholder="Enter your full name"
                   />
+                  {errors.fullName && (
+                    <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                  )}
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2">
@@ -251,10 +314,14 @@ We welcome people from all backgrounds and value the different skills and perspe
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      required
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                      className={`w-full rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none ${
+                        errors.email
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                          : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500/20'
+                      }`}
                       placeholder="your.email@example.com"
                     />
+                    {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
                   </div>
 
                   <div>
@@ -270,10 +337,16 @@ We welcome people from all backgrounds and value the different skills and perspe
                       name="phoneNumber"
                       value={formData.phoneNumber}
                       onChange={handleInputChange}
-                      required
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                      className={`w-full rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none ${
+                        errors.phoneNumber
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                          : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500/20'
+                      }`}
                       placeholder="07XXX XXXXXX"
                     />
+                    {errors.phoneNumber && (
+                      <p className="mt-1 text-sm text-red-600">{errors.phoneNumber}</p>
+                    )}
                   </div>
                 </div>
 
@@ -289,8 +362,11 @@ We welcome people from all backgrounds and value the different skills and perspe
                     name="positionOfInterest"
                     value={formData.positionOfInterest}
                     onChange={handleInputChange}
-                    required
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                    className={`w-full rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none ${
+                      errors.positionOfInterest
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500/20'
+                    }`}
                   >
                     <option value="">Select a position</option>
                     <option value="Driver">Driver</option>
@@ -298,6 +374,9 @@ We welcome people from all backgrounds and value the different skills and perspe
                     <option value="Office & Support">Office &amp; Support</option>
                     <option value="Other">Other</option>
                   </select>
+                  {errors.positionOfInterest && (
+                    <p className="mt-1 text-sm text-red-600">{errors.positionOfInterest}</p>
+                  )}
                 </div>
 
                 <div>
@@ -312,11 +391,17 @@ We welcome people from all backgrounds and value the different skills and perspe
                     name="coverLetter"
                     value={formData.coverLetter}
                     onChange={handleInputChange}
-                    required
                     rows={6}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
+                    className={`w-full rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none ${
+                      errors.coverLetter
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                        : 'border-gray-300 focus:border-teal-500 focus:ring-teal-500/20'
+                    }`}
                     placeholder="Tell us about yourself and why you'd like to join M19 Logistics..."
                   />
+                  {errors.coverLetter && (
+                    <p className="mt-1 text-sm text-red-600">{errors.coverLetter}</p>
+                  )}
                 </div>
 
                 <div>
@@ -330,12 +415,13 @@ We welcome people from all backgrounds and value the different skills and perspe
                       name="cv"
                       onChange={handleFileChange}
                       accept=".pdf,.doc,.docx"
-                      required
                       className="hidden"
                     />
                     <label
                       htmlFor="cv"
-                      className="flex cursor-pointer items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-6 py-8 transition-all hover:border-teal-500 hover:bg-teal-50"
+                      className={`flex cursor-pointer items-center justify-center gap-3 rounded-lg border-2 border-dashed bg-gray-50 px-6 py-8 transition-all hover:border-teal-500 hover:bg-teal-50 ${
+                        errors.cv ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     >
                       <Upload className="h-6 w-6 text-gray-500" />
                       <span className="text-gray-600">
@@ -343,9 +429,13 @@ We welcome people from all backgrounds and value the different skills and perspe
                       </span>
                     </label>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">
-                    Accepted formats: PDF, DOC, DOCX (Max 10MB)
-                  </p>
+                  {errors.cv ? (
+                    <p className="mt-2 text-sm text-red-600">{errors.cv}</p>
+                  ) : (
+                    <p className="mt-2 text-sm text-gray-500">
+                      Accepted formats: PDF, DOC, DOCX (Max 10MB)
+                    </p>
+                  )}
                 </div>
 
                 <div className="pt-4">
