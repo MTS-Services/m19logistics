@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
@@ -22,6 +22,8 @@ import {
   Briefcase,
   AlertTriangle,
 } from 'lucide-react';
+import axiosInstance from '../../../services/axiosInstance';
+import { ENDPOINT } from '../../../services/httpEndpoint';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
@@ -29,11 +31,49 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [unreadCounts, setUnreadCounts] = useState({
+    contacts: 0,
+    enquiries: 0,
+    jobApplications: 0,
+    total: 0,
+  });
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  const fetchUnreadCounts = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(ENDPOINT.API.ADMIN_NOTIFICATIONS.UNREAD_COUNTS);
+      const data = response.data?.data || {};
+
+      setUnreadCounts({
+        contacts: data.contacts ?? 0,
+        enquiries: data.enquiries ?? 0,
+        jobApplications: data.jobApplications ?? 0,
+        total: data.total ?? 0,
+      });
+    } catch (error) {
+      console.error('Failed to fetch unread sidebar counts:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUnreadCounts();
+    const interval = setInterval(fetchUnreadCounts, 60000);
+    return () => clearInterval(interval);
+  }, [fetchUnreadCounts]);
+
+  useEffect(() => {
+    if (
+      location.pathname.startsWith('/admin/contacts') ||
+      location.pathname.startsWith('/admin/enquiries') ||
+      location.pathname.startsWith('/admin/job-applications')
+    ) {
+      fetchUnreadCounts();
+    }
+  }, [location.pathname, fetchUnreadCounts]);
 
   const navigationSections = [
     {
@@ -47,9 +87,24 @@ const AdminDashboard = () => {
         { name: 'Failed Deliveries', href: '/admin/failed-deliveries', icon: AlertTriangle },
         { name: 'Users', href: '/admin/users', icon: Users },
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
-        { name: 'Contacts', href: '/admin/contacts', icon: MessageSquare },
-        { name: 'Enquiries', href: '/admin/enquiries', icon: HelpCircle },
-        { name: 'Jobs Application', href: '/admin/job-applications', icon: Briefcase },
+        {
+          name: 'Contacts',
+          href: '/admin/contacts',
+          icon: MessageSquare,
+          badgeKey: 'contacts',
+        },
+        {
+          name: 'Enquiries',
+          href: '/admin/enquiries',
+          icon: HelpCircle,
+          badgeKey: 'enquiries',
+        },
+        {
+          name: 'Jobs Application',
+          href: '/admin/job-applications',
+          icon: Briefcase,
+          badgeKey: 'jobApplications',
+        },
         { name: 'Audit Logs', href: '/admin/audit-logs', icon: FileText },
         { name: 'Slots', href: '/admin/slots', icon: Calendar },
       ],
@@ -70,9 +125,10 @@ const AdminDashboard = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  const formatBadge = (count) => (count > 99 ? '99+' : String(count));
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100">
-      {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
           className="bg-opacity-75 fixed inset-0 z-40 bg-gray-600 lg:hidden"
@@ -80,9 +136,8 @@ const AdminDashboard = () => {
         ></div>
       )}
 
-      {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-linear-to-b from-gray-900 to-gray-800 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -99,22 +154,22 @@ const AdminDashboard = () => {
             </button>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 space-y-6 overflow-y-auto p-4">
             {navigationSections.map((section, sectionIndex) => (
               <div key={section.title}>
-                {/* Section Header */}
                 <div className="mb-3 px-3">
                   <h3 className="text-xs font-semibold tracking-wider text-gray-500 uppercase">
                     {section.title}
                   </h3>
                 </div>
 
-                {/* Section Items */}
                 <div className="space-y-1">
                   {section.items.map((item) => {
                     const Icon = item.icon;
                     const active = isActive(item.href);
+                    const unreadCount = item.badgeKey ? unreadCounts[item.badgeKey] || 0 : 0;
+                    const hasUnread = unreadCount > 0;
+
                     return (
                       <Link
                         key={item.name}
@@ -126,12 +181,11 @@ const AdminDashboard = () => {
                             : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                         }`}
                       >
-                        {/* Active indicator bar */}
                         {active && (
                           <div className="absolute top-0 left-0 h-full w-1 rounded-r-full bg-white"></div>
                         )}
 
-                        <div className="flex items-center space-x-3">
+                        <div className="flex min-w-0 items-center space-x-3">
                           <div
                             className={`rounded-lg p-1.5 transition-colors ${
                               active ? 'bg-white/20' : 'bg-gray-800 group-hover:bg-gray-700'
@@ -141,16 +195,26 @@ const AdminDashboard = () => {
                               className={`h-5 w-5 ${active ? 'text-white' : 'text-gray-400 group-hover:text-teal-400'}`}
                             />
                           </div>
-                          <span className="font-medium">{item.name}</span>
+                          <span className="truncate font-medium">{item.name}</span>
+
+                          {/* Rounded circle badge — new message count */}
+                          {hasUnread && (
+                            <span
+                              className={`inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-[11px] leading-none font-bold ${
+                                active ? 'bg-white text-teal-700' : 'bg-red-500 text-white'
+                              }`}
+                            >
+                              {formatBadge(unreadCount)}
+                            </span>
+                          )}
                         </div>
 
-                        {active && <ChevronRight className="h-4 w-4 animate-pulse" />}
+                        {active && <ChevronRight className="h-4 w-4 shrink-0 animate-pulse" />}
                       </Link>
                     );
                   })}
                 </div>
 
-                {/* Section Divider (except for last section) */}
                 {sectionIndex < navigationSections.length - 1 && (
                   <div className="mt-6 border-t border-gray-700/50"></div>
                 )}
@@ -158,7 +222,6 @@ const AdminDashboard = () => {
             ))}
           </nav>
 
-          {/* Logout Button */}
           <div className="border-t border-gray-700 p-4">
             <button
               onClick={handleLogout}
@@ -171,15 +234,16 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top Bar */}
         <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm sm:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-gray-500 hover:text-gray-700 lg:hidden"
+            className="relative text-gray-500 hover:text-gray-700 lg:hidden"
           >
             <Menu className="h-6 w-6" />
+            {unreadCounts.total > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
+            )}
           </button>
           <div className="flex-1"></div>
           <div className="relative">
@@ -201,7 +265,6 @@ const AdminDashboard = () => {
               />
             </button>
 
-            {/* Dropdown Menu */}
             {userDropdownOpen && (
               <>
                 <div
@@ -223,7 +286,6 @@ const AdminDashboard = () => {
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6">
           <Outlet />
         </main>

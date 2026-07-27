@@ -70,6 +70,9 @@ export const ENDPOINT = {
       DELETE: (id) => `/api/admin/enquiries/${id}`,
       MARK_READ: (id) => `/api/admin/enquiries/${id}/mark-read`,
     },
+    ADMIN_NOTIFICATIONS: {
+      UNREAD_COUNTS: '/api/admin/notifications/unread-counts',
+    },
     ADMIN_SETTINGS: {
       STATUS_SUMMARY: '/api/admin/settings/status/summary',
       GET_ALL: '/api/admin/settings',

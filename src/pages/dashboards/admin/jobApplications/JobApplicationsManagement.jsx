@@ -8,21 +8,21 @@ import {
   Mail,
   Phone,
   Calendar,
-  CheckCircle,
   Clock,
   XCircle,
   Star,
-  FileText,
   Loader2,
   RefreshCw,
   MoreVertical,
-  MessageSquare,
   FileSpreadsheet,
   Trash2,
 } from 'lucide-react';
 import Pagination from '../../../../components/Pagination';
 import axiosInstance from '../../../../services/axiosInstance';
 import Loading from '../../../../components/Loading';
+import DeleteApplicationModal from './components/DeleteApplicationModal';
+import StatusUpdateModal from './components/StatusUpdateModal';
+import ViewApplicationModal from './components/ViewApplicationModal';
 
 const STATUS_CONFIG = {
   PENDING: {
@@ -144,6 +144,14 @@ const JobApplicationsManagement = () => {
     setShowModal(false);
     setSelectedApp(null);
   };
+
+  const handleApplicationLoaded = useCallback((data) => {
+    if (!data?.id) return;
+    // Sync list row with latest API details (e.g. isRead)
+    setAllApplications((prev) =>
+      prev.map((app) => (app.id === data.id ? { ...app, ...data } : app))
+    );
+  }, []);
 
   const handleStatusMenuClick = (appId, e) => {
     if (openDropdownId === appId) {
@@ -662,279 +670,38 @@ const JobApplicationsManagement = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between rounded-t-2xl border-b border-gray-100 px-6 py-4">
-              <div>
-                <h2 className="text-base font-bold text-gray-900">Delete Application</h2>
-                <p className="mt-0.5 text-xs text-gray-500">{deleteTarget.fullName}</p>
-              </div>
-              <button
-                onClick={handleDeleteClose}
-                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-              >
-                <XCircle className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-6">
-              <div className="flex flex-col items-center gap-3 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-                  <Trash2 className="h-6 w-6 text-red-600" />
-                </div>
-                <p className="text-sm text-gray-700">
-                  Are you sure you want to delete the application from{' '}
-                  <span className="font-semibold text-gray-900">{deleteTarget.fullName}</span>? This
-                  action cannot be undone.
-                </p>
-              </div>
-              {deleteError && (
-                <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-xs text-red-600">
-                  {deleteError}
-                </div>
-              )}
-            </div>
-            <div className="flex gap-3 border-t border-gray-100 px-6 py-4">
-              <button
-                onClick={handleDeleteClose}
-                disabled={isDeleting}
-                className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteConfirm}
-                disabled={isDeleting}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-red-700 disabled:opacity-50"
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteApplicationModal
+          application={deleteTarget}
+          isDeleting={isDeleting}
+          deleteError={deleteError}
+          onClose={handleDeleteClose}
+          onConfirm={handleDeleteConfirm}
+        />
       )}
 
       {/* Status Update Confirmation Modal */}
       {showStatusModal && statusTarget.app && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl">
-            {/* Header */}
-            <div className="flex items-center justify-between rounded-t-2xl border-b border-gray-100 px-6 py-4">
-              <div>
-                <h2 className="text-base font-bold text-gray-900">Update Application Status</h2>
-                <p className="mt-0.5 text-xs text-gray-500">{statusTarget.app.fullName}</p>
-              </div>
-              <button
-                onClick={handleCloseStatusModal}
-                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-              >
-                <XCircle className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Body */}
-            <div className="space-y-4 p-6">
-              {/* Status transition */}
-              <div className="flex items-center justify-center gap-3 rounded-lg bg-gray-50 px-4 py-3">
-                <div className="text-center">
-                  <p className="mb-1 text-xs text-gray-400">From</p>
-                  {getStatusBadge(statusTarget.app.status)}
-                </div>
-                <span className="text-lg font-bold text-gray-400">→</span>
-                <div className="text-center">
-                  <p className="mb-1 text-xs text-gray-400">To</p>
-                  {getStatusBadge(statusTarget.newStatus)}
-                </div>
-              </div>
-
-              {/* Admin Notes */}
-              <div>
-                <label className="mb-1.5 flex items-center gap-1 text-sm font-medium text-gray-700">
-                  <MessageSquare className="h-4 w-4 text-gray-400" />
-                  Admin Notes
-                  <span className="text-xs font-normal text-gray-400">(optional)</span>
-                </label>
-                <textarea
-                  value={adminNotes}
-                  onChange={(e) => setAdminNotes(e.target.value)}
-                  rows={3}
-                  placeholder="e.g. Strong candidate, schedule interview for next week..."
-                  className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20"
-                />
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="flex gap-3 border-t border-gray-100 px-6 py-4">
-              <button
-                onClick={handleCloseStatusModal}
-                disabled={isUpdating}
-                className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleStatusUpdate}
-                disabled={isUpdating}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-teal-700 disabled:opacity-50"
-              >
-                {isUpdating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Updating...
-                  </>
-                ) : (
-                  'Confirm Update'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
+        <StatusUpdateModal
+          application={statusTarget.app}
+          newStatus={statusTarget.newStatus}
+          adminNotes={adminNotes}
+          isUpdating={isUpdating}
+          getStatusBadge={getStatusBadge}
+          onAdminNotesChange={setAdminNotes}
+          onClose={handleCloseStatusModal}
+          onConfirm={handleStatusUpdate}
+        />
       )}
 
       {/* View Modal */}
       {showModal && selectedApp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            {/* Modal Header */}
-            <div className="sticky top-0 flex items-center justify-between rounded-t-2xl bg-white px-6 py-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-base font-bold text-teal-700">
-                  {selectedApp.fullName?.charAt(0)?.toUpperCase() || 'A'}
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">{selectedApp.fullName}</h2>
-                  <p className="text-xs text-gray-500">Application #{selectedApp.id}</p>
-                </div>
-              </div>
-              <button
-                onClick={handleCloseModal}
-                className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-              >
-                <XCircle className="h-6 w-6" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="space-y-5 p-6">
-              {/* Status */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Status</span>
-                {getStatusBadge(selectedApp.status)}
-              </div>
-
-              {/* Read Status */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Read Status</span>
-                {selectedApp.isRead ? (
-                  <span className="flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
-                    <CheckCircle className="h-3 w-3" />
-                    Read
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-700">
-                    <Clock className="h-3 w-3" />
-                    Unread
-                  </span>
-                )}
-              </div>
-
-              <hr className="border-gray-100" />
-
-              {/* Contact Info */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                  Contact Details
-                </h3>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-500">
-                      <Mail className="h-3 w-3" /> Email
-                    </p>
-                    <p className="text-sm font-medium break-all text-gray-800">
-                      {selectedApp.email}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-500">
-                      <Phone className="h-3 w-3" /> Phone
-                    </p>
-                    <p className="text-sm font-medium text-gray-800">{selectedApp.phoneNumber}</p>
-                  </div>
-                </div>
-              </div>
-
-              <hr className="border-gray-100" />
-
-              {/* Position & Date */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                  Application Details
-                </h3>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-500">
-                      <Briefcase className="h-3 w-3" /> Position
-                    </p>
-                    <p className="text-sm font-medium text-gray-800">
-                      {selectedApp.positionOfInterest}
-                    </p>
-                  </div>
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="mb-1 flex items-center gap-1 text-xs font-medium text-gray-500">
-                      <Calendar className="h-3 w-3" /> Applied Date
-                    </p>
-                    <p className="text-sm font-medium text-gray-800">
-                      {formatDate(selectedApp.createdAt)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* CV Download */}
-              {selectedApp.cvUrl && (
-                <>
-                  <hr className="border-gray-100" />
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold tracking-wide text-gray-500 uppercase">
-                      CV / Resume
-                    </h3>
-                    <a
-                      href={selectedApp.cvUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-teal-700"
-                    >
-                      <FileText className="h-4 w-4" />
-                      View / Download CV
-                      <Download className="h-4 w-4" />
-                    </a>
-                    <p className="text-center text-xs text-gray-400">Opens in a new tab</p>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="border-t border-gray-100 px-6 py-4">
-              <button
-                onClick={handleCloseModal}
-                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <ViewApplicationModal
+          applicationId={selectedApp.id}
+          getStatusBadge={getStatusBadge}
+          formatDate={formatDate}
+          onClose={handleCloseModal}
+          onLoaded={handleApplicationLoaded}
+        />
       )}
     </div>
   );
