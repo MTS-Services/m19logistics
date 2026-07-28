@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user data and token on mount
+
     const storedToken = getToken();
     const storedUser = getUser();
 
