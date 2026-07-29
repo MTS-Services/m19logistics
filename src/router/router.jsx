@@ -23,6 +23,7 @@ import UsersManagement from '../pages/dashboards/admin/userManagement/UsersManag
 import DriverManagement from '../pages/dashboards/admin/driverManagement/DriverManagement';
 import AdminDriverAvailability from '../pages/dashboards/admin/driverManagement/AdminDriverAvailability';
 import InvoicesManagement from '../pages/dashboards/admin/invoiceManagement/InvoicesManagement';
+import ContractorInvoiceManagement from '../pages/dashboards/admin/contractorInvoice/ContractorInvoiceManagement';
 import PricingManagement from '../pages/dashboards/admin/PricingManagement';
 import AnalyticsDashboard from '../pages/dashboards/admin/AnalyticsDashboard';
 import SettingsManagement from '../pages/dashboards/admin/SettingsManagement';
@@ -117,6 +118,7 @@ const router = createBrowserRouter(
         <Route path="job-applications" element={<JobApplicationsManagement />} />
         <Route path="slots" element={<SlotsManagement />} />
         <Route path="invoices" element={<InvoicesManagement />} />
+        <Route path="contractor-invoices" element={<ContractorInvoiceManagement />} />
         <Route path="pricing" element={<PricingManagement />} />
         <Route path="analytics" element={<AnalyticsDashboard />} />
         <Route path="settings" element={<SettingsManagement />} />

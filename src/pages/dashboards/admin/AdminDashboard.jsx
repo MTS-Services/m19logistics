@@ -113,6 +113,7 @@ const AdminDashboard = () => {
       title: 'Finance',
       items: [
         { name: 'Invoices', href: '/admin/invoices', icon: FileText },
+        { name: 'Contractor Invoice', href: '/admin/contractor-invoices', icon: FileText },
         { name: 'Pricing', href: '/admin/pricing', icon: DollarSign },
         { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
       ],
