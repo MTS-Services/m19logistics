@@ -1,14 +1,17 @@
-import { Building, Calendar, CheckCircle, Download, Edit, Eye, Package } from 'lucide-react';
+import { Building, Calendar, CheckCircle, Download, Eye, Package, XCircle } from 'lucide-react';
 
 const ContractorInvoiceCard = ({
   invoice,
   onView,
-  onEdit,
   onDownload,
   onMarkPaid,
+  onReject,
   markingPaid,
+  rejecting,
 }) => {
   const isPaid = invoice.status === 'Paid';
+  const isRejected = invoice.status === 'Rejected';
+  const canAct = !isPaid && !isRejected;
 
   const statusClass =
     invoice.status === 'Paid'
@@ -63,7 +66,7 @@ const ContractorInvoiceCard = ({
           <Eye className="h-4 w-4" />
           <span className="hidden sm:inline">View</span>
         </button>
-        
+
         <button
           type="button"
           onClick={() => onDownload(invoice)}
@@ -72,11 +75,32 @@ const ContractorInvoiceCard = ({
           <Download className="h-4 w-4" />
           <span className="hidden sm:inline">PDF</span>
         </button>
-        {!isPaid && (
+
+        {canAct && (
+          <button
+            type="button"
+            onClick={() => onReject(invoice)}
+            disabled={rejecting || markingPaid}
+            className="flex items-center justify-center space-x-1 rounded-lg bg-red-50 px-2 py-2 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60 sm:px-3 sm:text-sm"
+          >
+            {rejecting ? (
+              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+            ) : (
+              <XCircle className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline">{rejecting ? 'Rejecting...' : 'Reject'}</span>
+            <span className="sm:hidden">{rejecting ? '...' : 'Reject'}</span>
+          </button>
+        )}
+
+        {canAct && (
           <button
             type="button"
             onClick={() => onMarkPaid(invoice)}
-            disabled={markingPaid}
+            disabled={markingPaid || rejecting}
             className="col-span-2 flex items-center justify-center space-x-1 rounded-lg bg-teal-600 px-2 py-2 text-xs font-medium text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-1 sm:px-3 sm:text-sm"
           >
             {markingPaid ? (

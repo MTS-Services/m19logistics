@@ -22,6 +22,7 @@ export default function ContractorInvoiceManagement() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [markingPaidId, setMarkingPaidId] = useState(null);
+  const [rejectingId, setRejectingId] = useState(null);
 
   const filteredInvoices = useMemo(() => {
     const q = searchQuery.toLowerCase();
@@ -53,10 +54,6 @@ export default function ContractorInvoiceManagement() {
     toast.info(`View invoice ${invoice.invoiceNumber} (dummy)`);
   };
 
-  const handleEdit = (invoice) => {
-    toast.info(`Edit invoice ${invoice.invoiceNumber} (dummy)`);
-  };
-
   const handleDownload = (invoice) => {
     toast.success(`PDF download for ${invoice.invoiceNumber} (dummy)`);
   };
@@ -67,6 +64,17 @@ export default function ContractorInvoiceManagement() {
       setInvoices((prev) => prev.map((item) => (item.id === invoice.id ? { ...item, status: 'Paid' } : item)));
       setMarkingPaidId(null);
       toast.success(`${invoice.invoiceNumber} marked as paid`);
+    }, 500);
+  };
+
+  const handleReject = (invoice) => {
+    setRejectingId(invoice.id);
+    setTimeout(() => {
+      setInvoices((prev) =>
+        prev.map((item) => (item.id === invoice.id ? { ...item, status: 'Rejected' } : item))
+      );
+      setRejectingId(null);
+      toast.success(`${invoice.invoiceNumber} rejected`);
     }, 500);
   };
 
@@ -127,10 +135,11 @@ export default function ContractorInvoiceManagement() {
                 key={item.id}
                 invoice={item}
                 onView={handleView}
-                onEdit={handleEdit}
                 onDownload={handleDownload}
                 onMarkPaid={handleMarkPaid}
+                onReject={handleReject}
                 markingPaid={markingPaidId === item.id}
+                rejecting={rejectingId === item.id}
               />
             ))}
           </div>
