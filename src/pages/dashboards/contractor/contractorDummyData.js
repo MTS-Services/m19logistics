@@ -7,8 +7,8 @@ export const DEMO_CONTRACTOR_CREDENTIALS = {
 
 export const DEMO_CONTRACTOR_USER = {
   id: 'demo-contractor-001',
-  role: 'contractor',
-  driverType: 'contractor',
+  role: 'driver',
+  driverType: 'CONTRACTOR',
   fullName: 'Ahmed Hassan',
   name: 'Ahmed Hassan',
   email: 'contractor@demo.com',

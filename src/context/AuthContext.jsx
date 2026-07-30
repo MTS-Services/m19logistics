@@ -44,6 +44,15 @@ export const AuthProvider = ({ children }) => {
     saveUser(updatedUser);
   };
 
+  const role = user?.role?.toLowerCase() || '';
+  const driverType = (
+    user?.driverType ||
+    user?.driverProfile?.driverType ||
+    ''
+  ).toString().toUpperCase();
+  const isContractorDriver = role === 'driver' && driverType === 'CONTRACTOR';
+  const isEmployeeDriver = role === 'driver' && driverType !== 'CONTRACTOR';
+
   const value = {
     user,
     login,
@@ -51,12 +60,14 @@ export const AuthProvider = ({ children }) => {
     updateUser,
     loading,
     isAuthenticated: !!user,
-    isAdmin: user?.role?.toLowerCase() === 'admin',
-    isDriver: user?.role?.toLowerCase() === 'driver',
-    isContractor: user?.role?.toLowerCase() === 'contractor',
-    isCustomer: user?.role?.toLowerCase() === 'customer',
-    isManager: user?.role?.toLowerCase() === 'manager',
-    isAreaManager: user?.role?.toLowerCase() === 'area_manager',
+    isAdmin: role === 'admin',
+    // Employee drivers only — contractors use contractor dashboard
+    isDriver: isEmployeeDriver,
+    // Legacy role "contractor" OR driver with driverType CONTRACTOR
+    isContractor: role === 'contractor' || isContractorDriver,
+    isCustomer: role === 'customer',
+    isManager: role === 'manager',
+    isAreaManager: role === 'area_manager',
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

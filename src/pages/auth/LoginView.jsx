@@ -44,19 +44,33 @@ const LoginView = () => {
       if (response.data.success) {
         const { user, token, requirePasswordReset } = response.data.data;
 
+        console.log('Login response data:', response.data.data);
+
         // Store user and token
         login(user, token);
 
         toast.success(response.data.message || `Welcome back, ${user.fullName || user.username}!`);
 
-        // Redirect based on role from backend
-        const role = user.role.toLowerCase();
+        // Redirect based on role (+ driverType for DRIVER accounts)
+        const role = user.role?.toLowerCase() || '';
+        const driverType = (
+          user.driverType ||
+          user.driverProfile?.driverType ||
+          ''
+        )
+          .toString()
+          .toUpperCase();
+
         switch (role) {
           case 'admin':
             navigate('/admin/dashboard');
             break;
           case 'driver':
-            navigate('/driver/dashboard');
+            if (driverType === 'CONTRACTOR') {
+              navigate('/contractor/dashboard');
+            } else {
+              navigate('/driver/dashboard');
+            }
             break;
           case 'contractor':
             navigate('/contractor/dashboard');

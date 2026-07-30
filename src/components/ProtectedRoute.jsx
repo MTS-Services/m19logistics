@@ -1,6 +1,18 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const getDriverType = (user) =>
+  (user?.driverType || user?.driverProfile?.driverType || '').toString().toUpperCase();
+
+/** Effective dashboard role: contractor drivers share role DRIVER with employee drivers. */
+const getEffectiveRole = (user) => {
+  const role = user?.role?.toLowerCase() || '';
+  if (role === 'driver' && getDriverType(user) === 'CONTRACTOR') {
+    return 'contractor';
+  }
+  return role;
+};
+
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { user, loading } = useAuth();
 
@@ -16,11 +28,10 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Normalize roles to lowercase for case-insensitive comparison
-  const userRole = user.role?.toLowerCase();
-  const normalizedAllowedRoles = allowedRoles.map(role => role.toLowerCase());
+  const effectiveRole = getEffectiveRole(user);
+  const normalizedAllowedRoles = allowedRoles.map((role) => role.toLowerCase());
 
-  if (allowedRoles.length > 0 && !normalizedAllowedRoles.includes(userRole)) {
+  if (allowedRoles.length > 0 && !normalizedAllowedRoles.includes(effectiveRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

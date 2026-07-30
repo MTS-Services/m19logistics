@@ -7,8 +7,24 @@ import {
   DRIVER_TYPE,
   emptyContractorFields,
   validateContractorFields,
-  buildContractorPayload,
 } from '../../components/driverTypeUtils';
+
+const PAY_TYPE_API_MAP = {
+  Daily: 'DAILY',
+  Weekly: 'WEEKLY',
+  Fortnightly: 'FORTNIGHTLY',
+  'Four Weekly': 'FOUR_WEEKLY',
+};
+
+const PAY_TYPE_UI_MAP = {
+  DAILY: 'Daily',
+  WEEKLY: 'Weekly',
+  FORTNIGHTLY: 'Fortnightly',
+  FOUR_WEEKLY: 'Four Weekly',
+};
+
+const normalizePayTypeForUI = (value) => PAY_TYPE_UI_MAP[value] || value || 'Weekly';
+const normalizePayTypeForApi = (value) => PAY_TYPE_API_MAP[value] || value;
 
 const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
   const initialRole =
@@ -52,7 +68,7 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     sortCode: user?.bank?.sortCode || '',
     accountNumber: user?.bank?.accountNumber || '',
     bankReference: user?.bank?.reference || '',
-    payType: user?.payStructure?.payType || 'Weekly',
+    payType: normalizePayTypeForUI(user?.payStructure?.payType),
     rate: user?.payStructure?.rate ?? '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -125,6 +141,18 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
     ) {
       Object.assign(newErrors, validateContractorFields(formData));
     }
+    if (
+      formData.role === 'DRIVER' &&
+      formData.driverType === DRIVER_TYPE.EMPLOYEE
+    ) {
+      if (!formData.address.trim()) newErrors.address = 'Address is required';
+      if (!formData.driversLicenceNumber.trim()) {
+        newErrors.driversLicenceNumber = "Driver's licence number is required";
+      }
+      if (!formData.vanRegistration.trim()) {
+        newErrors.vanRegistration = 'Vehicle registration is required';
+      }
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -165,11 +193,38 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
 
         if (formData.role === 'DRIVER') {
           updatePayload.driverType = formData.driverType;
-          if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
-            Object.assign(updatePayload, buildContractorPayload(formData));
+          if (formData.driverType === DRIVER_TYPE.EMPLOYEE) {
+            updatePayload.address = formData.address.trim();
+            updatePayload.driverLicenseNumber = formData.driversLicenceNumber.trim();
+            updatePayload.vehicleRegistration = formData.vanRegistration.trim();
+          } else if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+            Object.assign(updatePayload, {
+              tradingName: formData.tradingName.trim(),
+              contactName: formData.contactName?.trim() || '',
+              address: formData.address.trim(),
+              tradingAddress: formData.tradingAddress.trim(),
+              driverLicenseNumber: formData.driversLicenceNumber.trim(),
+              isVatRegistered: !!formData.vatRegistered,
+              vatNumber: formData.vatRegistered ? formData.vatNumber.trim() : '',
+              vehicleRegistration: formData.vanRegistration.trim(),
+              vehicleMake: formData.vehicleMake?.trim() || '',
+              vehicleModel: formData.vehicleModel?.trim() || '',
+              motExpiry: formData.motExpiry || null,
+              insuranceExpiry: formData.insuranceExpiry || null,
+              goodsInTransitExpiry: formData.goodsInTransitExpiry || null,
+              publicLiabilityExpiry: formData.publicLiabilityExpiry || null,
+              bankName: formData.bankName?.trim() || '',
+              accountName: formData.accountName?.trim() || '',
+              sortCode: formData.sortCode?.trim() || '',
+              accountNumber: formData.accountNumber?.trim() || '',
+              bankReference: formData.bankReference?.trim() || '',
+              payType: normalizePayTypeForApi(formData.payType),
+              rate: Number(formData.rate),
+            });
           }
         }
 
+        console.log('Update user payload:', updatePayload);
         response = await axiosInstance.put(`/api/admin/users/${user.id}`, updatePayload);
       } else {
         const createPayload = {
@@ -196,13 +251,43 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
 
         if (formData.role === 'DRIVER') {
           createPayload.driverType = formData.driverType;
-          if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
-            Object.assign(createPayload, buildContractorPayload(formData));
+          if (formData.driverType === DRIVER_TYPE.EMPLOYEE) {
+            Object.assign(createPayload, {
+              address: formData.address.trim(),
+              driverLicenseNumber: formData.driversLicenceNumber.trim(),
+              vehicleRegistration: formData.vanRegistration.trim(),
+            });
+          } else if (formData.driverType === DRIVER_TYPE.CONTRACTOR) {
+            Object.assign(createPayload, {
+              tradingName: formData.tradingName.trim(),
+              contactName: formData.contactName?.trim() || '',
+              address: formData.address.trim(),
+              tradingAddress: formData.tradingAddress.trim(),
+              driverLicenseNumber: formData.driversLicenceNumber.trim(),
+              isVatRegistered: !!formData.vatRegistered,
+              vatNumber: formData.vatRegistered ? formData.vatNumber.trim() : '',
+              vehicleRegistration: formData.vanRegistration.trim(),
+              vehicleMake: formData.vehicleMake?.trim() || '',
+              vehicleModel: formData.vehicleModel?.trim() || '',
+              motExpiry: formData.motExpiry || null,
+              insuranceExpiry: formData.insuranceExpiry || null,
+              goodsInTransitExpiry: formData.goodsInTransitExpiry || null,
+              publicLiabilityExpiry: formData.publicLiabilityExpiry || null,
+              bankName: formData.bankName?.trim() || '',
+              accountName: formData.accountName?.trim() || '',
+              sortCode: formData.sortCode?.trim() || '',
+              accountNumber: formData.accountNumber?.trim() || '',
+              bankReference: formData.bankReference?.trim() || '',
+              payType: normalizePayTypeForApi(formData.payType),
+              rate: Number(formData.rate),
+            });
           }
         }
 
+        console.log('Create user payload:', createPayload);
         response = await axiosInstance.post('/api/admin/users', createPayload);
       }
+      console.log('Backend response data:', response?.data);
 
       if (response.data?.success) {
         toast.success(isEdit ? 'User updated successfully!' : 'User created successfully!');
@@ -354,6 +439,58 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
                   onChange={handleChange}
                   onRadioChange={handleRadioChange}
                 />
+              )}
+
+              {isDriver && !isContractor && (
+                <div className="space-y-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <h3 className="text-sm font-semibold text-gray-900">Employee Driver Details</h3>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Address *</label>
+                    <textarea
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      rows={2}
+                      className={`mt-1 block w-full rounded-lg border px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="Enter address"
+                    />
+                    {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Driver License Number *
+                      </label>
+                      <input
+                        type="text"
+                        name="driversLicenceNumber"
+                        value={formData.driversLicenceNumber}
+                        onChange={handleChange}
+                        className={`mt-1 block w-full rounded-lg border px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 ${errors.driversLicenceNumber ? 'border-red-500' : 'border-gray-300'}`}
+                        placeholder="Enter driver license number"
+                      />
+                      {errors.driversLicenceNumber && (
+                        <p className="mt-1 text-xs text-red-500">{errors.driversLicenceNumber}</p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Vehicle Registration *
+                      </label>
+                      <input
+                        type="text"
+                        name="vanRegistration"
+                        value={formData.vanRegistration}
+                        onChange={handleChange}
+                        className={`mt-1 block w-full rounded-lg border px-3 py-2 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 ${errors.vanRegistration ? 'border-red-500' : 'border-gray-300'}`}
+                        placeholder="e.g., AB12 CDE"
+                      />
+                      {errors.vanRegistration && (
+                        <p className="mt-1 text-xs text-red-500">{errors.vanRegistration}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
 
               {formData.role === 'CUSTOMER' && (
