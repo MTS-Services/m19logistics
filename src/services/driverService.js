@@ -10,6 +10,24 @@ export const getDriverDashboard = async () => {
 };
 
 /**
+ * Get contractor driver dashboard data
+ * @returns {Promise} Promise with contractor dashboard payload
+ */
+export const getContractorDashboard = async () => {
+  const response = await axiosInstance.get('/api/driver/contractor/dashboard');
+  return response.data;
+};
+
+/**
+ * Get contractor profile details
+ * @returns {Promise} Promise with contractor profile payload
+ */
+export const getContractorProfile = async () => {
+  const response = await axiosInstance.get('/api/driver/contractor/profile');
+  return response.data;
+};
+
+/**
  * Get driver deliveries by status and date
  * @param {string} status - Delivery status (e.g., 'ALLOCATED')
  * @param {string} startDate - Start date in YYYY-MM-DD format (optional)

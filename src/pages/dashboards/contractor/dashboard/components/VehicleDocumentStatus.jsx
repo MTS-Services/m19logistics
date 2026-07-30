@@ -9,7 +9,7 @@ const expiryStyles = {
   expired: 'border-red-600 bg-red-200 text-red-950',
 };
 
-const VehicleDocumentStatus = ({ documents }) => {
+const VehicleDocumentStatus = ({ documents = [] }) => {
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
@@ -26,10 +26,14 @@ const VehicleDocumentStatus = ({ documents }) => {
           >
             <div className="flex items-start justify-between gap-2">
               <p className="text-sm font-medium">{doc.label}</p>
-              {doc.urgency !== 'ok' && <AlertTriangle className="h-4 w-4 shrink-0" />}
+              {(doc.highlight || doc.urgency !== 'ok') && (
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+              )}
             </div>
             <p className="mt-2 text-lg font-bold">{formatDate(doc.date)}</p>
-            <p className="mt-1 text-xs font-semibold tracking-wide uppercase">{doc.urgencyLabel}</p>
+            <p className="mt-1 text-xs font-semibold tracking-wide uppercase">
+              {doc.urgencyLabel}
+            </p>
           </div>
         ))}
       </div>

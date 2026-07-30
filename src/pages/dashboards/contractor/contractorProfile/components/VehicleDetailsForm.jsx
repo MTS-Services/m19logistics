@@ -1,5 +1,5 @@
 import { AlertTriangle } from 'lucide-react';
-import { formatDate, getExpiryUrgency, getExpiryLabel } from '../../contractorDummyData';
+import { formatDate } from '../../contractorDummyData';
 import { PROFILE_INPUT_CLASS, EXPIRY_STYLES } from './profileConstants';
 
 const expiryFields = [
@@ -9,7 +9,16 @@ const expiryFields = [
   { key: 'publicLiabilityExpiry', label: 'Public Liability Insurance' },
 ];
 
-const VehicleDetailsForm = ({ form, updateField }) => {
+const mapDocStatusToUrgency = (status) => {
+  const value = (status || '').toString().toUpperCase();
+  if (value === 'EXPIRED') return 'expired';
+  if (value === 'WITHIN_7_DAYS') return 'warning_7';
+  if (value === 'WITHIN_14_DAYS') return 'warning_14';
+  if (value === 'WITHIN_30_DAYS') return 'warning_30';
+  return 'ok';
+};
+
+const VehicleDetailsForm = ({ form, updateField, documentStatus = {} }) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -41,18 +50,19 @@ const VehicleDetailsForm = ({ form, updateField }) => {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {expiryFields.map((field) => {
-          const urgency = getExpiryUrgency(form[field.key]);
+          const doc = documentStatus[field.key] || {};
+          const urgency = mapDocStatusToUrgency(doc.status);
           return (
             <div
               key={field.key}
               className={`rounded-lg border p-4 ${EXPIRY_STYLES[urgency] || EXPIRY_STYLES.ok}`}
             >
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-2 flex items-center justify-between gap-2">
                 <label className="text-sm font-medium text-gray-700">{field.label}</label>
-                {urgency !== 'ok' && (
+                {(doc.highlight || urgency !== 'ok') && (
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-800">
                     <AlertTriangle className="h-3 w-3" />
-                    {getExpiryLabel(urgency)}
+                    {doc.label || 'Attention'}
                   </span>
                 )}
               </div>
@@ -62,7 +72,7 @@ const VehicleDetailsForm = ({ form, updateField }) => {
                 value={form[field.key]}
                 onChange={(e) => updateField(field.key, e.target.value)}
               />
-              <p className="mt-1 text-xs text-gray-600">{formatDate(form[field.key])}</p>
+              <p className="mt-1 text-xs text-gray-600">{formatDate(form[field.key] || doc.date)}</p>
             </div>
           );
         })}

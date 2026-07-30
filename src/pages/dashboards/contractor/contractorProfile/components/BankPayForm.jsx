@@ -1,6 +1,13 @@
 import { PROFILE_INPUT_CLASS } from './profileConstants';
 
-const BankPayForm = ({ form, updateField }) => {
+const PAY_TYPE_OPTIONS = [
+  { value: 'DAILY', label: 'Daily' },
+  { value: 'WEEKLY', label: 'Weekly' },
+  { value: 'FORTNIGHTLY', label: 'Fortnightly' },
+  { value: 'FOUR_WEEKLY', label: 'Four Weekly' },
+];
+
+const BankPayForm = ({ form, updateField, payFieldsReadOnly = true }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -52,28 +59,31 @@ const BankPayForm = ({ form, updateField }) => {
           <div>
             <label className="block text-sm font-medium text-gray-700">Pay Type</label>
             <select
-              className={PROFILE_INPUT_CLASS}
+              className={`${PROFILE_INPUT_CLASS} ${payFieldsReadOnly ? 'cursor-not-allowed bg-gray-50' : ''}`}
               value={form.payType}
               onChange={(e) => updateField('payType', e.target.value)}
-              disabled
-              title="Set by Admin"
+              disabled={payFieldsReadOnly}
+              title={payFieldsReadOnly ? 'Set by Admin' : ''}
             >
-              <option>Daily</option>
-              <option>Weekly</option>
-              <option>Fortnightly</option>
-              <option>Four Weekly</option>
+              {PAY_TYPE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
-            <p className="mt-1 text-xs text-gray-500">Set by Admin (read-only for now)</p>
+            {payFieldsReadOnly && (
+              <p className="mt-1 text-xs text-gray-500">Set by Admin (read-only)</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Rate (£)</label>
             <input
               type="number"
-              className={PROFILE_INPUT_CLASS}
+              className={`${PROFILE_INPUT_CLASS} ${payFieldsReadOnly ? 'cursor-not-allowed bg-gray-50' : ''}`}
               value={form.rate}
-              onChange={(e) => updateField('rate', Number(e.target.value))}
-              disabled
-              title="Set by Admin"
+              onChange={(e) => updateField('rate', e.target.value)}
+              disabled={payFieldsReadOnly}
+              title={payFieldsReadOnly ? 'Set by Admin' : ''}
             />
           </div>
         </div>

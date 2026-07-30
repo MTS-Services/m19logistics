@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { FileText } from 'lucide-react';
-import { formatMoney, formatDate } from '../../contractorDummyData';
+import { formatMoney } from '../../contractorDummyData';
 
 const invoiceStatusStyles = {
   Paid: 'bg-green-100 text-green-700',
   Outstanding: 'bg-amber-100 text-amber-800',
+  Pending: 'bg-blue-100 text-blue-700',
+  Rejected: 'bg-red-100 text-red-700',
 };
 
-const InvoiceSnapshot = ({ invoices }) => {
+const InvoiceSnapshot = ({ invoices = [] }) => {
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4">
@@ -19,27 +21,34 @@ const InvoiceSnapshot = ({ invoices }) => {
           View all
         </Link>
       </div>
-      <div className="divide-y divide-gray-200">
-        {invoices.map((invoice) => (
-          <div key={invoice.id} className="px-6 py-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-semibold text-gray-900">{invoice.id}</p>
-                <p className="text-sm text-gray-600">{invoice.period}</p>
-                {/* <p className="mt-1 text-xs text-gray-500">Issued {formatDate(invoice.issuedAt)}</p> */}
+
+      {invoices.length === 0 ? (
+        <div className="px-6 py-10 text-center text-sm text-gray-500">No recent invoices.</div>
+      ) : (
+        <div className="divide-y divide-gray-200">
+          {invoices.map((invoice) => (
+            <div key={invoice.id} className="px-6 py-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-gray-900">{invoice.id}</p>
+                  <p className="text-sm text-gray-600">{invoice.period}</p>
+                </div>
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    invoiceStatusStyles[invoice.status] || 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {invoice.status}
+                </span>
               </div>
-              <span
-                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                  invoiceStatusStyles[invoice.status] || 'bg-gray-100 text-gray-700'
-                }`}
-              >
-                {invoice.status}
-              </span>
+              <p className="mt-2 text-sm font-semibold text-gray-900">
+                {formatMoney(invoice.amount)}
+              </p>
             </div>
-            <p className="mt-2 text-sm font-semibold text-gray-900">{formatMoney(invoice.amount)}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
       <div className="border-t border-gray-200 p-4">
         <Link
           to="/contractor/invoices/generate"

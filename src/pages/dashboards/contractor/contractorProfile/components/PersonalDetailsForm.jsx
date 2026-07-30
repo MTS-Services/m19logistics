@@ -10,7 +10,7 @@ const PersonalDetailsForm = ({ form, updateField }) => {
         </div>
         <div>
           <p className="font-semibold text-gray-900">{form.tradingName}</p>
-          <p className="text-sm text-gray-500">Contractor</p>
+          <p className="text-sm text-gray-500">{form.displayRole || 'Contractor'}</p>
         </div>
       </div>
 
