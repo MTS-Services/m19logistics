@@ -1,10 +1,5 @@
 /** Frontend-only dummy data for Contractor dashboard. Backend will replace later. */
 
-export const DEMO_CONTRACTOR_CREDENTIALS = {
-  email: 'contractor@demo.com',
-  password: 'demo123',
-};
-
 export const DEMO_CONTRACTOR_USER = {
   id: 'demo-contractor-001',
   role: 'driver',
@@ -41,8 +36,6 @@ export const DEMO_CONTRACTOR_USER = {
     rate: 180,
   },
 };
-
-export const DEMO_CONTRACTOR_TOKEN = 'demo-contractor-token';
 
 export const contractorDashboardData = {
   currentPeriod: {

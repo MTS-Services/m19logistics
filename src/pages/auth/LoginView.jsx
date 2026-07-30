@@ -5,11 +5,6 @@ import { toast } from 'react-toastify';
 import { Eye, EyeOff, Truck } from 'lucide-react';
 import axiosInstance from '../../services/axiosInstance';
 import { ENDPOINT } from '../../services/httpEndpoint';
-import {
-  DEMO_CONTRACTOR_CREDENTIALS,
-  DEMO_CONTRACTOR_TOKEN,
-  DEMO_CONTRACTOR_USER,
-} from '../dashboards/contractor/contractorDummyData';
 
 const LoginView = () => {
   const [email, setEmail] = useState('');
@@ -22,18 +17,6 @@ const LoginView = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Frontend-only demo contractor login (rakib4 Phase 1)
-    if (
-      email.trim().toLowerCase() === DEMO_CONTRACTOR_CREDENTIALS.email &&
-      password === DEMO_CONTRACTOR_CREDENTIALS.password
-    ) {
-      login(DEMO_CONTRACTOR_USER, DEMO_CONTRACTOR_TOKEN);
-      toast.success(`Welcome back, ${DEMO_CONTRACTOR_USER.tradingName}!`);
-      navigate('/contractor/dashboard');
-      setLoading(false);
-      return;
-    }
 
     try {
       const response = await axiosInstance.post(ENDPOINT.API.AUTH.LOGIN, {
