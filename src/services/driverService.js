@@ -28,6 +28,16 @@ export const getContractorProfile = async () => {
 };
 
 /**
+ * Update contractor profile details
+ * @param {object} payload - Editable profile fields (excludes payType/rate)
+ * @returns {Promise} Promise with updated profile payload
+ */
+export const updateContractorProfile = async (payload) => {
+  const response = await axiosInstance.put('/api/driver/contractor/profile', payload);
+  return response.data;
+};
+
+/**
  * Get driver deliveries by status and date
  * @param {string} status - Delivery status (e.g., 'ALLOCATED')
  * @param {string} startDate - Start date in YYYY-MM-DD format (optional)

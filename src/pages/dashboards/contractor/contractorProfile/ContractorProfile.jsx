@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Save } from 'lucide-react';
+import { Save, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { getContractorProfile } from '../../../../services/driverService';
+import {
+  getContractorProfile,
+  updateContractorProfile,
+} from '../../../../services/driverService';
 import Loading from '../../../../components/Loading';
 import ProfileHeader from './components/ProfileHeader';
 import ProfileTabs from './components/ProfileTabs';
@@ -75,12 +78,37 @@ const mapProfileToForm = (data) => {
   };
 };
 
+/** Build update payload — payType / rate excluded (admin-only). */
+const buildUpdatePayload = (form) => ({
+  contactName: form.contactName.trim(),
+  phone: form.phone.trim(),
+  tradingName: form.tradingName.trim(),
+  address: form.address.trim(),
+  tradingAddress: form.tradingAddress.trim(),
+  driverLicenseNumber: form.driversLicenceNumber.trim(),
+  isVatRegistered: !!form.vatRegistered,
+  vatNumber: form.vatRegistered ? form.vatNumber.trim() : '',
+  vehicleRegistration: form.vanRegistration.trim(),
+  vehicleMake: form.make.trim(),
+  vehicleModel: form.model.trim(),
+  motExpiry: form.motExpiry || null,
+  insuranceExpiry: form.insuranceExpiry || null,
+  goodsInTransitExpiry: form.goodsInTransitExpiry || null,
+  publicLiabilityExpiry: form.publicLiabilityExpiry || null,
+  bankName: form.bankName.trim(),
+  accountName: form.accountName.trim(),
+  sortCode: form.sortCode.trim(),
+  accountNumber: form.accountNumber.trim(),
+  bankReference: form.reference.trim(),
+});
+
 const ContractorProfile = () => {
   const [activeTab, setActiveTab] = useState('personal');
   const [form, setForm] = useState(emptyForm);
   const [documentStatus, setDocumentStatus] = useState({});
   const [payFieldsReadOnly, setPayFieldsReadOnly] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(function fetchContractorProfileOnMount() {
     let isMounted = true;
@@ -121,10 +149,34 @@ const ContractorProfile = () => {
 
   const updateField = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    console.log('Contractor profile save payload (update API pending):', form);
-    toast.info('Profile loaded from API. Update endpoint not connected yet.');
+    if (saving) return;
+
+    const payload = buildUpdatePayload(form);
+    console.log('Contractor profile update payload:', payload);
+
+    setSaving(true);
+    try {
+      const response = await updateContractorProfile(payload);
+      console.log('Contractor profile update response:', response);
+
+      if (response?.success) {
+        if (response.data) {
+          setForm(mapProfileToForm(response.data));
+          setDocumentStatus(response.data.documentStatus || {});
+          setPayFieldsReadOnly(response.data.payFieldsReadOnly !== false);
+        }
+        toast.success(response.message || 'Profile updated successfully');
+      } else {
+        throw new Error(response?.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error updating contractor profile:', error);
+      toast.error(error.response?.data?.message || error.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
@@ -162,10 +214,11 @@ const ContractorProfile = () => {
         <div className="mt-6 flex justify-end border-t border-gray-200 pt-4">
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700"
+            disabled={saving}
+            className="inline-flex items-center gap-2 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <Save className="h-4 w-4" />
-            Save Changes
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </form>

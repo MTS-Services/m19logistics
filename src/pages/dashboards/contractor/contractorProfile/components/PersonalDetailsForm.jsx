@@ -54,11 +54,13 @@ const PersonalDetailsForm = ({ form, updateField }) => {
             <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="email"
-              className={`${PROFILE_INPUT_CLASS} pl-9`}
+              className={`${PROFILE_INPUT_CLASS} cursor-not-allowed bg-gray-50 pl-9`}
               value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
+              readOnly
+              title="Email cannot be changed"
             />
           </div>
+          <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">Address *</label>
