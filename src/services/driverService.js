@@ -38,6 +38,16 @@ export const updateContractorProfile = async (payload) => {
 };
 
 /**
+ * Get contractor invoices list
+ * @param {{ page?: number, limit?: number, status?: string }} params
+ * @returns {Promise} Promise with invoices + pagination
+ */
+export const getContractorInvoices = async (params = {}) => {
+  const response = await axiosInstance.get('/api/driver/contractor/invoices', { params });
+  return response.data;
+};
+
+/**
  * Get driver deliveries by status and date
  * @param {string} status - Delivery status (e.g., 'ALLOCATED')
  * @param {string} startDate - Start date in YYYY-MM-DD format (optional)

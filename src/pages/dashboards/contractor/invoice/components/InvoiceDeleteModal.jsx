@@ -26,15 +26,15 @@ const InvoiceDeleteModal = ({ invoice, onCancel, onConfirm }) => {
         <div className="p-6">
           <h3 className="mb-2 text-center text-lg font-semibold text-gray-900">Delete Invoice</h3>
           <p className="mb-4 text-center text-sm text-gray-600">
-            Are you sure you want to delete <strong>{invoice.id}</strong>? This action cannot be
-            undone.
+            Are you sure you want to delete <strong>{invoice.invoiceNumber}</strong>? This action
+            cannot be undone.
           </p>
 
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Invoice:</span>
-                <span className="font-medium text-gray-900">{invoice.id}</span>
+                <span className="font-medium text-gray-900">{invoice.invoiceNumber}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Period:</span>

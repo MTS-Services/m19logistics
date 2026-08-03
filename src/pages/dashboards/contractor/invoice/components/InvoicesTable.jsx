@@ -5,6 +5,8 @@ import InvoiceActionMenu from './InvoiceActionMenu';
 const statusStyles = {
   Paid: 'bg-green-100 text-green-700',
   Outstanding: 'bg-amber-100 text-amber-800',
+  Pending: 'bg-blue-100 text-blue-700',
+  Rejected: 'bg-red-100 text-red-700',
 };
 
 const StatusBadge = ({ status }) => (
@@ -21,7 +23,7 @@ const InvoiceCard = ({ invoice, onView, onDelete }) => (
   <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <p className="truncate text-base font-semibold text-gray-900">{invoice.id}</p>
+        <p className="truncate text-base font-semibold text-gray-900">{invoice.invoiceNumber}</p>
         <p className="mt-1 text-sm text-gray-600">{invoice.period}</p>
       </div>
       <div className="flex shrink-0 items-center gap-1">
@@ -59,7 +61,6 @@ const InvoiceCard = ({ invoice, onView, onDelete }) => (
 const InvoicesTable = ({ invoices, onView, onDelete }) => {
   return (
     <>
-      {/* Mobile + Tablet cards */}
       <div className="space-y-3 p-4 lg:hidden">
         {invoices.map((invoice) => (
           <InvoiceCard
@@ -71,7 +72,6 @@ const InvoicesTable = ({ invoices, onView, onDelete }) => {
         ))}
       </div>
 
-      {/* Desktop table */}
       <div className="hidden overflow-x-auto lg:block">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -102,7 +102,9 @@ const InvoicesTable = ({ invoices, onView, onDelete }) => {
           <tbody className="divide-y divide-gray-200 bg-white">
             {invoices.map((invoice) => (
               <tr key={invoice.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-semibold text-gray-900">{invoice.id}</td>
+                <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                  {invoice.invoiceNumber}
+                </td>
                 <td className="px-6 py-4 text-sm text-gray-600">{invoice.period}</td>
                 <td className="px-6 py-4 text-sm text-gray-600">{invoice.jobs}</td>
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">

@@ -6,7 +6,7 @@ const InvoicesHeader = () => {
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">My Invoices</h1>
-        <p className="mt-2 text-gray-600">Invoices submitted to M19 Logistics — dummy data</p>
+        <p className="mt-2 text-gray-600">Invoices submitted to M19 Logistics</p>
       </div>
       <Link
         to="/contractor/invoices/generate"

@@ -22,6 +22,7 @@ const InvoicesFilters = ({ searchQuery, onSearchChange, statusFilter, onStatusCh
           <option value="all">All Status</option>
           <option value="Paid">Paid</option>
           <option value="Outstanding">Outstanding</option>
+          <option value="Pending">Pending</option>
         </select>
       </div>
     </div>
