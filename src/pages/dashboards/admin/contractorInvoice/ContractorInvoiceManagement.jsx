@@ -22,7 +22,7 @@ export default function ContractorInvoiceManagement() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [markingPaidId, setMarkingPaidId] = useState(null);
-  const [rejectingId, setRejectingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const filteredInvoices = useMemo(() => {
     const q = searchQuery.toLowerCase();
@@ -67,14 +67,12 @@ export default function ContractorInvoiceManagement() {
     }, 500);
   };
 
-  const handleReject = (invoice) => {
-    setRejectingId(invoice.id);
+  const handleDelete = (invoice) => {
+    setDeletingId(invoice.id);
     setTimeout(() => {
-      setInvoices((prev) =>
-        prev.map((item) => (item.id === invoice.id ? { ...item, status: 'Rejected' } : item))
-      );
-      setRejectingId(null);
-      toast.success(`${invoice.invoiceNumber} rejected`);
+      setInvoices((prev) => prev.filter((item) => item.id !== invoice.id));
+      setDeletingId(null);
+      toast.success(`${invoice.invoiceNumber} deleted`);
     }, 500);
   };
 
@@ -137,9 +135,9 @@ export default function ContractorInvoiceManagement() {
                 onView={handleView}
                 onDownload={handleDownload}
                 onMarkPaid={handleMarkPaid}
-                onReject={handleReject}
+                onDelete={handleDelete}
                 markingPaid={markingPaidId === item.id}
-                rejecting={rejectingId === item.id}
+                deleting={deletingId === item.id}
               />
             ))}
           </div>
