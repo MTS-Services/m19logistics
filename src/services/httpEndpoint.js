@@ -56,6 +56,10 @@ export const ENDPOINT = {
       MARK_PAID: (id) => `/api/admin/invoices/${id}/mark-paid`,
       SEND_REMINDERS: '/api/admin/invoices/send-reminders',
     },
+    ADMIN_CONTRACTOR_INVOICE: {
+      GET_ALL: '/api/admin/contractor-invoices',
+      MARK_PAID: (id) => `/api/admin/contractor-invoices/${id}/mark-paid`,
+    },
     ADMIN_AUDIT: {
       GET_ALL: '/api/admin/audit-logs',
       GET_BY_ID: (id) => `/api/admin/audit-logs/${id}`,

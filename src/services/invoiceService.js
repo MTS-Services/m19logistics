@@ -95,3 +95,38 @@ export const sendAdminInvoiceReminders = async () => {
   const response = await axiosInstance.post(ENDPOINT.API.ADMIN_INVOICE.SEND_REMINDERS);
   return response.data;
 };
+
+// ====== Admin Contractor Invoice Management ======
+
+export const getAdminContractorInvoices = async (params = {}) => {
+  const response = await axiosInstance.get(ENDPOINT.API.ADMIN_CONTRACTOR_INVOICE.GET_ALL, {
+    params,
+  });
+  return response.data;
+};
+
+export const markAdminContractorInvoicePaid = async (id) => {
+  const response = await axiosInstance.post(ENDPOINT.API.ADMIN_CONTRACTOR_INVOICE.MARK_PAID(id));
+  return response.data;
+};
+
+/**
+ * Export contractor invoice PDF by invoice number
+ * GET /api/driver/contractor/invoices/number/:invoiceNumber/export/pdf
+ */
+export const exportContractorInvoicePDFByNumber = async (invoiceNumber) => {
+  const response = await axiosInstance.get(
+    `/api/driver/contractor/invoices/number/${encodeURIComponent(invoiceNumber)}/export/pdf`,
+    { responseType: 'blob' }
+  );
+  return response;
+};
+
+/**
+ * Delete contractor invoice by id
+ * DELETE /api/driver/contractor/invoices/:invoiceId
+ */
+export const deleteContractorInvoice = async (invoiceId) => {
+  const response = await axiosInstance.delete(`/api/driver/contractor/invoices/${invoiceId}`);
+  return response.data;
+};

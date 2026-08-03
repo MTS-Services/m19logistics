@@ -8,26 +8,30 @@ const ContractorInvoiceCard = ({
   onDelete,
   markingPaid,
   deleting,
+  downloading,
 }) => {
-  const isPaid = invoice.status === 'Paid';
-  const isRejected = invoice.status === 'Rejected';
-  const canAct = !isPaid && !isRejected;
+  const isPaid = invoice.status === 'Paid' || invoice.statusRaw === 'PAID';
+  const canMarkPaid = !isPaid;
 
   const statusClass =
     invoice.status === 'Paid'
       ? 'bg-green-100 text-green-700'
-      : invoice.status === 'Approved'
-        ? 'bg-blue-100 text-blue-700'
-        : invoice.status === 'Rejected'
-          ? 'bg-red-100 text-red-700'
-          : 'bg-amber-100 text-amber-700';
+      : invoice.status === 'Outstanding'
+        ? 'bg-amber-100 text-amber-800'
+        : invoice.status === 'Pending'
+          ? 'bg-blue-100 text-blue-700'
+          : invoice.status === 'Rejected'
+            ? 'bg-red-100 text-red-700'
+            : 'bg-gray-100 text-gray-700';
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-all hover:shadow-md sm:p-4 lg:p-6">
       <div className="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
         <div className="flex-1">
           <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3">
-            <h3 className="text-base font-semibold text-gray-900 sm:text-lg">{invoice.invoiceNumber}</h3>
+            <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
+              {invoice.invoiceNumber}
+            </h3>
             <span className={`inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClass}`}>
               {invoice.status}
             </span>
@@ -52,8 +56,10 @@ const ContractorInvoiceCard = ({
         </div>
 
         <div className="text-left sm:text-right">
-          <p className="text-xl font-bold text-gray-900 sm:text-2xl">£{invoice.amount.toFixed(2)}</p>
-          <p className="text-xs text-gray-500">inc. VAT £{invoice.vat.toFixed(2)}</p>
+          <p className="text-xl font-bold text-gray-900 sm:text-2xl">
+            £{Number(invoice.amount || 0).toFixed(2)}
+          </p>
+          <p className="text-xs text-gray-500">Rate £{Number(invoice.rate || 0).toFixed(2)}</p>
         </div>
       </div>
 
@@ -70,10 +76,19 @@ const ContractorInvoiceCard = ({
         <button
           type="button"
           onClick={() => onDownload(invoice)}
-          className="flex items-center justify-center space-x-1 rounded-lg bg-gray-50 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 sm:px-3 sm:text-sm"
+          disabled={downloading || deleting || markingPaid}
+          className="flex items-center justify-center space-x-1 rounded-lg bg-gray-50 px-2 py-2 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 sm:px-3 sm:text-sm"
         >
-          <Download className="h-4 w-4" />
-          <span className="hidden sm:inline">PDF</span>
+          {downloading ? (
+            <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          <span className="hidden sm:inline">{downloading ? 'Downloading...' : 'PDF'}</span>
+          <span className="sm:hidden">{downloading ? '...' : 'PDF'}</span>
         </button>
 
         <button
@@ -94,7 +109,7 @@ const ContractorInvoiceCard = ({
           <span className="sm:hidden">{deleting ? '...' : 'Delete'}</span>
         </button>
 
-        {canAct && (
+        {canMarkPaid && (
           <button
             type="button"
             onClick={() => onMarkPaid(invoice)}

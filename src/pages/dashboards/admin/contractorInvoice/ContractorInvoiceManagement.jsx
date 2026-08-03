@@ -1,48 +1,152 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FileText, Search, Filter } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Pagination from '../../../../components/Pagination';
+import Loading from '../../../../components/Loading';
+import {
+  getAdminContractorInvoices,
+  markAdminContractorInvoicePaid,
+  exportContractorInvoicePDFByNumber,
+  deleteContractorInvoice,
+} from '../../../../services/invoiceService';
 import ContractorInvoiceCard from './components/ContractorInvoiceCard';
+import ContractorInvoiceViewModal from './components/ContractorInvoiceViewModal';
 
-const dummyContractorInvoices = [
-  { id: 1, invoiceNumber: 'CINV-2026-001', contractor: 'Rapid Haul Ltd', period: '01 Jul - 07 Jul', amount: 1260, vat: 210, jobsCount: 7, status: 'Pending', submittedAt: '2026-07-08' },
-  { id: 2, invoiceNumber: 'CINV-2026-002', contractor: 'Northline Couriers', period: '01 Jul - 07 Jul', amount: 980, vat: 163.33, jobsCount: 5, status: 'Approved', submittedAt: '2026-07-08' },
-  { id: 3, invoiceNumber: 'CINV-2026-003', contractor: 'AK Transport', period: '08 Jul - 14 Jul', amount: 1440, vat: 240, jobsCount: 8, status: 'Paid', submittedAt: '2026-07-15' },
-  { id: 4, invoiceNumber: 'CINV-2026-004', contractor: 'Metro Van Services', period: '08 Jul - 14 Jul', amount: 1100, vat: 183.33, jobsCount: 6, status: 'Pending', submittedAt: '2026-07-15' },
-  { id: 5, invoiceNumber: 'CINV-2026-005', contractor: 'SwiftDrop Solutions', period: '15 Jul - 21 Jul', amount: 890, vat: 148.33, jobsCount: 4, status: 'Rejected', submittedAt: '2026-07-22' },
-  { id: 6, invoiceNumber: 'CINV-2026-006', contractor: 'Rapid Haul Ltd', period: '15 Jul - 21 Jul', amount: 1320, vat: 220, jobsCount: 7, status: 'Approved', submittedAt: '2026-07-22' },
-  { id: 7, invoiceNumber: 'CINV-2026-007', contractor: 'Northline Couriers', period: '22 Jul - 28 Jul', amount: 1025, vat: 170.83, jobsCount: 5, status: 'Pending', submittedAt: '2026-07-29' },
-];
+const formatDate = (value) => {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+};
 
-const ITEMS_PER_PAGE = 5;
+const formatStatusLabel = (status) => {
+  if (!status) return '—';
+  return status
+    .toString()
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
+
+const normalizeInvoice = (invoice) => {
+  const contractorName =
+    invoice.contractor?.driverProfile?.tradingName ||
+    invoice.contractor?.fullName ||
+    '—';
+
+  return {
+    ...invoice,
+    id: invoice.id,
+    invoiceNumber: invoice.invoiceNumber || `INV-${invoice.id}`,
+    contractor: contractorName,
+    contractorEmail: invoice.contractor?.email || '',
+    period: `${formatDate(invoice.periodStart)} – ${formatDate(invoice.periodEnd)}`,
+    jobsCount: invoice.jobCount ?? invoice.items?.length ?? 0,
+    amount: Number(invoice.amount) || 0,
+    rate: Number(invoice.rate) || 0,
+    status: formatStatusLabel(invoice.status),
+    statusRaw: (invoice.status || '').toString().toUpperCase(),
+    submittedAt: formatDate(invoice.issuedAt || invoice.createdAt),
+    items: Array.isArray(invoice.items) ? invoice.items : [],
+  };
+};
+
+const ITEMS_PER_PAGE = 10;
 
 export default function ContractorInvoiceManagement() {
-  const [invoices, setInvoices] = useState(dummyContractorInvoices);
+  const [invoices, setInvoices] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: ITEMS_PER_PAGE,
+    total: 0,
+    totalPages: 1,
+  });
+  const [loading, setLoading] = useState(true);
   const [markingPaidId, setMarkingPaidId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+
+  useEffect(
+    function fetchAdminContractorInvoicesOnPageOrFilterChange() {
+      let isMounted = true;
+
+      const fetchInvoices = async () => {
+        setLoading(true);
+        try {
+          const params = {
+            page: currentPage,
+            limit: ITEMS_PER_PAGE,
+          };
+          if (statusFilter !== 'all') {
+            params.status = statusFilter.toUpperCase();
+          }
+
+          const response = await getAdminContractorInvoices(params);
+          console.log('Admin contractor invoices response:', response);
+
+          if (!isMounted) return;
+
+          if (response?.success && Array.isArray(response.data)) {
+            const apiPagination = response.pagination || {};
+            setInvoices(response.data.map(normalizeInvoice));
+            setPagination({
+              page: apiPagination.page || currentPage,
+              limit: apiPagination.limit || ITEMS_PER_PAGE,
+              total: apiPagination.total ?? response.count ?? response.data.length,
+              totalPages: apiPagination.totalPages || 1,
+            });
+          } else {
+            throw new Error(response?.message || 'Failed to load contractor invoices');
+          }
+        } catch (error) {
+          console.error('Error loading admin contractor invoices:', error);
+          if (isMounted) {
+            toast.error(error.response?.data?.message || 'Failed to load contractor invoices');
+            setInvoices([]);
+            setPagination({
+              page: 1,
+              limit: ITEMS_PER_PAGE,
+              total: 0,
+              totalPages: 1,
+            });
+          }
+        } finally {
+          if (isMounted) setLoading(false);
+        }
+      };
+
+      fetchInvoices();
+
+      return function cleanupAdminContractorInvoicesFetch() {
+        isMounted = false;
+      };
+    },
+    [currentPage, statusFilter]
+  );
 
   const filteredInvoices = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return invoices.filter((item) => {
-      const matchesSearch =
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return invoices;
+    return invoices.filter(
+      (item) =>
         item.invoiceNumber.toLowerCase().includes(q) ||
-        item.contractor.toLowerCase().includes(q);
-      const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    });
-  }, [invoices, searchQuery, statusFilter]);
-
-  const paginatedInvoices = filteredInvoices.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+        item.contractor.toLowerCase().includes(q) ||
+        item.contractorEmail.toLowerCase().includes(q)
+    );
+  }, [invoices, searchQuery]);
 
   const handleSearchChange = (value) => {
     setSearchQuery(value);
-    setCurrentPage(1);
   };
 
   const handleFilterChange = (value) => {
@@ -50,30 +154,105 @@ export default function ContractorInvoiceManagement() {
     setCurrentPage(1);
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const handleView = (invoice) => {
-    toast.info(`View invoice ${invoice.invoiceNumber} (dummy)`);
+    setSelectedInvoice(invoice);
+    setShowViewModal(true);
   };
 
-  const handleDownload = (invoice) => {
-    toast.success(`PDF download for ${invoice.invoiceNumber} (dummy)`);
+  const handleCloseViewModal = () => {
+    setShowViewModal(false);
+    setSelectedInvoice(null);
   };
 
-  const handleMarkPaid = (invoice) => {
+  const handleDownload = async (invoice) => {
+    if (downloadingId || !invoice?.invoiceNumber) return;
+
+    setDownloadingId(invoice.id);
+    try {
+      const resp = await exportContractorInvoicePDFByNumber(invoice.invoiceNumber);
+      console.log('Contractor invoice PDF response:', resp);
+
+      const blob = new Blob([resp.data], { type: resp.data?.type || 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${invoice.invoiceNumber}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success(`${invoice.invoiceNumber} PDF downloaded`);
+    } catch (error) {
+      console.error('Error downloading contractor invoice PDF:', error);
+      toast.error(error.response?.data?.message || 'Failed to download PDF');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
+  const handleMarkPaid = async (invoice) => {
+    if (markingPaidId) return;
+
     setMarkingPaidId(invoice.id);
-    setTimeout(() => {
-      setInvoices((prev) => prev.map((item) => (item.id === invoice.id ? { ...item, status: 'Paid' } : item)));
+    try {
+      const response = await markAdminContractorInvoicePaid(invoice.id);
+      console.log('Mark contractor invoice paid response:', response);
+
+      if (response?.success) {
+        const updated = response.data;
+        setInvoices((prev) =>
+          prev.map((item) =>
+            item.id === invoice.id
+              ? {
+                  ...item,
+                  ...(updated ? normalizeInvoice(updated) : {}),
+                  status: 'Paid',
+                  statusRaw: 'PAID',
+                  paidAt: updated?.paidAt || new Date().toISOString(),
+                }
+              : item
+          )
+        );
+        toast.success(response.message || `${invoice.invoiceNumber} marked as paid`);
+      } else {
+        throw new Error(response?.message || 'Failed to mark invoice as paid');
+      }
+    } catch (error) {
+      console.error('Error marking contractor invoice as paid:', error);
+      toast.error(error.response?.data?.message || error.message || 'Failed to mark as paid');
+    } finally {
       setMarkingPaidId(null);
-      toast.success(`${invoice.invoiceNumber} marked as paid`);
-    }, 500);
+    }
   };
 
-  const handleDelete = (invoice) => {
+  const handleDelete = async (invoice) => {
+    if (deletingId) return;
+
     setDeletingId(invoice.id);
-    setTimeout(() => {
-      setInvoices((prev) => prev.filter((item) => item.id !== invoice.id));
+    try {
+      const response = await deleteContractorInvoice(invoice.id);
+      console.log('Delete contractor invoice response:', response);
+
+      if (response?.success !== false) {
+        setInvoices((prev) => prev.filter((item) => item.id !== invoice.id));
+        setPagination((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - 1),
+        }));
+        toast.success(response?.message || `${invoice.invoiceNumber} deleted`);
+      } else {
+        throw new Error(response?.message || 'Failed to delete invoice');
+      }
+    } catch (error) {
+      console.error('Error deleting contractor invoice:', error);
+      toast.error(error.response?.data?.message || error.message || 'Failed to delete invoice');
+    } finally {
       setDeletingId(null);
-      toast.success(`${invoice.invoiceNumber} deleted`);
-    }, 500);
+    }
   };
 
   return (
@@ -107,10 +286,9 @@ export default function ContractorInvoiceManagement() {
               className="rounded-lg border border-gray-300 py-2.5 pr-8 pl-9 text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none"
             >
               <option value="all">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
+              <option value="Outstanding">Outstanding</option>
               <option value="Paid">Paid</option>
-              <option value="Rejected">Rejected</option>
+              <option value="Pending">Pending</option>
             </select>
           </div>
         </div>
@@ -121,14 +299,18 @@ export default function ContractorInvoiceManagement() {
           <h2 className="text-base font-bold text-gray-900">Invoice Records</h2>
         </div>
 
-        {paginatedInvoices.length === 0 ? (
+        {loading ? (
+          <div className="flex min-h-[30vh] items-center justify-center p-6">
+            <Loading />
+          </div>
+        ) : filteredInvoices.length === 0 ? (
           <div className="p-10 text-center">
             <FileText className="mx-auto h-10 w-10 text-gray-400" />
             <p className="mt-3 text-sm text-gray-600">No contractor invoices found.</p>
           </div>
         ) : (
           <div className="space-y-4 p-4 sm:p-5">
-            {paginatedInvoices.map((item) => (
+            {filteredInvoices.map((item) => (
               <ContractorInvoiceCard
                 key={item.id}
                 invoice={item}
@@ -138,19 +320,30 @@ export default function ContractorInvoiceManagement() {
                 onDelete={handleDelete}
                 markingPaid={markingPaidId === item.id}
                 deleting={deletingId === item.id}
+                downloading={downloadingId === item.id}
               />
             ))}
           </div>
         )}
+
+        {!loading && pagination.total > 0 && (
+          <div className="border-t border-gray-200 px-4 sm:px-6">
+            <Pagination
+              currentPage={pagination.page || currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+              itemsPerPage={pagination.limit || ITEMS_PER_PAGE}
+              totalItems={pagination.total}
+              compact
+            />
+          </div>
+        )}
       </div>
 
-      {filteredInvoices.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(filteredInvoices.length / ITEMS_PER_PAGE)}
-          onPageChange={setCurrentPage}
-          itemsPerPage={ITEMS_PER_PAGE}
-          totalItems={filteredInvoices.length}
+      {showViewModal && (
+        <ContractorInvoiceViewModal
+          invoice={selectedInvoice}
+          onClose={handleCloseViewModal}
         />
       )}
     </div>
