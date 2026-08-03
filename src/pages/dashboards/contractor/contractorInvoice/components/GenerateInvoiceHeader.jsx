@@ -13,7 +13,7 @@ const GenerateInvoiceHeader = () => {
       </Link>
       <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Generate Invoice</h1>
       <p className="mt-2 text-gray-600">
-        Invoice to M19 Logistics for the current pay period — dummy preview
+        Create and submit an invoice to M19 Logistics for your pay period
       </p>
     </div>
   );

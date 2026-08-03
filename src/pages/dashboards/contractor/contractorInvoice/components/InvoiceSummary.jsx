@@ -1,6 +1,16 @@
 import { FileText } from 'lucide-react';
 import { formatMoney } from '../../contractorDummyData';
 
+const formatPayType = (payType) => {
+  if (!payType) return '—';
+  return payType
+    .toString()
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
+
 const InvoiceSummary = ({ profile, jobsCount, total, submitting }) => {
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-4 lg:self-start">
@@ -11,7 +21,7 @@ const InvoiceSummary = ({ profile, jobsCount, total, submitting }) => {
       <dl className="space-y-3 text-sm">
         <div className="flex justify-between">
           <dt className="text-gray-600">Pay Type</dt>
-          <dd className="font-medium text-gray-900">{profile.payStructure?.payType}</dd>
+          <dd className="font-medium text-gray-900">{formatPayType(profile.payType)}</dd>
         </div>
         <div className="flex justify-between">
           <dt className="text-gray-600">Jobs</dt>
@@ -19,9 +29,7 @@ const InvoiceSummary = ({ profile, jobsCount, total, submitting }) => {
         </div>
         <div className="flex justify-between">
           <dt className="text-gray-600">Rate</dt>
-          <dd className="font-medium text-gray-900">
-            {formatMoney(profile.payStructure?.rate)}/day
-          </dd>
+          <dd className="font-medium text-gray-900">{formatMoney(profile.rate)}</dd>
         </div>
         <div className="border-t border-gray-200 pt-3">
           <div className="flex justify-between">

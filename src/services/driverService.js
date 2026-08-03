@@ -48,6 +48,16 @@ export const getContractorInvoices = async (params = {}) => {
 };
 
 /**
+ * Generate a contractor invoice
+ * @param {{ periodStart?: string, periodEnd?: string }} [payload] - Optional period body
+ * @returns {Promise} Promise with created invoice payload
+ */
+export const generateContractorInvoice = async (payload = {}) => {
+  const response = await axiosInstance.post('/api/driver/contractor/invoices/generate', payload);
+  return response.data;
+};
+
+/**
  * Get driver deliveries by status and date
  * @param {string} status - Delivery status (e.g., 'ALLOCATED')
  * @param {string} startDate - Start date in YYYY-MM-DD format (optional)
