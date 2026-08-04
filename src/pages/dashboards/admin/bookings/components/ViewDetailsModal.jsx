@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { X, User, Phone, MapPin, Calendar, Weight, Truck, Camera, PenLine, ImageOff } from 'lucide-react';
+import { X, User, Phone, MapPin, Calendar, Weight, Truck, Camera, PenLine, ImageOff, MessageSquare } from 'lucide-react';
 import axiosInstance from '../../../../../services/axiosInstance';
 
 /** Parse photoUrl / photoUrls into a clean URL array */
@@ -79,6 +79,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
         let full = null;
         try {
           const byId = await axiosInstance.get(`/api/admin/deliveries/${delivery.id}`);
+          console.log('ViewDetailsModal backend response (by id):', byId.data);
           full = byId.data?.data || byId.data;
           if (Array.isArray(full)) {
             full = full.find((d) => d.id === delivery.id) || null;
@@ -86,6 +87,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
         } catch {
           // Fallback: list endpoint and find by id
           const listRes = await axiosInstance.get('/api/admin/deliveries');
+          console.log('ViewDetailsModal backend response (list fallback):', listRes.data);
           const list = listRes.data?.data || [];
           full = list.find((d) => d.id === delivery.id) || null;
         }
@@ -109,6 +111,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
             signatureUrl: full.signatureUrl ?? delivery.signatureUrl,
             receivedBy: full.receivedBy ?? delivery.receivedBy,
             deliveredAt: full.deliveredAt ?? delivery.deliveredAt,
+            driverFeedback: full.driverFeedback ?? delivery.driverFeedback ?? null,
           };
           setDetail(merged);
           console.log('ViewDetailsModal full delivery loaded:', merged);
@@ -356,6 +359,23 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
                 {data.receivedBy && (
                   <p className="text-base text-green-700">Received by: {data.receivedBy}</p>
                 )}
+              </div>
+            )}
+
+            {(data.driverFeedback?.notes || data.driverFeedback?.comments) && (
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div className="mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
+                  <MessageSquare className="h-4 w-4 text-gray-500" />
+                  <h3 className="font-semibold text-gray-900">Driver Feedback</h3>
+                </div>
+                <p className="text-base text-gray-800 whitespace-pre-wrap">
+                  {data.driverFeedback.notes || data.driverFeedback.comments}
+                </p>
+                {/* {data.driverFeedback.createdAt && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    Submitted: {formatDate(data.driverFeedback.createdAt)}
+                  </p>
+                )} */}
               </div>
             )}
 
