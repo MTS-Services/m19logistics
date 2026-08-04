@@ -214,14 +214,14 @@ const ContractorGenerateInvoice = () => {
           <div className="space-y-6 lg:col-span-2">
             <InvoiceContractorDetails profile={profile || {}} />
             <InvoiceBankDetails bank={profile?.bank || {}} />
-            <InvoiceJobsList
+            {/* <InvoiceJobsList
               jobs={jobs}
               period={{
                 startDate: periodStart,
                 endDate: periodEnd,
                 label: periodLabel,
               }}
-            />
+            /> */}
           </div>
 
           <InvoiceSummary
