@@ -1,5 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { X, User, Phone, MapPin, Calendar, Weight, Truck, Camera, PenLine, ImageOff, MessageSquare } from 'lucide-react';
+import {
+  X,
+  User,
+  Phone,
+  MapPin,
+  Calendar,
+  Weight,
+  Truck,
+  Camera,
+  PenLine,
+  ImageOff,
+  MessageSquare,
+} from 'lucide-react';
 import axiosInstance from '../../../../../services/axiosInstance';
 
 /** Parse photoUrl / photoUrls into a clean URL array */
@@ -275,9 +287,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
                     Delivery Photos {photoUrls.length > 0 ? `(${photoUrls.length})` : ''}
                   </h3>
                 </div>
-                {loadingDetail && (
-                  <span className="text-xs text-gray-500">Loading proof...</span>
-                )}
+                {loadingDetail && <span className="text-xs text-gray-500">Loading proof...</span>}
               </div>
 
               {photoUrls.length > 0 ? (
@@ -303,9 +313,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
                             src={src}
                             alt={`Delivery proof ${index + 1}`}
                             className="h-28 w-full object-cover transition-transform group-hover:scale-105"
-                            onError={() =>
-                              setBrokenImages((prev) => ({ ...prev, [index]: true }))
-                            }
+                            onError={() => setBrokenImages((prev) => ({ ...prev, [index]: true }))}
                           />
                         )}
                         <p className="truncate px-2 py-1 text-[11px] text-gray-500" title={url}>
@@ -368,7 +376,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
                   <MessageSquare className="h-4 w-4 text-gray-500" />
                   <h3 className="font-semibold text-gray-900">Driver Feedback</h3>
                 </div>
-                <p className="text-base text-gray-800 whitespace-pre-wrap">
+                <p className="text-base whitespace-pre-wrap text-gray-800">
                   {data.driverFeedback.notes || data.driverFeedback.comments}
                 </p>
                 {/* {data.driverFeedback.createdAt && (
@@ -384,9 +392,7 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
                 <h3 className="mb-2 font-semibold text-red-900">Cancellation Details</h3>
                 <p className="text-base text-red-700">{data.cancelReason}</p>
                 {data.cancelledAt && (
-                  <p className="mt-1 text-base text-red-500">
-                    Cancelled at: {data.cancelledAt}
-                  </p>
+                  <p className="mt-1 text-base text-red-500">Cancelled at: {data.cancelledAt}</p>
                 )}
               </div>
             )}
