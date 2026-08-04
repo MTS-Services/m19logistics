@@ -123,6 +123,20 @@ export const completeDelivery = async (deliveryId, receivedBy) => {
   return response.data;
 };
 
+/**
+ * Submit delivery feedback / comments
+ * @param {number} deliveryId - Delivery ID
+ * @param {{ comments?: string, name?: string }} payload
+ * @returns {Promise} Promise with feedback response data
+ */
+export const submitDeliveryFeedback = async (deliveryId, payload) => {
+  const response = await axiosInstance.post(
+    `/api/driver/deliveries/${deliveryId}/feedback`,
+    payload
+  );
+  return response.data;
+};
+
 // Driver Availability
 export const getDriverAvailability = async () => {
   const response = await axiosInstance.get('/api/driver/availability');

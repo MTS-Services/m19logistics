@@ -46,6 +46,7 @@ const AssignedDeliveries = () => {
 
   const [finalCompletionData, setFinalCompletionData] = useState({
     receivedBy: '',
+    comments: '',
   });
 
   // Fetch all ALLOCATED deliveries on component mount
