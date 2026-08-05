@@ -31,12 +31,7 @@ const InvoiceSummary = ({ profile, jobsCount, total, submitting }) => {
           <dt className="text-gray-600">Rate</dt>
           <dd className="font-medium text-gray-900">{formatMoney(profile.rate)}</dd>
         </div>
-        {/* <div className="border-t border-gray-200 pt-3">
-          <div className="flex justify-between">
-            <dt className="text-base font-semibold text-gray-900">Total</dt>
-            <dd className="text-base font-bold text-teal-700">{formatMoney(total)}</dd>
-          </div>
-        </div> */}
+     
       </dl>
 
       <button
