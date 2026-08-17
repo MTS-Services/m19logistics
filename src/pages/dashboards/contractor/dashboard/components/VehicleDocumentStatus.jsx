@@ -9,13 +9,30 @@ const expiryStyles = {
   expired: 'border-red-600 bg-red-200 text-red-950',
 };
 
+const formatDaysRemaining = (daysRemaining) => {
+  if (daysRemaining == null || Number.isNaN(Number(daysRemaining))) return '—';
+
+  const days = Number(daysRemaining);
+
+  if (days < 0) {
+    const ago = Math.abs(days);
+    return ago === 1 ? 'Expired 1 day ago' : `Expired ${ago} days ago`;
+  }
+
+  if (days === 0) return 'Expires today';
+  if (days === 1) return 'Expires in 1 day';
+  return `Expires in ${days} days`;
+};
+
 const VehicleDocumentStatus = ({ documents = [] }) => {
+  console.log('VehicleDocumentStatus received documents:', documents);
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
         <h2 className="text-lg font-bold text-gray-900">Vehicle Document Status</h2>
         <p className="text-sm text-gray-500">
-          Highlighted in red when within 30 / 14 / 7 days or expired
+          Shows how many days until expiry. Highlighted in red when within 30 days or expired.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -32,7 +49,7 @@ const VehicleDocumentStatus = ({ documents = [] }) => {
             </div>
             <p className="mt-2 text-lg font-bold">{formatDate(doc.date)}</p>
             <p className="mt-1 text-xs font-semibold tracking-wide uppercase">
-              {doc.urgencyLabel}
+              {formatDaysRemaining(doc.daysRemaining)}
             </p>
           </div>
         ))}
