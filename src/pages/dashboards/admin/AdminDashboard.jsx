@@ -21,6 +21,7 @@ import {
   HelpCircle,
   Briefcase,
   AlertTriangle,
+  PlusCircle,
 } from 'lucide-react';
 import axiosInstance from '../../../services/axiosInstance';
 import { ENDPOINT } from '../../../services/httpEndpoint';
@@ -84,6 +85,8 @@ const AdminDashboard = () => {
       title: 'Operations',
       items: [
         { name: 'Bookings', href: '/admin/bookings', icon: Package },
+        { name: 'Create Job', href: '/admin/create-job', icon: PlusCircle },
+        { name: 'My Bookings', href: '/admin/my-bookings', icon: FileText },
         { name: 'Failed Deliveries', href: '/admin/failed-deliveries', icon: AlertTriangle },
         { name: 'Users', href: '/admin/users', icon: Users },
         { name: 'Drivers', href: '/admin/drivers', icon: Truck },
