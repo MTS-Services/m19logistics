@@ -32,6 +32,8 @@ import ContactsManagement from '../pages/dashboards/admin/contactManagement/Cont
 import EnquiriesManagement from '../pages/dashboards/admin/enquiryManagement/EnquiriesManagement';
 import AdminAuditLogs from '../pages/dashboards/admin/adminauditlog/AuditLogs';
 import JobApplicationsManagement from '../pages/dashboards/admin/jobApplications/JobApplicationsManagement';
+import AdminCreateJob from '../pages/dashboards/admin/createJob/AdminCreateJob';
+import AdminMyBookings from '../pages/dashboards/admin/myBookings/AdminMyBookings';
 
 // Dashboard pages - Customer
 import CustomerDashboard from '../pages/dashboards/customer/CustomerDashboard';
@@ -108,6 +110,8 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<AdminDashboardHome />} />
         <Route path="bookings" element={<BookingsBoard />} />
         <Route path="bookings/allocate" element={<AllocateDriverPage />} />
+        <Route path="create-job" element={<AdminCreateJob />} />
+        <Route path="my-bookings" element={<AdminMyBookings />} />
         <Route path="failed-deliveries" element={<FailedDeliveries />} />
         <Route path="users" element={<UsersManagement />} />
         <Route path="drivers" element={<DriverManagement />} />
