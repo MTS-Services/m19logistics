@@ -22,7 +22,7 @@ const statusConfig = {
   overdue: { label: 'Overdue', color: 'bg-red-100 text-red-700', icon: () => null },
 };
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 export default function InvoicesManagement() {
   const [invoices, setInvoices] = useState([]);
@@ -34,6 +34,12 @@ export default function InvoicesManagement() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: ITEMS_PER_PAGE,
+    total: 0,
+    totalPages: 1,
+  });
 
   const [showViewModal, setShowViewModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -44,17 +50,27 @@ export default function InvoicesManagement() {
   const [sendingReminders, setSendingReminders] = useState(false);
 
   useEffect(() => {
-    fetchInvoices();
-  }, []);
+    fetchInvoices(currentPage);
+  }, [currentPage]);
 
-  const fetchInvoices = async () => {
+  const fetchInvoices = async (page = currentPage) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllAdminInvoices();
-      // API returns { success, data: [...], count, summary: { totalInvoices, totalPaid, totalUnpaid } }
-      setInvoices(Array.isArray(data?.data) ? data.data : []);
-      setCurrentPage(1);
+      const data = await getAllAdminInvoices({ page, limit: ITEMS_PER_PAGE });
+
+      const list = Array.isArray(data?.data) ? data.data : [];
+      const meta = data?.pagination || {};
+      const total = Number(meta.total ?? data?.summary?.totalInvoices ?? list.length) || 0;
+      const limit = Number(meta.limit) || ITEMS_PER_PAGE;
+
+      setInvoices(list);
+      setPagination({
+        page: Number(meta.page) || page,
+        limit,
+        total,
+        totalPages: Number(meta.totalPages) || Math.max(1, Math.ceil(total / limit)),
+      });
       if (data?.summary) setSummary(data.summary);
     } catch (err) {
       setError(err.message || 'Failed to load invoices');
@@ -139,11 +155,8 @@ export default function InvoicesManagement() {
     totalUnpaid: Number(summary.totalUnpaid).toFixed(2),
   };
 
-  const totalPages = Math.ceil(invoices.length / ITEMS_PER_PAGE) || 1;
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedInvoices = invoices.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
   const handlePageChange = (page) => {
+    if (page < 1 || page > pagination.totalPages || page === currentPage) return;
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -191,7 +204,7 @@ export default function InvoicesManagement() {
       {error && !loading && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <p className="text-red-700">{error}</p>
-          <button onClick={fetchInvoices} className="mt-2 rounded bg-red-600 px-3 py-1 text-white">
+          <button onClick={() => fetchInvoices()} className="mt-2 rounded bg-red-600 px-3 py-1 text-white">
             Retry
           </button>
         </div>
@@ -217,7 +230,7 @@ export default function InvoicesManagement() {
 
           <div className="grid gap-4">
             {invoices.length === 0 && <p className="text-gray-600">No invoices found.</p>}
-            {paginatedInvoices.map((inv) => (
+            {invoices.map((inv) => (
               <InvoiceCard
                 key={inv.id || inv._id || inv.invoiceNumber}
                 invoice={inv}
@@ -231,14 +244,14 @@ export default function InvoicesManagement() {
             ))}
           </div>
 
-          {invoices.length > 0 && (
+          {pagination.total > 0 && (
             <div className="mt-6">
               <Pagination
                 currentPage={currentPage}
-                totalPages={totalPages}
+                totalPages={pagination.totalPages}
                 onPageChange={handlePageChange}
-                itemsPerPage={ITEMS_PER_PAGE}
-                totalItems={invoices.length}
+                itemsPerPage={pagination.limit}
+                totalItems={pagination.total}
               />
             </div>
           )}
