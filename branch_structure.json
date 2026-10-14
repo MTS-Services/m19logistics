@@ -1,0 +1,39 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "abdur",
+    "dev2",
+    "kamrul",
+    "main",
+    "mehedi",
+    "rafi",
+    "rakib",
+    "rakib2",
+    "rakib3",
+    "rakib4"
+  ],
+  "parent": {
+    "abdur": "main",
+    "dev2": "main",
+    "kamrul": "main",
+    "main": null,
+    "mehedi": "main",
+    "rafi": "main",
+    "rakib": "main",
+    "rakib2": "main",
+    "rakib3": "main",
+    "rakib4": "main"
+  },
+  "order": [
+    "main",
+    "abdur",
+    "dev2",
+    "kamrul",
+    "mehedi",
+    "rafi",
+    "rakib",
+    "rakib2",
+    "rakib3",
+    "rakib4"
+  ]
+}
