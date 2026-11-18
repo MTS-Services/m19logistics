@@ -44,7 +44,9 @@ export const DRIVER_TYPE = {
   CONTRACTOR: 'CONTRACTOR',
 };
 
-export const PAY_TYPES = ['Daily', 'Weekly', 'Fortnightly', 'Four Weekly'];
+export const RATE_ON_JOB = 'Rate on Job';
+
+export const PAY_TYPES = ['Daily', 'Weekly', 'Fortnightly', 'Four Weekly', RATE_ON_JOB];
 
 export const emptyContractorFields = {
   tradingName: '',

@@ -14,6 +14,9 @@ import {
   Send,
   X,
   Info,
+  Plus,
+  Trash2,
+  PoundSterling,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -25,17 +28,23 @@ const AdminCreateJob = () => {
   const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [showSameDayModal, setShowSameDayModal] = useState(false);
-  const [formData, setFormData] = useState({
+
+  const getEmptyForm = () => ({
     spoNumber: '',
     date: '',
     timeSlot: 'AM',
     weight: '',
     address: '',
+    collectionPoints: [''],
     customerName: '',
     phone: '',
     requestedBy: user?.name || user?.fullName || '',
     instructions: '',
+    isPerJobContractor: false,
+    jobRate: '',
   });
+
+  const [formData, setFormData] = useState(getEmptyForm);
 
   const [errors, setErrors] = useState({});
 
@@ -45,17 +54,37 @@ const AdminCreateJob = () => {
     return formData.date === today;
   };
 
-  const getEmptyForm = () => ({
-    spoNumber: '',
-    date: '',
-    timeSlot: 'AM',
-    weight: '',
-    address: '',
-    customerName: '',
-    phone: '',
-    requestedBy: user?.name || user?.fullName || '',
-    instructions: '',
-  });
+  const getFilledCollectionPoints = () =>
+    formData.collectionPoints.map((point) => point.trim()).filter(Boolean);
+
+  const handleCollectionPointChange = (index, value) => {
+    const next = [...formData.collectionPoints];
+    next[index] = value;
+    setFormData({ ...formData, collectionPoints: next });
+    if (errors.collectionPoints) {
+      setErrors({ ...errors, collectionPoints: '' });
+    }
+  };
+
+  const addCollectionPoint = () => {
+    setFormData({ ...formData, collectionPoints: [...formData.collectionPoints, ''] });
+  };
+
+  const removeCollectionPoint = (index) => {
+    if (formData.collectionPoints.length <= 1) return;
+    setFormData({
+      ...formData,
+      collectionPoints: formData.collectionPoints.filter((_, i) => i !== index),
+    });
+  };
+
+  const handlePerJobToggle = (e) => {
+    const checked = e.target.checked;
+    setFormData({ ...formData, isPerJobContractor: checked, jobRate: checked ? formData.jobRate : '' });
+    if (!checked && errors.jobRate) {
+      setErrors({ ...errors, jobRate: '' });
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -71,6 +100,15 @@ const AdminCreateJob = () => {
     }
     if (!formData.address.trim()) {
       newErrors.address = 'Delivery address is required';
+    }
+    if (getFilledCollectionPoints().length === 0) {
+      newErrors.collectionPoints = 'At least one collection point is required';
+    }
+    if (
+      formData.isPerJobContractor &&
+      (formData.jobRate === '' || Number(formData.jobRate) <= 0)
+    ) {
+      newErrors.jobRate = 'Enter a valid rate for this job';
     }
     if (!formData.customerName.trim()) {
       newErrors.customerName = 'Customer name is required';
@@ -114,7 +152,10 @@ const AdminCreateJob = () => {
 
   // Design-only confirm — no API call; save locally and go to My Bookings
   const confirmSubmission = () => {
-    const job = saveAdminCreatedJob(formData);
+    const job = saveAdminCreatedJob({
+      ...formData,
+      collectionPoints: getFilledCollectionPoints(),
+    });
     console.log('Admin Create Job saved locally:', job);
     toast.success('Job created — saved to My Bookings');
     setShowPreview(false);
@@ -257,13 +298,13 @@ const AdminCreateJob = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
-            <MapPin className="h-5 w-5 text-teal-600" />
-            Delivery Address
-          </h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
+              <MapPin className="h-5 w-5 text-teal-600" />
+              Delivery Address
+            </h2>
 
-          <div className="space-y-4">
             <div>
               <label className="mb-2 block text-base font-medium text-gray-700">
                 Full Address *
@@ -280,6 +321,58 @@ const AdminCreateJob = () => {
               />
               {errors.address && <p className="mt-1 text-base text-red-600">{errors.address}</p>}
             </div>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <h2 className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                <MapPin className="h-5 w-5 text-teal-600" />
+                Collection From
+              </h2>
+              <button
+                type="button"
+                onClick={addCollectionPoint}
+                className="inline-flex items-center gap-1 rounded-md border border-teal-200 bg-teal-50 px-3 py-1.5 text-sm font-medium text-teal-700 hover:bg-teal-100"
+              >
+                <Plus className="h-4 w-4" />
+                Add Point
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {formData.collectionPoints.map((point, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <div className="flex-1">
+                    <label className="mb-2 block text-base font-medium text-gray-700">
+                      Collection Point {index + 1}
+                      {index === 0 ? ' *' : ''}
+                    </label>
+                    <textarea
+                      value={point}
+                      onChange={(e) => handleCollectionPointChange(index, e.target.value)}
+                      rows={2}
+                      className={`w-full rounded-md border ${
+                        errors.collectionPoints && index === 0 ? 'border-red-300' : 'border-gray-300'
+                      } px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none`}
+                      placeholder="Enter collection address with postcode"
+                    />
+                  </div>
+                  {formData.collectionPoints.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeCollectionPoint(index)}
+                      className="mt-9 rounded-md border border-red-200 p-2 text-red-600 hover:bg-red-50"
+                      title="Remove collection point"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {errors.collectionPoints && (
+              <p className="mt-2 text-base text-red-600">{errors.collectionPoints}</p>
+            )}
           </div>
         </div>
 
@@ -348,6 +441,50 @@ const AdminCreateJob = () => {
               )}
             </div>
           </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-900">
+            <PoundSterling className="h-5 w-5 text-teal-600" />
+            Contractor Rate
+          </h2>
+
+          <label className="flex items-start gap-3 text-base text-gray-700">
+            <input
+              type="checkbox"
+              checked={formData.isPerJobContractor}
+              onChange={handlePerJobToggle}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+            />
+            <span>
+              This job is for a contractor paid per job (Rate on Job)
+              <span className="block text-sm text-gray-500">
+                Leave unticked if the job is for an employee or a contractor on daily / weekly pay
+              </span>
+            </span>
+          </label>
+
+          {formData.isPerJobContractor && (
+            <div className="mt-4 max-w-xs">
+              <label className="mb-2 flex items-center gap-2 text-base font-medium text-gray-700">
+                <PoundSterling className="h-4 w-4 text-gray-400" />
+                Rate for this Job (£) *
+              </label>
+              <input
+                type="number"
+                name="jobRate"
+                min="0"
+                step="0.01"
+                value={formData.jobRate}
+                onChange={handleChange}
+                className={`w-full rounded-md border ${
+                  errors.jobRate ? 'border-red-300' : 'border-gray-300'
+                } px-4 py-2 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:outline-none`}
+                placeholder="e.g., 45"
+              />
+              {errors.jobRate && <p className="mt-1 text-base text-red-600">{errors.jobRate}</p>}
+            </div>
+          )}
         </div>
 
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -438,6 +575,26 @@ const AdminCreateJob = () => {
                   <p className="text-base text-gray-600">Delivery Address</p>
                   <p className="font-semibold text-gray-900">{formData.address}</p>
                 </div>
+
+                <div>
+                  <p className="text-base text-gray-600">Collection From</p>
+                  <ul className="mt-1 list-disc space-y-1 pl-5">
+                    {getFilledCollectionPoints().map((point, index) => (
+                      <li key={index} className="font-semibold text-gray-900">
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {formData.isPerJobContractor && (
+                  <div>
+                    <p className="text-base text-gray-600">Contractor Rate (Rate on Job)</p>
+                    <p className="font-semibold text-gray-900">
+                      £{Number(formData.jobRate).toFixed(2)}
+                    </p>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>

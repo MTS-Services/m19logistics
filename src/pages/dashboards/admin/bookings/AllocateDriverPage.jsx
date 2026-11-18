@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../../services/axiosInstance';
+import ContractorRateModal from './components/ContractorRateModal';
 
 const AllocateDriverPage = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const AllocateDriverPage = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [assigningDriverId, setAssigningDriverId] = useState(null);
+  const [rateModalDriver, setRateModalDriver] = useState(null);
 
   // Redirect if no delivery data
   useEffect(() => {
@@ -60,6 +62,9 @@ const AllocateDriverPage = () => {
             currentDeliveries: driver._count?.deliveriesAssigned || 0,
             totalDeliveries: driver._count?.deliveriesAssigned || 0,
             vehicleRegistration: driver.driverProfile?.vehicleRegistration,
+            driverType: driver.driverType || driver.driverProfile?.driverType || 'EMPLOYEE',
+            payType: driver.payStructure?.payType || driver.driverProfile?.payType || '',
+            rate: driver.payStructure?.rate ?? driver.driverProfile?.rate ?? '',
           }));
           setDrivers(mappedDrivers);
         } else {
@@ -77,6 +82,22 @@ const AllocateDriverPage = () => {
       fetchDrivers();
     }
   }, [delivery]);
+
+  const handleAssignClick = (driver) => {
+    if (driver.driverType === 'CONTRACTOR') {
+      setRateModalDriver(driver);
+      return;
+    }
+    handleAssignDriver(driver);
+  };
+
+  const handleRateConfirm = (rateSelection) => {
+    const driver = rateModalDriver;
+    setRateModalDriver(null);
+    // Rate is not sent to the allocate API until backend supports it
+    console.log('Contractor rate selection (UI only):', { driverId: driver.id, ...rateSelection });
+    handleAssignDriver(driver);
+  };
 
   const handleAssignDriver = async (driver) => {
     let toastId = null;
@@ -292,6 +313,15 @@ const AllocateDriverPage = () => {
                             <CheckCircle className="h-3 w-3" />
                             {driver.username}
                           </span>
+                          <span
+                            className={`inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-sm font-medium ${
+                              driver.driverType === 'CONTRACTOR'
+                                ? 'bg-purple-50 text-purple-700'
+                                : 'bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {driver.driverType === 'CONTRACTOR' ? 'Contractor' : 'Employee'}
+                          </span>
                         </div>
 
                         {/* Contact Info */}
@@ -332,7 +362,7 @@ const AllocateDriverPage = () => {
 
                     {/* Assign Button */}
                     <button
-                      onClick={() => handleAssignDriver(driver)}
+                      onClick={() => handleAssignClick(driver)}
                       disabled={assigningDriverId !== null}
                       className="w-full rounded-lg bg-linear-to-r from-teal-600 to-teal-500 px-6 py-3 text-base font-medium text-white shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
@@ -357,6 +387,15 @@ const AllocateDriverPage = () => {
           </div>
         </div>
       </div>
+
+      {rateModalDriver && (
+        <ContractorRateModal
+          driver={rateModalDriver}
+          delivery={delivery}
+          onClose={() => setRateModalDriver(null)}
+          onConfirm={handleRateConfirm}
+        />
+      )}
     </div>
   );
 };

@@ -14,6 +14,7 @@ const PAY_TYPE_API_MAP = {
   Weekly: 'WEEKLY',
   Fortnightly: 'FORTNIGHTLY',
   'Four Weekly': 'FOUR_WEEKLY',
+  'Rate on Job': 'PER_JOB',
 };
 
 const PAY_TYPE_UI_MAP = {
@@ -21,6 +22,7 @@ const PAY_TYPE_UI_MAP = {
   WEEKLY: 'Weekly',
   FORTNIGHTLY: 'Fortnightly',
   FOUR_WEEKLY: 'Four Weekly',
+  PER_JOB: 'Rate on Job',
 };
 
 const normalizePayTypeForUI = (value) => PAY_TYPE_UI_MAP[value] || value || 'Weekly';

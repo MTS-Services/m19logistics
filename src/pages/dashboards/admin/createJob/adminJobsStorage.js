@@ -19,6 +19,8 @@ export const saveAdminCreatedJob = (formData) => {
     timeSlot: formData.timeSlot,
     weight: formData.weight,
     address: formData.address,
+    collectionPoints: formData.collectionPoints || [],
+    jobRate: formData.isPerJobContractor ? Number(formData.jobRate) : null,
     customer: formData.customerName,
     phone: formData.phone,
     requestedBy: formData.requestedBy,

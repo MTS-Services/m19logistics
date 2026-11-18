@@ -345,10 +345,35 @@ const AdminMyBookings = () => {
               <div>
                 <p className="mb-1 flex items-center gap-2 text-sm text-gray-500">
                   <MapPin className="h-4 w-4" />
-                  Address
+                  Delivery Address
                 </p>
                 <p className="font-semibold text-gray-900">{selectedJob.address}</p>
               </div>
+
+              {selectedJob.collectionPoints?.length > 0 && (
+                <div>
+                  <p className="mb-1 flex items-center gap-2 text-sm text-gray-500">
+                    <MapPin className="h-4 w-4" />
+                    Collection From
+                  </p>
+                  <ul className="list-disc space-y-1 pl-5">
+                    {selectedJob.collectionPoints.map((point, index) => (
+                      <li key={index} className="font-semibold text-gray-900">
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedJob.jobRate != null && (
+                <div>
+                  <p className="text-sm text-gray-500">Contractor Rate (Rate on Job)</p>
+                  <p className="font-semibold text-gray-900">
+                    £{Number(selectedJob.jobRate).toFixed(2)}
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>

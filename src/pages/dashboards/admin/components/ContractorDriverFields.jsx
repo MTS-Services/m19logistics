@@ -2,6 +2,7 @@ import { AlertTriangle } from 'lucide-react';
 import {
   EXPIRY_STYLES,
   PAY_TYPES,
+  RATE_ON_JOB,
   getExpiryLabel,
   getExpiryUrgency,
 } from './driverTypeUtils';
@@ -284,7 +285,9 @@ const ContractorDriverFields = ({ formData, errors = {}, onChange, onRadioChange
           {errors.payType && <p className="mt-1 text-xs text-red-500">{errors.payType}</p>}
         </div>
         <div className="max-w-xs">
-          <label className="block text-sm font-medium text-gray-700">Rate (£) *</label>
+          <label className="block text-sm font-medium text-gray-700">
+            {formData.payType === RATE_ON_JOB ? 'Default Rate per Job (£) *' : 'Rate (£) *'}
+          </label>
           <input
             type="number"
             name="rate"
@@ -296,7 +299,11 @@ const ContractorDriverFields = ({ formData, errors = {}, onChange, onRadioChange
             placeholder="e.g., 180"
           />
           {errors.rate && <p className="mt-1 text-xs text-red-500">{errors.rate}</p>}
-          <p className="mt-1 text-xs text-gray-500">Admin sets the rate for the selected pay type</p>
+          <p className="mt-1 text-xs text-gray-500">
+            {formData.payType === RATE_ON_JOB
+              ? 'Paid per job — this default can be changed on each job when creating or allocating'
+              : 'Admin sets the rate for the selected pay type'}
+          </p>
         </div>
       </div>
     </div>
