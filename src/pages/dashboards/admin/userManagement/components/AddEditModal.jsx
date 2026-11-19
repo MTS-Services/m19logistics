@@ -14,7 +14,7 @@ const PAY_TYPE_API_MAP = {
   Weekly: 'WEEKLY',
   Fortnightly: 'FORTNIGHTLY',
   'Four Weekly': 'FOUR_WEEKLY',
-  'Rate on Job': 'PER_JOB',
+  'Rate on Job': 'RATE_ON_JOB',
 };
 
 const PAY_TYPE_UI_MAP = {
@@ -22,7 +22,7 @@ const PAY_TYPE_UI_MAP = {
   WEEKLY: 'Weekly',
   FORTNIGHTLY: 'Fortnightly',
   FOUR_WEEKLY: 'Four Weekly',
-  PER_JOB: 'Rate on Job',
+  RATE_ON_JOB: 'Rate on Job',
 };
 
 const normalizePayTypeForUI = (value) => PAY_TYPE_UI_MAP[value] || value || 'Weekly';
@@ -300,8 +300,20 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
       }
     } catch (err) {
       console.error('Error saving user:', err);
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to save user';
-      toast.error(errorMessage);
+      console.error('Backend 400/error response:', err.response?.data);
+
+      const data = err.response?.data;
+      let errorMessage = data?.message || err.message || 'Failed to save user';
+
+      // Show validation details when backend returns field errors
+      if (data?.errors) {
+        const details = Object.entries(data.errors)
+          .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+          .join(' | ');
+        if (details) errorMessage = `${errorMessage} — ${details}`;
+      }
+
+      toast.error(errorMessage, { autoClose: 8000 });
     } finally {
       setIsSubmitting(false);
     }
