@@ -21,13 +21,14 @@ import {
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthContext';
-import { saveAdminCreatedJob } from './adminJobsStorage';
+import { createDeliveryRequest } from '../../../../services/deliveryService';
 
 const AdminCreateJob = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [showSameDayModal, setShowSameDayModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getEmptyForm = () => ({
     spoNumber: '',
@@ -150,18 +151,87 @@ const AdminCreateJob = () => {
     setShowPreview(true);
   };
 
-  // Design-only confirm — no API call; save locally and go to My Bookings
-  const confirmSubmission = () => {
-    const job = saveAdminCreatedJob({
-      ...formData,
+  // POST /api/deliveries — payload matches Postman Create Delivery Request
+  const confirmSubmission = async () => {
+    if (isSubmitting) return;
+
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields correctly');
+      setShowPreview(false);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const payload = {
+      spoNumber: formData.spoNumber.trim(),
+      deliveryDate: formData.date,
+      timeSlot: formData.timeSlot,
+      weight: Number(formData.weight),
+      deliveryAddress: formData.address.trim(),
+      customerName: formData.customerName.trim(),
+      customerPhone: formData.phone.trim(),
+      requestedBy: formData.requestedBy.trim(),
+      specialInstructions: formData.instructions.trim(),
       collectionPoints: getFilledCollectionPoints(),
-    });
-    console.log('Admin Create Job saved locally:', job);
-    toast.success('Job created — saved to My Bookings');
-    setShowPreview(false);
-    setFormData(getEmptyForm());
-    setErrors({});
-    navigate('/admin/my-bookings');
+    };
+
+    // Only send contractorRate when Rate on Job is selected
+    if (formData.isPerJobContractor) {
+      payload.contractorRate = Number(formData.jobRate);
+    }
+
+    console.log('Admin Create Job payload:', payload);
+
+    try {
+      const response = await createDeliveryRequest(payload);
+      console.log('Admin Create Job response:', response);
+
+      if (response?.success === false) {
+        throw new Error(response?.message || 'Failed to create job');
+      }
+
+      toast.success(response?.message || 'Job created successfully');
+
+      if (formData.timeSlot === 'SAME_DAY' || isSameDayDelivery()) {
+        setTimeout(() => {
+          toast.warning(
+            'Same-day delivery cannot be guaranteed. Please call 07818077110 to confirm availability'
+          );
+        }, 1000);
+      }
+
+      setShowPreview(false);
+      setFormData(getEmptyForm());
+      setErrors({});
+      navigate('/admin/my-bookings');
+    } catch (error) {
+      console.error('Error creating admin job:', error);
+
+      if (error.response?.status === 400) {
+        const errorMessage =
+          error.response.data?.message || 'Invalid request data. Please check your input.';
+
+        if (errorMessage.includes('No slot availability configured')) {
+          toast.error(
+            `${errorMessage} Please try selecting a different date or time slot, or contact support at 07818077110.`,
+            { autoClose: 10000 }
+          );
+        } else {
+          toast.error(errorMessage);
+        }
+      } else if (error.response?.status === 401) {
+        toast.error('You are not authorized to perform this action. Please login again.');
+      } else if (error.response?.status === 500) {
+        toast.error('Server error. Please try again later or contact support.');
+      } else {
+        toast.error(
+          error.response?.data?.message || error.message || 'Failed to create job. Please try again.'
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -624,16 +694,33 @@ const AdminCreateJob = () => {
             <div className="flex flex-col items-center justify-center gap-4 border-t border-gray-200 px-6 py-4 sm:flex-row sm:justify-end">
               <button
                 onClick={() => setShowPreview(false)}
-                className="w-full rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all hover:bg-gray-50 sm:w-auto"
+                disabled={isSubmitting}
+                className={`w-full rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 shadow-sm transition-all sm:w-auto ${
+                  isSubmitting ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-50'
+                }`}
               >
                 Cancel
               </button>
               <button
                 onClick={confirmSubmission}
-                className="flex w-full items-center justify-center gap-2 rounded-md bg-linear-to-r from-teal-600 to-teal-500 px-6 py-2 text-white shadow-md transition-all hover:from-teal-700 hover:to-teal-600 sm:w-auto"
+                disabled={isSubmitting}
+                className={`flex w-full items-center justify-center gap-2 rounded-md px-6 py-2 text-white shadow-md transition-all sm:w-auto ${
+                  isSubmitting
+                    ? 'cursor-not-allowed bg-gray-400'
+                    : 'bg-linear-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600'
+                }`}
               >
-                <CheckCircle className="h-5 w-5" />
-                Confirm & Submit
+                {isSubmitting ? (
+                  <>
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-5 w-5" />
+                    Confirm & Submit
+                  </>
+                )}
               </button>
             </div>
           </div>
