@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Package,
@@ -8,17 +8,17 @@ import {
   FileText,
   Search,
   Eye,
-  Trash2,
+  Edit,
   PlusCircle,
   Phone,
   User,
   X,
+  PoundSterling,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import {
-  getAdminCreatedJobs,
-  deleteAdminCreatedJob,
-} from '../createJob/adminJobsStorage';
+import Loading from '../../../../components/Loading';
+import { getAllDeliveries } from '../../../../services/deliveryService';
+import EditJobModal from './components/EditJobModal';
 
 const getStatusColor = (status) => {
   switch ((status || '').toLowerCase()) {
@@ -33,6 +33,15 @@ const getStatusColor = (status) => {
     default:
       return 'bg-gray-100 text-gray-800';
   }
+};
+
+const formatStatus = (status) => {
+  if (!status) return '—';
+  return String(status)
+    .toLowerCase()
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
 };
 
 const formatDate = (value) => {
@@ -53,14 +62,52 @@ const formatTimeSlot = (slot) => {
   return slot || '—';
 };
 
+const mapApiJobToUi = (item) => ({
+  id: item.id,
+  spoNumber: item.spoNumber || '—',
+  deliveryDate: item.deliveryDate,
+  timeSlot: item.timeSlot,
+  weight: item.weight,
+  address: item.deliveryAddress || '—',
+  collectionPoints: Array.isArray(item.collectionPoints) ? item.collectionPoints : [],
+  jobRate: item.contractorRate != null && item.contractorRate !== '' ? Number(item.contractorRate) : null,
+  customer: item.customerName || '—',
+  phone: item.customerPhone || '—',
+  requestedBy: item.requestedBy || '—',
+  instructions: item.specialInstructions || '',
+  status: formatStatus(item.status),
+  rawStatus: item.status,
+  totalPrice: item.totalPrice,
+  createdAt: item.createdAt,
+});
+
 const AdminMyBookings = () => {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJob, setSelectedJob] = useState(null);
+  const [editingJob, setEditingJob] = useState(null);
+
+  const fetchJobs = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getAllDeliveries();
+      console.log('Admin My Bookings /api/deliveries response:', response);
+
+      const list = Array.isArray(response?.data) ? response.data : [];
+      setJobs(list.map(mapApiJobToUi));
+    } catch (error) {
+      console.error('Error loading admin my bookings:', error);
+      toast.error(error.response?.data?.message || 'Failed to load jobs');
+      setJobs([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    setJobs(getAdminCreatedJobs());
-  }, []);
+    fetchJobs();
+  }, [fetchJobs]);
 
   const filteredJobs = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -70,16 +117,20 @@ const AdminMyBookings = () => {
         job.spoNumber?.toLowerCase().includes(q) ||
         job.customer?.toLowerCase().includes(q) ||
         job.address?.toLowerCase().includes(q) ||
-        job.phone?.toLowerCase().includes(q)
+        job.phone?.toLowerCase().includes(q) ||
+        job.collectionPoints?.some((point) => point?.toLowerCase().includes(q))
     );
   }, [jobs, searchQuery]);
 
-  const handleDelete = (jobId) => {
-    const next = deleteAdminCreatedJob(jobId);
-    setJobs(next);
-    if (selectedJob?.id === jobId) setSelectedJob(null);
-    toast.success('Job removed from My Bookings');
-  };
+  const receivedCount = jobs.filter((j) => j.rawStatus === 'RECEIVED').length;
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center p-6">
+        <Loading message="Loading My Bookings" submessage="Fetching admin jobs..." />
+      </div>
+    );
+  }
 
   return (
     <div className="p-2 sm:p-6">
@@ -109,9 +160,7 @@ const AdminMyBookings = () => {
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <p className="text-sm text-gray-500">Received</p>
-            <p className="mt-1 text-2xl font-bold text-blue-600">
-              {jobs.filter((j) => j.status === 'Received').length}
-            </p>
+            <p className="mt-1 text-2xl font-bold text-blue-600">{receivedCount}</p>
           </div>
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <p className="text-sm text-gray-500">Showing</p>
@@ -236,11 +285,11 @@ const AdminMyBookings = () => {
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleDelete(job.id)}
-                              className="rounded-lg border border-gray-300 bg-white p-2 text-red-600 hover:border-red-300 hover:bg-red-50"
-                              title="Delete"
+                              onClick={() => setEditingJob(job)}
+                              className="rounded-lg border border-gray-300 bg-white p-2 text-gray-700 hover:border-teal-400 hover:bg-gray-50"
+                              title="Edit"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Edit className="h-4 w-4" />
                             </button>
                           </div>
                         </td>
@@ -283,10 +332,11 @@ const AdminMyBookings = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDelete(job.id)}
-                        className="inline-flex items-center justify-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+                        onClick={() => setEditingJob(job)}
+                        className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
+                        Edit
                       </button>
                     </div>
                   </div>
@@ -314,7 +364,7 @@ const AdminMyBookings = () => {
               </button>
             </div>
 
-            <div className="space-y-4 p-6">
+            <div className="max-h-[70vh] space-y-4 overflow-y-auto p-6">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-sm text-gray-500">Status</p>
@@ -366,9 +416,12 @@ const AdminMyBookings = () => {
                 </div>
               )}
 
-              {selectedJob.jobRate != null && (
+              {selectedJob.jobRate != null && !Number.isNaN(selectedJob.jobRate) && (
                 <div>
-                  <p className="text-sm text-gray-500">Contractor Rate (Rate on Job)</p>
+                  <p className="mb-1 flex items-center gap-2 text-sm text-gray-500">
+                    <PoundSterling className="h-4 w-4" />
+                    Contractor Rate (Rate on Job)
+                  </p>
                   <p className="font-semibold text-gray-900">
                     £{Number(selectedJob.jobRate).toFixed(2)}
                   </p>
@@ -405,7 +458,18 @@ const AdminMyBookings = () => {
               )}
             </div>
 
-            <div className="flex justify-end border-t border-gray-200 px-6 py-4">
+            <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingJob(selectedJob);
+                  setSelectedJob(null);
+                }}
+                className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-5 py-2 text-gray-700 hover:bg-gray-50"
+              >
+                <Edit className="h-4 w-4" />
+                Edit
+              </button>
               <button
                 type="button"
                 onClick={() => setSelectedJob(null)}
@@ -416,6 +480,17 @@ const AdminMyBookings = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {editingJob && (
+        <EditJobModal
+          job={editingJob}
+          onClose={() => setEditingJob(null)}
+          onSave={() => {
+            setEditingJob(null);
+            fetchJobs();
+          }}
+        />
       )}
     </div>
   );
