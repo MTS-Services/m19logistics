@@ -6,7 +6,7 @@ const PAY_TYPE_LABELS = {
   WEEKLY: 'Weekly',
   FORTNIGHTLY: 'Fortnightly',
   FOUR_WEEKLY: 'Four Weekly',
-  PER_JOB: 'Rate on Job',
+  RATE_ON_JOB: 'Rate on Job',
 };
 
 export const RATE_MODE = {
@@ -17,10 +17,17 @@ export const RATE_MODE = {
 const ContractorRateModal = ({ driver, delivery, onClose, onConfirm }) => {
   const payType = driver?.payType || '';
   const defaultRate = driver?.rate ?? '';
-  const isPerJob = payType === 'PER_JOB';
+  const deliveryRate = delivery?.contractorRate ?? delivery?.jobRate ?? '';
+  const isPerJob = payType === 'RATE_ON_JOB' || payType === 'Rate on Job';
+
+  const initialJobRate = () => {
+    if (deliveryRate !== '' && deliveryRate != null) return String(deliveryRate);
+    if (isPerJob && defaultRate !== '' && defaultRate != null) return String(defaultRate);
+    return '';
+  };
 
   const [mode, setMode] = useState(isPerJob ? RATE_MODE.JOB_RATE : RATE_MODE.PAY_STRUCTURE);
-  const [jobRate, setJobRate] = useState(isPerJob && defaultRate !== '' ? String(defaultRate) : '');
+  const [jobRate, setJobRate] = useState(initialJobRate);
   const [error, setError] = useState('');
 
   const handleConfirm = () => {

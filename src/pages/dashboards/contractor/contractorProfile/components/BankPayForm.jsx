@@ -5,7 +5,7 @@ const PAY_TYPE_OPTIONS = [
   { value: 'WEEKLY', label: 'Weekly' },
   { value: 'FORTNIGHTLY', label: 'Fortnightly' },
   { value: 'FOUR_WEEKLY', label: 'Four Weekly' },
-  { value: 'PER_JOB', label: 'Rate on Job' },
+  { value: 'RATE_ON_JOB', label: 'Rate on Job' },
 ];
 
 const BankPayForm = ({ form, updateField, payFieldsReadOnly = true }) => {

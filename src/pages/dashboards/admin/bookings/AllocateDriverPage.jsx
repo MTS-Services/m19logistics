@@ -94,12 +94,17 @@ const AllocateDriverPage = () => {
   const handleRateConfirm = (rateSelection) => {
     const driver = rateModalDriver;
     setRateModalDriver(null);
-    // Rate is not sent to the allocate API until backend supports it
-    console.log('Contractor rate selection (UI only):', { driverId: driver.id, ...rateSelection });
-    handleAssignDriver(driver);
+
+    // JOB_RATE → send contractorRate; PAY_STRUCTURE → driverId only
+    const options =
+      rateSelection?.rateMode === 'JOB_RATE' && rateSelection?.jobRate != null
+        ? { contractorRate: Number(rateSelection.jobRate) }
+        : {};
+
+    handleAssignDriver(driver, options);
   };
 
-  const handleAssignDriver = async (driver) => {
+  const handleAssignDriver = async (driver, options = {}) => {
     let toastId = null;
 
     try {
@@ -108,10 +113,22 @@ const AllocateDriverPage = () => {
       // Show loading toast
       toastId = toast.loading(`Assigning ${driver.name}...`);
 
-      // Make API call
-      const response = await axiosInstance.post(`/api/admin/deliveries/${delivery.id}/allocate`, {
-        driverId: driver.id,
-      });
+      // POST /api/admin/deliveries/{id}/allocate
+      // Employee / pay structure: { driverId }
+      // Contractor job rate: { driverId, contractorRate }
+      const payload = { driverId: driver.id };
+      if (options.contractorRate != null && !Number.isNaN(Number(options.contractorRate))) {
+        payload.contractorRate = Number(options.contractorRate);
+      }
+
+      console.log('Allocate driver payload:', payload);
+
+      const response = await axiosInstance.post(
+        `/api/admin/deliveries/${delivery.id}/allocate`,
+        payload
+      );
+
+      console.log('Allocate driver response:', response.data);
 
       // Update toast to success
       if (response.data.success || response.status === 200) {
