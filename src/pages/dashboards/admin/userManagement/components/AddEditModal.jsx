@@ -226,7 +226,6 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           }
         }
 
-        console.log('Update user payload:', updatePayload);
         response = await axiosInstance.put(`/api/admin/users/${user.id}`, updatePayload);
       } else {
         const createPayload = {
@@ -286,10 +285,8 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
           }
         }
 
-        console.log('Create user payload:', createPayload);
         response = await axiosInstance.post('/api/admin/users', createPayload);
       }
-      console.log('Backend response data:', response?.data);
 
       if (response.data?.success) {
         toast.success(isEdit ? 'User updated successfully!' : 'User created successfully!');
@@ -300,12 +297,9 @@ const AddEditModal = ({ isEdit = false, user = null, onClose, onSuccess }) => {
       }
     } catch (err) {
       console.error('Error saving user:', err);
-      console.error('Backend 400/error response:', err.response?.data);
-
       const data = err.response?.data;
       let errorMessage = data?.message || err.message || 'Failed to save user';
 
-      // Show validation details when backend returns field errors
       if (data?.errors) {
         const details = Object.entries(data.errors)
           .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)

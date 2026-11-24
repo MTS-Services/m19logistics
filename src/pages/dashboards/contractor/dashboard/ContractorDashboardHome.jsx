@@ -69,10 +69,6 @@ const ContractorDashboardHome = () => {
       setLoading(true);
       try {
         const response = await getContractorDashboard();
-        console.log('Contractor dashboard full backend response:', response);
-        console.log('Contractor dashboard data:', response?.data);
-        console.log('Vehicle documentStatus (API):', response?.data?.documentStatus);
-
         if (!isMounted) return;
 
         if (response?.success && response?.data) {
@@ -120,8 +116,6 @@ const ContractorDashboardHome = () => {
   const recentJobs = normalizeJobs(dashboard.recentCompletedJobs);
   const recentInvoices = normalizeInvoices(dashboard.recentInvoices);
   const documents = normalizeDocuments(dashboard.documentStatus);
-
-  console.log('VehicleDocumentStatus mapped documents:', documents);
 
   return (
     <div className="space-y-6 p-3 sm:p-6 lg:p-8">

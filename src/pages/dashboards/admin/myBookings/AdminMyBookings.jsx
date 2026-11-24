@@ -92,8 +92,6 @@ const AdminMyBookings = () => {
     setLoading(true);
     try {
       const response = await getAllDeliveries();
-      console.log('Admin My Bookings /api/deliveries response:', response);
-
       const list = Array.isArray(response?.data) ? response.data : [];
       setJobs(list.map(mapApiJobToUi));
     } catch (error) {

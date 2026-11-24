@@ -314,11 +314,8 @@ const AssignedDeliveries = () => {
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      console.log('Canvas initialized with white background');
-
       // Native touch event handlers with passive: false
       const handleTouchStart = (e) => {
-        console.log('Touch start detected');
         e.preventDefault();
         isDrawingRef.current = true;
 
@@ -429,8 +426,6 @@ const AssignedDeliveries = () => {
 
         const x = (touch.clientX - rect.left) * scaleX;
         const y = (touch.clientY - rect.top) * scaleY;
-
-        console.log('Touch position:', { x, y });
 
         ctx.strokeStyle = '#000000';
         ctx.lineWidth = 2;

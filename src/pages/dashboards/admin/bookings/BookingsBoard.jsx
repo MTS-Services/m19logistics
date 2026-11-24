@@ -74,7 +74,6 @@ const BookingsBoard = () => {
   // Toggle dropdown and calculate its fixed position from the button
   const toggleDropdown = useCallback(
     (deliveryId, e) => {
-      console.log('toggleDropdown called with deliveryId:', deliveryId, 'type:', typeof deliveryId);
       if (showActionDropdown === deliveryId) {
         setShowActionDropdown(null);
         return;
@@ -91,7 +90,6 @@ const BookingsBoard = () => {
         openUp,
       });
       setShowActionDropdown(deliveryId);
-      console.log('showActionDropdown set to:', deliveryId);
     },
     [showActionDropdown]
   );
@@ -379,11 +377,8 @@ const BookingsBoard = () => {
 
   // Handle actions
   const handleViewDelivery = (delivery) => {
-    console.log('handleViewDelivery called with:', delivery);
     setSelectedDelivery(delivery);
-    console.log('setSelectedDelivery called');
     setShowViewModal(true);
-    console.log('setShowViewModal(true) called');
     setShowActionDropdown(null);
   };
 
@@ -446,8 +441,6 @@ const BookingsBoard = () => {
       </div>
     );
   }
-
-  console.log('Render - showViewModal:', showViewModal, 'selectedDelivery:', selectedDelivery);
 
   return (
     <div className="p-2 sm:p-6">
@@ -814,15 +807,11 @@ const DropdownMenu = ({
   handleDeleteDelivery,
 }) => {
   const handleAllocate = () => {
-    console.log('=== ALLOCATE BUTTON CLICKED ===');
     const deliveryId = showActionDropdown;
     const delivery = filteredDeliveries.find((d) => d.id === deliveryId);
-    console.log('Delivery found:', delivery);
     if (delivery) {
       setShowActionDropdown(null);
       navigate('/admin/bookings/allocate', { state: { delivery } });
-    } else {
-      console.error('Delivery not found! ID:', deliveryId);
     }
   };
 

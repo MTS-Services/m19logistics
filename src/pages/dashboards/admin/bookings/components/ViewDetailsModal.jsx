@@ -91,7 +91,6 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
         let full = null;
         try {
           const byId = await axiosInstance.get(`/api/admin/deliveries/${delivery.id}`);
-          console.log('ViewDetailsModal backend response (by id):', byId.data);
           full = byId.data?.data || byId.data;
           if (Array.isArray(full)) {
             full = full.find((d) => d.id === delivery.id) || null;
@@ -99,7 +98,6 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
         } catch {
           // Fallback: list endpoint and find by id
           const listRes = await axiosInstance.get('/api/admin/deliveries');
-          console.log('ViewDetailsModal backend response (list fallback):', listRes.data);
           const list = listRes.data?.data || [];
           full = list.find((d) => d.id === delivery.id) || null;
         }
@@ -126,9 +124,6 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
             driverFeedback: full.driverFeedback ?? delivery.driverFeedback ?? null,
           };
           setDetail(merged);
-          console.log('ViewDetailsModal full delivery loaded:', merged);
-          console.log('ViewDetailsModal raw photoUrl:', merged.photoUrl);
-          console.log('ViewDetailsModal raw photoUrls:', merged.photoUrls);
         }
       } catch (err) {
         console.error('Failed to load full delivery detail:', err);
@@ -145,13 +140,6 @@ const ViewDetailsModal = ({ delivery, onClose, formatDate, formatCurrency, getSt
   }, [delivery]);
 
   const photoUrls = useMemo(() => getPhotoUrls(detail), [detail]);
-
-  useEffect(() => {
-    console.log('ViewDetailsModal parsed photos:', {
-      count: photoUrls.length,
-      urls: photoUrls,
-    });
-  }, [photoUrls]);
 
   if (!delivery) return null;
 
