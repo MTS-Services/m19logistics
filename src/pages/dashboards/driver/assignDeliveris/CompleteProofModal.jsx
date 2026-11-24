@@ -127,23 +127,7 @@ const CompleteProofModal = ({
       formData.append('receivedBy', completionData.receivedBy || '');
       formData.append('driverNotes', completionData.driverNotes || '');
 
-      // Console: show as ARRAY
-      console.log('Sending payload:', {
-        signature: 'signature.png',
-        photo: photoFiles, // File[] — multer field name
-        photoCount: photoFiles.length,
-        photoNames: photoFiles.map((f) => f.name),
-        receivedBy: completionData.receivedBy || '',
-        driverNotes: completionData.driverNotes || '',
-      });
-      console.log('photo isArray?', Array.isArray(photoFiles));
-
       const result = await uploadDeliveryProof(selectedDelivery.id, formData);
-
-      console.log('Upload proof backend response (full):', result);
-      console.log('Upload proof backend response data:', result?.data);
-      console.log('photoUrls from backend:', result?.data?.photoUrls);
-      console.log('signatureUrl from backend:', result?.data?.signatureUrl);
 
       toast.success(result.message || 'Proof uploaded successfully');
       onSuccess(result.data);
@@ -156,7 +140,6 @@ const CompleteProofModal = ({
       });
     } catch (error) {
       console.error('Error uploading proof:', error);
-      console.error('Backend error response:', error.response?.data);
       const isTimeout = error.code === 'ECONNABORTED' || error.message?.includes('timeout');
       const errorMessage = isTimeout
         ? 'Upload timed out. Please try fewer/smaller images or check your connection.'

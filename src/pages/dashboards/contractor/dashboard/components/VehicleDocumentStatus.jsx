@@ -25,8 +25,6 @@ const formatDaysRemaining = (daysRemaining) => {
 };
 
 const VehicleDocumentStatus = ({ documents = [] }) => {
-  console.log('VehicleDocumentStatus received documents:', documents);
-
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">

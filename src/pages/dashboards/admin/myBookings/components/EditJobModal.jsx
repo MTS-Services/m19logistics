@@ -81,10 +81,7 @@ const EditJobModal = ({ job, onClose, onSave }) => {
         payload.contractorRate = Number(form.contractorRate);
       }
 
-      console.log('Edit job payload:', payload);
-
       const response = await axiosInstance.put(`/api/admin/deliveries/${job.id}`, payload);
-      console.log('Edit job response:', response.data);
 
       if (response.data?.success === false) {
         throw new Error(response.data?.message || 'Update failed');

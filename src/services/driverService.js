@@ -105,28 +105,41 @@ export const uploadDeliveryProof = async (deliveryId, formData) => {
       timeout: 120000,
     }
   );
-  console.log('uploadDeliveryProof axios response:', response);
-  console.log('uploadDeliveryProof response.data:', response.data);
   return response.data;
 };
 
 /**
  * Complete a delivery
+ * POST /api/driver/deliveries/{id}/complete
+ * Body: { receivedBy, signatureUrl, photoUrls }
  * @param {number} deliveryId - Delivery ID
- * @param {string} receivedBy - Name of person who received the delivery
+ * @param {{ receivedBy: string, signatureUrl?: string, photoUrls?: string[] }} payload
  * @returns {Promise} Promise with completion response data
  */
-export const completeDelivery = async (deliveryId, receivedBy) => {
-  const response = await axiosInstance.post(`/api/driver/deliveries/${deliveryId}/complete`, {
-    receivedBy: receivedBy,
-  });
+export const completeDelivery = async (deliveryId, payload) => {
+  // Support old call style: completeDelivery(id, 'name')
+  const body =
+    typeof payload === 'string'
+      ? { receivedBy: payload }
+      : {
+          receivedBy: payload.receivedBy,
+          signatureUrl: payload.signatureUrl || '',
+          photoUrls: Array.isArray(payload.photoUrls) ? payload.photoUrls : [],
+        };
+
+  const response = await axiosInstance.post(
+    `/api/driver/deliveries/${deliveryId}/complete`,
+    body
+  );
   return response.data;
 };
 
 /**
  * Submit delivery feedback / comments
+ * POST /api/driver/deliveries/{id}/feedback
+ * Body: { comments }
  * @param {number} deliveryId - Delivery ID
- * @param {{ comments?: string, name?: string }} payload
+ * @param {{ comments: string }} payload
  * @returns {Promise} Promise with feedback response data
  */
 export const submitDeliveryFeedback = async (deliveryId, payload) => {

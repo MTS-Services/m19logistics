@@ -20,9 +20,6 @@ const AllocateDriverPage = () => {
   const location = useLocation();
   const delivery = location.state?.delivery;
 
-  console.log('AllocateDriverPage - location.state:', location.state);
-  console.log('AllocateDriverPage - delivery:', delivery);
-
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +30,6 @@ const AllocateDriverPage = () => {
   // Redirect if no delivery data
   useEffect(() => {
     if (!delivery) {
-      console.log('No delivery data found, redirecting...');
       toast.error('No delivery data found. Redirecting to bookings...');
       setTimeout(() => {
         navigate('/admin/bookings', { replace: true });
@@ -121,14 +117,10 @@ const AllocateDriverPage = () => {
         payload.contractorRate = Number(options.contractorRate);
       }
 
-      console.log('Allocate driver payload:', payload);
-
       const response = await axiosInstance.post(
         `/api/admin/deliveries/${delivery.id}/allocate`,
         payload
       );
-
-      console.log('Allocate driver response:', response.data);
 
       // Update toast to success
       if (response.data.success || response.status === 200) {

@@ -181,11 +181,8 @@ const AdminCreateJob = () => {
       payload.contractorRate = Number(formData.jobRate);
     }
 
-    console.log('Admin Create Job payload:', payload);
-
     try {
       const response = await createDeliveryRequest(payload);
-      console.log('Admin Create Job response:', response);
 
       if (response?.success === false) {
         throw new Error(response?.message || 'Failed to create job');

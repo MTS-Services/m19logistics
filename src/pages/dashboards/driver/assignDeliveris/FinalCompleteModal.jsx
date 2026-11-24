@@ -22,21 +22,25 @@ const FinalCompleteModal = ({
 
     setSubmitting(true);
     try {
-      const result = await completeDelivery(
-        selectedDelivery.id,
-        finalCompletionData.receivedBy.trim()
-      );
-      console.log('Delivery completed:', result);
+      // Postman: { receivedBy, signatureUrl, photoUrls }
+      const photoUrls = Array.isArray(proofUploadResponse?.photoUrls)
+        ? proofUploadResponse.photoUrls
+        : proofUploadResponse?.photoUrl
+          ? [proofUploadResponse.photoUrl]
+          : [];
 
+      const completePayload = {
+        receivedBy: finalCompletionData.receivedBy.trim(),
+        signatureUrl: proofUploadResponse?.signatureUrl || '',
+        photoUrls,
+      };
+
+      const result = await completeDelivery(selectedDelivery.id, completePayload);
+
+      // Postman feedback: { comments }
       const comments = finalCompletionData.comments?.trim() || '';
       if (comments) {
-        const feedbackPayload = {
-          comments,
-          name: finalCompletionData.receivedBy.trim(),
-        };
-        console.log('Delivery feedback payload:', feedbackPayload);
-        const feedbackResult = await submitDeliveryFeedback(selectedDelivery.id, feedbackPayload);
-        console.log('Delivery feedback response:', feedbackResult);
+        await submitDeliveryFeedback(selectedDelivery.id, { comments });
       }
 
       toast.success(result.message || 'Delivery completed successfully');
